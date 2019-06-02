@@ -14,11 +14,12 @@ namespace NexusForever.WorldServer.Game.Entity
         public InventoryLocation Location { get; }
 
         private Item[] items;
+        public int SlotsRemaining { get; private set; }
 
         public Bag(InventoryLocation location, uint capacity)
         {
             Location = location;
-            items    = new Item[capacity];
+            items = new Item[capacity];
 
             log.Trace($"Initialised new bag {Location} with {capacity} slots.");
         }
@@ -69,6 +70,8 @@ namespace NexusForever.WorldServer.Game.Entity
             items[item.BagIndex] = item;
 
             log.Trace($"Added item 0x{item.Guid:X16} to bag {Location} at index {item.BagIndex}.");
+
+            SlotsRemaining -= 1;
         }
 
         /// <summary>
@@ -89,6 +92,17 @@ namespace NexusForever.WorldServer.Game.Entity
 
             item.Location = InventoryLocation.None;
             item.BagIndex = 0u;
+
+            SlotsRemaining += 1;
+        }
+
+        /// <summary>
+        /// Returns bag's current size
+        /// </summary>
+        /// <returns></returns>
+        public int GetSize()
+        {
+            return items.Length;
         }
 
         /// <summary>
@@ -98,12 +112,11 @@ namespace NexusForever.WorldServer.Game.Entity
         {
             if (items.Length + capacityChange < 0)
                 throw new ArgumentOutOfRangeException(nameof(capacityChange));
-            if (items.Length + capacityChange < items.Length)
-                throw new ArgumentOutOfRangeException(nameof(capacityChange));
 
             Array.Resize(ref items, items.Length + capacityChange);
+            SlotsRemaining = items.Length - items.Count(i => i != null);
 
-            log.Trace($"Resized bag {Location} from {items.Length} to {items.Length + capacityChange} slots.");
+            log.Trace($"Resized bag {Location} from {items.Length - capacityChange} to {items.Length} slots.");
         }
 
         public IEnumerator<Item> GetEnumerator()

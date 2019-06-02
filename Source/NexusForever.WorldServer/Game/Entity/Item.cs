@@ -86,12 +86,17 @@ namespace NexusForever.WorldServer.Game.Entity
             get => bagIndex;
             set
             {
+                if (bagIndex != value)
+                    PreviousBagIndex = bagIndex;
+
                 bagIndex = value;
                 saveMask |= ItemSaveMask.BagIndex;
             }
         }
 
         private uint bagIndex;
+
+        public uint PreviousBagIndex { get; private set; }
 
         public uint StackCount
         {
@@ -180,7 +185,7 @@ namespace NexusForever.WorldServer.Game.Entity
         /// <summary>
         /// Create a new <see cref="Item"/> from an <see cref="Item2Entry"/> template.
         /// </summary>
-        public Item(ulong? owner, Item2Entry entry, uint count = 1u, uint initialCharges = 0)
+        public Item(ulong? owner, Item2Entry entry, uint count = 1u, uint initialCharges = 1)
         {
             Guid        = AssetManager.NextItemId;
             characterId = owner;
@@ -355,6 +360,13 @@ namespace NexusForever.WorldServer.Game.Entity
             // GameFormulaEntry entry = GameTableManager.GameFormula.GetEntry(559);
             // uint cost = Entry.PowerLevel * entry.Dataint01;
             return 0u;
+        }
+
+        /// Returns whether this item is an equippable bag for expanding inventory slots
+        /// </summary>
+        public bool IsEquippableBag()
+        {
+            return Entry.Item2FamilyId == 5 && Entry.Item2CategoryId == 88 && Entry.Item2TypeId == 134;
         }
     }
 }

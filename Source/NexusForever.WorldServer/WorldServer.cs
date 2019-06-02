@@ -70,7 +70,7 @@ namespace NexusForever.WorldServer
             NetworkManager<WorldSession>.Initialise(ConfigurationManager<WorldServerConfiguration>.Config.Network);
             WorldManager.Initialise(lastTick =>
             {
-                NetworkManager<WorldSession>.Update(lastTick);
+                Console.Title = Title + " Current users: " + NetworkManager<WorldSession>.Update(lastTick);
                 MapManager.Update(lastTick);
                 ResidenceManager.Update(lastTick);
                 BuybackManager.Update(lastTick);

@@ -263,7 +263,7 @@ namespace NexusForever.WorldServer.Network.Message.Handler
                     });
 
                     CharacterCustomizationEntry entry = GetCharacterCustomisation(customisations, creationEntry.RaceId, creationEntry.Sex, label, value);
-                    if (entry == null)
+                    if (entry == null || character.CharacterAppearance.FirstOrDefault(a => a.Slot == (byte)entry.ItemSlotId) != null)
                         continue;
 
                     character.CharacterAppearance.Add(new CharacterAppearance
@@ -385,7 +385,7 @@ namespace NexusForever.WorldServer.Network.Message.Handler
                 ImmutableList<CharacterCustomizationEntry> entries = AssetManager.GetPrimaryCharacterCustomisation(race, sex, primaryLabel, primaryValue);
                 if (entries == null)
                     return null;
-                if (entries.Count == 1)
+                if (entries.Count == 1)//if (entries[0].CharacterCustomizationLabelId00 != 0 || entries.Count == 1)
                     return entries[0];
 
                 // customisation has multiple results, filter with secondary label and value 

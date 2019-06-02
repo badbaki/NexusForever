@@ -138,7 +138,7 @@ namespace NexusForever.WorldServer.Game.Housing
                     throw new ArgumentOutOfRangeException();
 
                 skyWallpaperId = value;
-                saveMask |= ResidenceSaveMask.Ground;
+                saveMask |= ResidenceSaveMask.Sky;
             }
         }
 

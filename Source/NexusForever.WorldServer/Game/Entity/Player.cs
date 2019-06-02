@@ -161,9 +161,10 @@ namespace NexusForever.WorldServer.Game.Entity
             // temp
             Properties.Add(Property.BaseHealth, new PropertyValue(Property.BaseHealth, 200f, 800f));
             Properties.Add(Property.ShieldCapacityMax, new PropertyValue(Property.ShieldCapacityMax, 0f, 450f));
-            Properties.Add(Property.MoveSpeedMultiplier, new PropertyValue(Property.MoveSpeedMultiplier, 1f, 1f));
-            Properties.Add(Property.JumpHeight, new PropertyValue(Property.JumpHeight, 2.5f, 2.5f));
+            Properties.Add(Property.MoveSpeedMultiplier, new PropertyValue(Property.MoveSpeedMultiplier, 1.5f, 1.5f));
+            Properties.Add(Property.JumpHeight, new PropertyValue(Property.JumpHeight, 5f, 5f));
             Properties.Add(Property.GravityMultiplier, new PropertyValue(Property.GravityMultiplier, 1f, 1f));
+            Properties.Add(Property.MountSpeedMultiplier, new PropertyValue(Property.MountSpeedMultiplier, 3f, 3f));
             // sprint
             Properties.Add(Property.ResourceMax0, new PropertyValue(Property.ResourceMax0, 500f, 500f));
             // dash
@@ -291,13 +292,14 @@ namespace NexusForever.WorldServer.Game.Entity
             if (Zone != null)
             {
                 TextTable tt = GameTableManager.GetTextTable(Language.English);
-
+                /*
                 Session.EnqueueMessageEncrypted(new ServerChat
                 {
                     Guid    = Session.Player.Guid,
                     Channel = ChatChannel.System,
                     Text    = $"New Zone: {tt.GetEntry(Zone.LocalizedTextIdName)}"
                 });
+                */
             }
             ZoneMapManager.OnZoneUpdate();
         }
@@ -328,6 +330,12 @@ namespace NexusForever.WorldServer.Game.Entity
                         Id    = RewardProperty.ExtraDecorSlots,
                         Type  = 1,
                         Value = 2000
+                    },
+                    new ServerRewardPropertySet.RewardProperty
+                    {
+                        Id    = RewardProperty.BagSlots,
+                        Type  = 1,
+                        Value = 4
                     },
                     new ServerRewardPropertySet.RewardProperty
                     {
@@ -380,6 +388,8 @@ namespace NexusForever.WorldServer.Game.Entity
             DatacubeManager.SendInitialPackets();
             MailManager.SendInitialPackets();
             ZoneMapManager.SendInitialPackets();
+
+            SocialManager.JoinChatChannels(Session);
         }
 
         public ItemProficiency GetItemProficiences()
@@ -452,7 +462,7 @@ namespace NexusForever.WorldServer.Game.Entity
         /// <summary>
         /// Start delayed logout with optional supplied time and <see cref="LogoutReason"/>.
         /// </summary>
-        public void LogoutStart(double timeToLogout = 30d, LogoutReason reason = LogoutReason.None, bool requested = true)
+        public void LogoutStart(double timeToLogout = 5d, LogoutReason reason = LogoutReason.None, bool requested = true)
         {
             if (logoutManager != null)
                 return;
@@ -517,6 +527,7 @@ namespace NexusForever.WorldServer.Game.Entity
                     () =>
                 {
                     RemoveFromMap();
+                    SocialManager.LeaveChatChannels(Session);
                     Session.Player = null;
 
                     CleanupManager.Untrack(Session.Account);
@@ -533,7 +544,18 @@ namespace NexusForever.WorldServer.Game.Entity
             if (entry == null)
                 throw new ArgumentException();
 
-            TeleportTo(entry, new Vector3(x, y, z), instanceId, residenceId);
+            if (Enum.IsDefined(typeof(BlacklistZoneIds), (int)worldId))
+            {
+                Session.EnqueueMessageEncrypted(new ServerChat
+                {
+                    Channel = ChatChannel.System,
+                    Text = ($"{(BlacklistZoneIds)worldId} (ID: {worldId}) is currently a blacklisted zone.")
+                });
+            }
+            else
+            {
+                TeleportTo(entry, new Vector3(x, y, z), instanceId, residenceId);
+            }
         }
 
         /// <summary>

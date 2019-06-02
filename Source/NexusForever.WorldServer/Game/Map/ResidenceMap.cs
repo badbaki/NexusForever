@@ -406,6 +406,16 @@ namespace NexusForever.WorldServer.Game.Map
                 throw new InvalidPacketValueException();
 
             // TODO
+
+            if (housingRemodel.GroundWallpaperId != 0)
+            {
+                residence.Ground = (ushort)housingRemodel.GroundWallpaperId;
+            }
+            if (housingRemodel.SkyWallpaperId != 0)
+            {
+                residence.Sky = (ushort)housingRemodel.SkyWallpaperId;
+            }
+            SendHousingProperties();
         }
     }
 }

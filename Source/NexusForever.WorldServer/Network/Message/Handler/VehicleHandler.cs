@@ -10,8 +10,9 @@ namespace NexusForever.WorldServer.Network.Message.Handler
         [MessageHandler(GameMessageOpcode.ClientVehicleDisembark)]
         public static void HandleVehicleDisembark(WorldSession session, ClientVehicleDisembark disembark)
         {
-            if (session.Player.VehicleGuid == 0u)
-                throw new InvalidPacketValueException();
+            //KNOWN ISSUE -- this currently DCs the user when switching between mounts
+            //if (session.Player.VehicleGuid == 0u)
+            //throw new InvalidPacketValueException();
 
             Vehicle vehicle = session.Player.GetVisible<Vehicle>(session.Player.VehicleGuid);
             vehicle.PassengerRemove(session.Player);

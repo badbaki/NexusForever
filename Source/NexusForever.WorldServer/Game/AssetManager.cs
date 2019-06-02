@@ -53,11 +53,24 @@ namespace NexusForever.WorldServer.Game
             var entries = new Dictionary<uint, List<CharacterCustomizationEntry>>();
             foreach (CharacterCustomizationEntry entry in GameTableManager.CharacterCustomization.Entries)
             {
-                uint primaryKey = (entry.Value00 << 24) | (entry.CharacterCustomizationLabelId00 << 16) | (entry.Gender << 8) | entry.RaceId;
-                if (!entries.ContainsKey(primaryKey))
-                    entries.Add(primaryKey, new List<CharacterCustomizationEntry>());
+                uint primaryKey;
+                if (entry.CharacterCustomizationLabelId00 == 0 && entry.CharacterCustomizationLabelId01 > 0)
+                {
+                    primaryKey = (entry.Value01 << 24) | (entry.CharacterCustomizationLabelId01 << 16) | (entry.Gender << 8) | entry.RaceId;
+                    if (!entries.ContainsKey(primaryKey))
+                        entries.Add(primaryKey, new List<CharacterCustomizationEntry>());
 
-                entries[primaryKey].Add(entry);
+                    entries[primaryKey].Add(entry);
+                }
+
+                if (entry.CharacterCustomizationLabelId00 > 0)
+                {
+                    primaryKey = (entry.Value00 << 24) | (entry.CharacterCustomizationLabelId00 << 16) | (entry.Gender << 8) | entry.RaceId;
+                    if (!entries.ContainsKey(primaryKey))
+                        entries.Add(primaryKey, new List<CharacterCustomizationEntry>());
+
+                    entries[primaryKey].Add(entry);
+                }
             }
 
             characterCustomisations = entries.ToImmutableDictionary(e => e.Key, e => e.Value.ToImmutableList());
