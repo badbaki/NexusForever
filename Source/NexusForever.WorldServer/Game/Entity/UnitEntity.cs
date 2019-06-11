@@ -73,6 +73,12 @@ namespace NexusForever.WorldServer.Game.Entity
             if (parameters == null)
                 throw new ArgumentNullException();
 
+            if (this is Player player)
+            {
+                if (parameters.UserInitiatedSpellCast)
+                    player.Dismount();
+            }
+
             var spell = new Spell.Spell(this, parameters);
             spell.Cast();
             pendingSpells.Add(spell);

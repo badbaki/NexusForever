@@ -123,6 +123,8 @@ namespace NexusForever.WorldServer.Game.Entity
         private LogoutManager logoutManager;
         private PendingTeleport pendingTeleport;
 
+        private bool loggedIn = false;
+
         public Player(WorldSession session, Character model)
             : base(EntityType.Player)
         {
@@ -273,6 +275,9 @@ namespace NexusForever.WorldServer.Game.Entity
             Session.EnqueueMessageEncrypted(new ServerPlayerEnteredWorld());
 
             IsLoading = false;
+
+            if (!loggedIn)
+                OnLogin();
         }
 
         public override void OnRelocate(Vector3 vector)
@@ -402,6 +407,8 @@ namespace NexusForever.WorldServer.Game.Entity
 
         public override void OnRemoveFromMap()
         {
+            DestroyDependents();
+
             base.OnRemoveFromMap();
 
             if (pendingTeleport != null)
@@ -535,6 +542,15 @@ namespace NexusForever.WorldServer.Game.Entity
             }));
         }
 
+        private void OnLogin()
+        {
+            loggedIn = true;
+
+            var motd = ConfigurationManager<WorldServerConfiguration>.Config.MessageOfTheDay;
+            if (motd.Length > 0)
+                SocialManager.SendMessage(Session, "MOTD: " + motd, channel: ChatChannel.Realm);
+        }
+
         /// <summary>
         /// Teleport <see cref="Player"/> to supplied location.
         /// </summary>
@@ -571,6 +587,43 @@ namespace NexusForever.WorldServer.Game.Entity
             var info = new MapInfo(entry, instanceId, residenceId);
             pendingTeleport = new PendingTeleport(info, vector);
             RemoveFromMap();
+        }
+
+        /// <summary>
+        /// Returns whether this <see cref="Player"/> is allowed to summon or be added to a mount
+        /// </summary>
+        public bool CanMount()
+        {
+            return VehicleGuid == 0u && pendingTeleport == null && logoutManager == null;
+        }
+
+        /// <summary>
+        /// Dismounts this <see cref="Player"/> from a vehicle that it's attached to
+        /// </summary>
+        public void Dismount()
+        {
+            if (VehicleGuid != 0u)
+            {
+                Vehicle vehicle = GetVisible<Vehicle>(VehicleGuid);
+                vehicle.PassengerRemove(this);
+            }
+        }
+
+        /// <summary>
+        /// Remove all entities associated with the <see cref="Player"/>
+        /// </summary>
+        private void DestroyDependents()
+        {
+            // TODO: Enqueue re-creation of necessary entities
+            if (VehicleGuid != 0u)
+            {
+                Vehicle vehicle = GetVisible<Vehicle>(VehicleGuid);
+                if (vehicle != null)
+                    vehicle.Destroy();
+                VehicleGuid = 0u;
+            }
+
+            // TODO: Remove pets, scanbots, vanity pets
         }
 
         /// <summary>

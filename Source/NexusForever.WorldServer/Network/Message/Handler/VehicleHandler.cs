@@ -14,8 +14,7 @@ namespace NexusForever.WorldServer.Network.Message.Handler
             //if (session.Player.VehicleGuid == 0u)
             //throw new InvalidPacketValueException();
 
-            Vehicle vehicle = session.Player.GetVisible<Vehicle>(session.Player.VehicleGuid);
-            vehicle.PassengerRemove(session.Player);
+            session.Player.Dismount();
         }
     }
 }

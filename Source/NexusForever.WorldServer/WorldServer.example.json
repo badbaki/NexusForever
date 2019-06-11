@@ -24,5 +24,6 @@
   "LengthOfInGameDay": 12600,
   "Rules": {
     "CrossFactionChat": true
-  }
+  },
+  "MessageOfTheDay": ""
 }
