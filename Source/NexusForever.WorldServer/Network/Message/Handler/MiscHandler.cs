@@ -3,6 +3,7 @@ using NexusForever.Shared.Network;
 using NexusForever.Shared.Network.Message;
 using NexusForever.WorldServer.Database.Character;
 using NexusForever.WorldServer.Database.Character.Model;
+using NexusForever.WorldServer.Game.Contact.Static;
 using NexusForever.WorldServer.Game.Entity.Static;
 using NexusForever.WorldServer.Network.Message.Model;
 using NexusForever.WorldServer.Network.Message.Model.Shared;
@@ -32,9 +33,8 @@ namespace NexusForever.WorldServer.Network.Message.Handler
                 if (character == null)
                     throw new InvalidPacketValueException();
 
-                session.EnqueueMessageEncrypted(new ServerPlayerInfoFullResponse
-                {
-                    BaseData = new ServerPlayerInfoFullResponse.Base
+                if (request.Type == ContactType.Ignore) // Ignored user data request
+                    session.EnqueueMessageEncrypted(new ServerPlayerInfoBasicResponse
                     {
                         ResultCode = 0,
                         Identity = new TargetPlayerIdentity
@@ -43,15 +43,29 @@ namespace NexusForever.WorldServer.Network.Message.Handler
                             CharacterId = character.Id
                         },
                         Name = character.Name,
-                        Faction = (Faction)character.FactionId
-                    },
-                    IsClassPathSet = true,
-                    Path = (Path)character.ActivePath,
-                    Class = (Class)character.Class,
-                    Level = character.Level,
-                    IsLastLoggedOnInDaysSet = false,
-                    LastLoggedInDays = -1f
-                });
+                        Faction = (Faction)character.FactionId,
+                    });
+                else
+                    session.EnqueueMessageEncrypted(new ServerPlayerInfoFullResponse
+                    {
+                        BaseData = new ServerPlayerInfoBasicResponse
+                        {
+                            ResultCode = 0,
+                            Identity = new TargetPlayerIdentity
+                            {
+                                RealmId = WorldServer.RealmId,
+                                CharacterId = character.Id
+                            },
+                            Name = character.Name,
+                            Faction = (Faction)character.FactionId
+                        },
+                        IsClassPathSet = true,
+                        Path = (Path)character.ActivePath,
+                        Class = (Class)character.Class,
+                        Level = character.Level,
+                        IsLastLoggedOnInDaysSet = true,
+                        LastLoggedInDays = NetworkManager<WorldSession>.GetSession(s => s.Player?.CharacterId == character.Id) != null ? 0 : -30f // TODO: Get Last Online from DB & Calculate Time Offline (Hard coded for 30 days currently)
+                    });
             }));
             
         }
