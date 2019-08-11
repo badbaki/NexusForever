@@ -9,6 +9,10 @@ namespace NexusForever.WorldServer.Database.Character
         {
             base.OnModelCreating(modelBuilder);
 
+            modelBuilder.Entity<CharacterBone>()
+                .Property(e => e.BoneIndex)
+                .ValueGeneratedNever();
+
             modelBuilder.Entity<CharacterCostume>()
                 .Property(p => p.Index)
                 .ValueGeneratedNever();
