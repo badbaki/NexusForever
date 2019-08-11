@@ -1,5 +1,7 @@
 ﻿using System.Threading.Tasks;
 using NexusForever.Shared.Database.Auth;
+using NexusForever.Shared.Database.Auth.Model;
+using NexusForever.Shared.Game.Events;
 using NexusForever.Shared.GameTable;
 using NexusForever.Shared.GameTable.Model;
 using NexusForever.Shared.GameTable.Static;
@@ -20,15 +22,17 @@ namespace NexusForever.WorldServer.Command.Handler
         [SubCommandHandler("create", "email password - Create a new account")]
         public async Task HandleAccountCreate(CommandContext context, string subCommand, string[] parameters)
         {
-            if (parameters.Length < 2)
+            if (parameters.Length != 2)
             {
                 await SendHelpAsync(context).ConfigureAwait(false);
                 return;
             }
 
-            AuthDatabase.CreateAccount(parameters[0], parameters[1]);
-            await context.SendMessageAsync($"Account {parameters[0]} created successfully")
-                .ConfigureAwait(false);
+            var account = await AuthDatabase.CreateAccount(parameters[0], parameters[1]);
+            if (account != null)
+                await context.SendMessageAsync($"Account {account.Email} created successfully");
+            else
+                await context.SendMessageAsync($"Account {parameters[0]} was unable to be created. Ensure email is unique and does not contain special characters. Please try again.");
         }
 
         [SubCommandHandler("delete", "email - Delete an account")]
