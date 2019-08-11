@@ -45,16 +45,19 @@ namespace NexusForever.Shared.Network
             connectionListener?.Shutdown();
         }
 
-        public static void Update(double lastTick)
+        public static int Update(double lastTick)
         {
             //
             while (pendingAdd.TryDequeue(out T session))
                 sessions.Add(session);
 
+            int SessCount = 0;
+
             //
             foreach (T session in sessions)
             {
                 session.Update(lastTick);
+                SessCount++;
                 if (session.Disconnected && !session.PendingEvent)
                     pendingRemove.Enqueue(session);
             }
@@ -62,6 +65,8 @@ namespace NexusForever.Shared.Network
             //
             while (pendingRemove.TryDequeue(out T session))
                 sessions.Remove(session);
+
+            return SessCount;
         }
     }
 }
