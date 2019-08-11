@@ -32,7 +32,8 @@ namespace NexusForever.WorldServer.Network.Message.Handler
             byte tier = session.Player.SpellManager.GetSpellTier(spell.Info.Entry.Id);
             session.Player.CastSpell(new SpellParameters
             {
-                SpellInfo = spell.Info.GetSpellInfo(tier)
+                SpellInfo = spell.Info.GetSpellInfo(tier),
+                UserInitiatedSpellCast = true
             });
         }
 
@@ -57,7 +58,8 @@ namespace NexusForever.WorldServer.Network.Message.Handler
             byte tier = session.Player.SpellManager.GetSpellTier(spell.Info.Entry.Id);
             session.Player.CastSpell(new SpellParameters
             {
-                SpellInfo = spell.Info.GetSpellInfo(tier)
+                SpellInfo = spell.Info.GetSpellInfo(tier),
+                UserInitiatedSpellCast = true
             });
         }
 

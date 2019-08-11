@@ -190,9 +190,10 @@ namespace NexusForever.WorldServer.Game.Entity
             // temp
             Properties.Add(Property.BaseHealth, new PropertyValue(Property.BaseHealth, 200f, 800f));
             Properties.Add(Property.ShieldCapacityMax, new PropertyValue(Property.ShieldCapacityMax, 0f, 450f));
-            Properties.Add(Property.MoveSpeedMultiplier, new PropertyValue(Property.MoveSpeedMultiplier, 1f, 1f));
-            Properties.Add(Property.JumpHeight, new PropertyValue(Property.JumpHeight, 2.5f, 2.5f));
+            Properties.Add(Property.MoveSpeedMultiplier, new PropertyValue(Property.MoveSpeedMultiplier, 1.5f, 1.5f));
+            Properties.Add(Property.JumpHeight, new PropertyValue(Property.JumpHeight, 5f, 5f));
             Properties.Add(Property.GravityMultiplier, new PropertyValue(Property.GravityMultiplier, 1f, 1f));
+            Properties.Add(Property.MountSpeedMultiplier, new PropertyValue(Property.MountSpeedMultiplier, 3f, 3f));
             // sprint
             Properties.Add(Property.ResourceMax0, new PropertyValue(Property.ResourceMax0, 500f, 500f));
             // dash
@@ -398,6 +399,24 @@ namespace NexusForever.WorldServer.Game.Entity
                     },
                     new ServerRewardPropertySet.RewardProperty
                     {
+                        Id    = RewardProperty.GuildCreateOrInviteAccess,
+                        Type  = 1,
+                        Value = 1
+                    },
+                    new ServerRewardPropertySet.RewardProperty
+                    {
+                        Id    = RewardProperty.GuildHolomarkUnlimited,
+                        Type  = 1,
+                        Value = 1
+                    },
+                    new ServerRewardPropertySet.RewardProperty
+                    {
+                        Id    = RewardProperty.BagSlots,
+                        Type  = 1,
+                        Value = 4
+                    },
+                    new ServerRewardPropertySet.RewardProperty
+                    {
                         Id    = RewardProperty.Trading,
                         Type  = 1,
                         Value = 1
@@ -535,7 +554,7 @@ namespace NexusForever.WorldServer.Game.Entity
         /// <summary>
         /// Start delayed logout with optional supplied time and <see cref="LogoutReason"/>.
         /// </summary>
-        public void LogoutStart(double timeToLogout = 30d, LogoutReason reason = LogoutReason.None, bool requested = true)
+        public void LogoutStart(double timeToLogout = 3d, LogoutReason reason = LogoutReason.None, bool requested = true)
         {
             if (logoutManager != null)
                 return;
@@ -646,6 +665,43 @@ namespace NexusForever.WorldServer.Game.Entity
             var info = new MapInfo(entry, instanceId, residenceId);
             pendingTeleport = new PendingTeleport(info, vector, vanityPetId);
             RemoveFromMap();
+        }
+
+        /// <summary>
+        /// Returns whether this <see cref="Player"/> is allowed to summon or be added to a mount
+        /// </summary>
+        public bool CanMount()
+        {
+            return VehicleGuid == 0u && pendingTeleport == null && logoutManager == null;
+        }
+
+        /// <summary>
+        /// Dismounts this <see cref="Player"/> from a vehicle that it's attached to
+        /// </summary>
+        public void Dismount()
+        {
+            if (VehicleGuid != 0u)
+            {
+                Vehicle vehicle = GetVisible<Vehicle>(VehicleGuid);
+                vehicle.PassengerRemove(this);
+            }
+        }
+
+        /// <summary>
+        /// Remove all entities associated with the <see cref="Player"/>
+        /// </summary>
+        private void DestroyDependents()
+        {
+            // TODO: Enqueue re-creation of necessary entities
+            if (VehicleGuid != 0u)
+            {
+                Vehicle vehicle = GetVisible<Vehicle>(VehicleGuid);
+                if (vehicle != null)
+                    vehicle.Destroy();
+                VehicleGuid = 0u;
+            }
+
+            // TODO: Remove pets, scanbots, vanity pets
         }
 
         /// <summary>

@@ -10,11 +10,10 @@ namespace NexusForever.WorldServer.Network.Message.Handler
         [MessageHandler(GameMessageOpcode.ClientVehicleDisembark)]
         public static void HandleVehicleDisembark(WorldSession session, ClientVehicleDisembark disembark)
         {
-            if (session.Player.VehicleGuid == 0u)
-                throw new InvalidPacketValueException();
+            //if (session.Player.VehicleGuid == 0u)
+            //throw new InvalidPacketValueException();
 
-            Vehicle vehicle = session.Player.GetVisible<Vehicle>(session.Player.VehicleGuid);
-            vehicle.PassengerRemove(session.Player);
+            session.Player.Dismount();
         }
     }
 }
