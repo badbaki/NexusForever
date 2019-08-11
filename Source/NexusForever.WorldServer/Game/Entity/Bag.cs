@@ -14,11 +14,14 @@ namespace NexusForever.WorldServer.Game.Entity
         public InventoryLocation Location { get; }
 
         private Item[] items;
+        public uint SlotsRemaining { get; private set; }
 
         public Bag(InventoryLocation location, uint capacity)
         {
             Location = location;
             items    = new Item[capacity];
+
+            SlotsRemaining = capacity;
 
             log.Trace($"Initialised new bag {Location} with {capacity} slots.");
         }
@@ -77,6 +80,8 @@ namespace NexusForever.WorldServer.Game.Entity
             items[item.BagIndex] = item;
 
             log.Trace($"Added item 0x{item.Guid:X16} to bag {Location} at index {item.BagIndex}.");
+
+            SlotsRemaining = Math.Clamp(SlotsRemaining - 1, 0, (uint)items.Length);
         }
 
         /// <summary>
@@ -97,6 +102,17 @@ namespace NexusForever.WorldServer.Game.Entity
 
             item.Location = InventoryLocation.None;
             item.BagIndex = 0u;
+
+            SlotsRemaining = Math.Clamp(SlotsRemaining + 1, 0, (uint)items.Length);
+        }
+
+        /// <summary>
+        /// Returns bag's current size
+        /// </summary>
+        /// <returns></returns>
+        public int GetSize()
+        {
+            return items.Length;
         }
 
         /// <summary>
@@ -106,12 +122,11 @@ namespace NexusForever.WorldServer.Game.Entity
         {
             if (items.Length + capacityChange < 0)
                 throw new ArgumentOutOfRangeException(nameof(capacityChange));
-            if (items.Length + capacityChange < items.Length)
-                throw new ArgumentOutOfRangeException(nameof(capacityChange));
 
             Array.Resize(ref items, items.Length + capacityChange);
+            SlotsRemaining = (uint)(SlotsRemaining + capacityChange);
 
-            log.Trace($"Resized bag {Location} from {items.Length} to {items.Length + capacityChange} slots.");
+            log.Trace($"Resized bag {Location} from {items.Length - capacityChange} to {items.Length} slots.");
         }
 
         public IEnumerator<Item> GetEnumerator()
