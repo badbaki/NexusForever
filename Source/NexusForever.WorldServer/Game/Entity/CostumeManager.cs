@@ -22,7 +22,7 @@ namespace NexusForever.WorldServer.Game.Entity
         private static readonly ILogger log = LogManager.GetCurrentClassLogger();
 
         // TODO: need to research Server092C more to find a permanent home for this
-        public const byte CostumeCap = 4;
+        public const byte CostumeCap = 12;
 
         // hard limit, array storing costumes at client is 12 in size 
         private const byte MaxCostumes = 12;
@@ -243,7 +243,9 @@ namespace NexusForever.WorldServer.Game.Entity
             if (entry == null)
                 return 1000u;
 
-            return entry.Dataint0/* + countFromEntitlements*/;
+            //Yes I know hard numbers are no bueno. Future me fix later. 
+            //Needs to be set to Entitlement.AdditionalCostumeUnlocks from CharacterHandler
+            return entry.Dataint0 + 2000u/* + countFromEntitlements*/;
         }
 
         /// <summary>

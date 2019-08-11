@@ -184,7 +184,7 @@ namespace NexusForever.WorldServer.Game.Entity
         /// <summary>
         /// Create a new <see cref="Item"/> from an <see cref="Item2Entry"/> template.
         /// </summary>
-        public Item(ulong? owner, Item2Entry entry, uint count = 1u, uint initialCharges = 0)
+        public Item(ulong? owner, Item2Entry entry, uint count = 1u, uint initialCharges = 1)
         {
             Guid        = AssetManager.NextItemId;
             characterId = owner;
@@ -208,7 +208,7 @@ namespace NexusForever.WorldServer.Game.Entity
             location    = InventoryLocation.None;
             bagIndex    = 0u;
             stackCount  = count;
-            charges     = 0u;
+            charges     = 1u;
             durability  = 0.0f;
 
             SpellEntry  = entry;
