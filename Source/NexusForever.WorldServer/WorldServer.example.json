@@ -1,25 +1,26 @@
 {
-    "Network": {
-        "Host": "0.0.0.0",
-        "Port": 24000
+  "Network": {
+    "Host": "0.0.0.0",
+    "Port": 24000
+  },
+  "Database": {
+    "Auth": {
+      "ConnectionString": "server=127.0.0.1;port=3306;user=nexusforever;password=nexusforever;database=nexus_forever_auth",
+      "Provider": "MySql"
     },
-    "Database": {
-        "Auth": {
-            "ConnectionString": "server=127.0.0.1;port=3306;user=nexusforever;password=nexusforever;database=nexus_forever_auth",
-            "Provider": "MySql"
-        },
-        "Character": {
-            "ConnectionString": "server=127.0.0.1;port=3306;user=nexusforever;password=nexusforever;database=nexus_forever_character",
-            "Provider": "MySql"
-        },
-        "World": {
-            "ConnectionString": "server=127.0.0.1;port=3306;user=nexusforever;password=nexusforever;database=nexus_forever_world",
-            "Provider": "MySql"
-        }
+    "Character": {
+      "ConnectionString": "server=127.0.0.1;port=3306;user=nexusforever;password=nexusforever;database=nexus_forever_character",
+      "Provider": "MySql"
     },
-    "Map": {
-        "MapPath": "map"
-    },
-    "RealmId": 1,
-    "LengthOfInGameDay": 12600
+    "World": {
+      "ConnectionString": "server=127.0.0.1;port=3306;user=nexusforever;password=nexusforever;database=nexus_forever_world",
+      "Provider": "MySql"
+    }
+  },
+  "Map": {
+    "MapPath": "map"
+  },
+  "RealmId": 1,
+  "LengthOfInGameDay": 12600,
+  "CrossFactionChat": true
 }

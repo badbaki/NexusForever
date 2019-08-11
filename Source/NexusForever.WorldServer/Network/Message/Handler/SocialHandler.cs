@@ -90,5 +90,11 @@ namespace NexusForever.WorldServer.Network.Message.Handler
                 Players = players
             });
         }
+
+        [MessageHandler(GameMessageOpcode.ClientChatWhisper)]
+        public static void HandleWhisper(WorldSession session, ClientChatWhisper whisper)
+        {
+            SocialManager.HandleWhisperChat(session, whisper);
+        }
     }
 }

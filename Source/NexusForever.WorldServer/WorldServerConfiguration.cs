@@ -15,5 +15,6 @@ namespace NexusForever.WorldServer
         public bool UseCache { get; set; } = false;
         public ushort RealmId { get; set; }
         public uint LengthOfInGameDay { get; set; }
+        public bool CrossFactionChat { get; set; } = true;
     }
 }
