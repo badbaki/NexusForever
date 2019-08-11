@@ -345,12 +345,14 @@ namespace NexusForever.WorldServer.Game.Entity
             {
                 TextTable tt = GameTableManager.GetTextTable(Language.English);
 
+                /* Shhh quiet zone spam
                 Session.EnqueueMessageEncrypted(new ServerChat
                 {
                     Guid    = Session.Player.Guid,
                     Channel = ChatChannel.System,
                     Text    = $"New Zone: ({Zone.Id}){tt.GetEntry(Zone.LocalizedTextIdName)}"
                 });
+                */
 
                 uint tutorialId = AssetManager.GetTutorialIdForZone(Zone.Id);
                 if (tutorialId > 0)
