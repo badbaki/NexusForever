@@ -53,6 +53,7 @@ namespace NexusForever.WorldServer.Database.Character.Model
         public byte InnateIndex { get; set; }
         public uint TimePlayedTotal { get; set; }
         public uint TimePlayedLevel { get; set; }
+        public uint TotalXp { get; set; }
         public DateTime? DeleteTime { get; set; }
         public string OriginalName { get; set; }
 

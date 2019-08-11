@@ -159,6 +159,10 @@ namespace NexusForever.WorldServer.Database.Character.Model
                     .HasColumnName("title")
                     .HasDefaultValueSql("'0'");
 
+                entity.Property(e => e.TotalXp)
+                    .HasColumnName("totalXp")
+                    .HasDefaultValueSql("'0'");
+
                 entity.Property(e => e.WorldId)
                     .HasColumnName("worldId")
                     .HasDefaultValueSql("'0'");
