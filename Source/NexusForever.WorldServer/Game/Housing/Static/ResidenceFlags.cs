@@ -5,6 +5,6 @@ namespace NexusForever.WorldServer.Game.Housing.Static
     [Flags]
     public enum ResidenceFlags
     {
-        
+        groundClutterOff = 1
     }
 }

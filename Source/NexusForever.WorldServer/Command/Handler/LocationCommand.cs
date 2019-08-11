@@ -8,7 +8,7 @@ namespace NexusForever.WorldServer.Command.Handler
     public class LocationCommand : NamedCommand
     {
 
-        public override string HelpText => "Writes the current position of the player as {MapId} {X} {Y} {Z}";
+        public override string HelpText => "Writes the current position of the player as {MapId} {ZoneId} {X} {Y} {Z}";
 
         public LocationCommand()
             : base(true, "location", "loc")
@@ -18,7 +18,7 @@ namespace NexusForever.WorldServer.Command.Handler
         protected override async Task HandleCommandAsync(CommandContext context, string command, string[] parameters)
         {
             await context.SendMessageAsync(
-                $"{context.Session.Player.Map.Entry.Id} {context.Session.Player.Position.X} {context.Session.Player.Position.Y} {context.Session.Player.Position.Z}");
+                $"{context.Session.Player.Map.Entry.Id} {context.Session.Player.Zone.Id} {context.Session.Player.Position.X} {context.Session.Player.Position.Y} {context.Session.Player.Position.Z}");
         }
     }
 }
