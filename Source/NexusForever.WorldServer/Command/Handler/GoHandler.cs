@@ -28,11 +28,11 @@ namespace NexusForever.WorldServer.Command.Handler
         }
         protected override async Task HandleCommandAsync(CommandContext context, string command, string[] parameters)
         {
-            string zoneName = string.Join(" ", parameters);
+            string zoneName = string.Join(" ", parameters).ToLower();
 
             WorldLocation2Entry zone = SearchManager.Search<WorldLocation2Entry>(zoneName, context.Language, GetTextIds).FirstOrDefault();
 
-            if (zoneName == "home")
+            if (zoneName.ToLower() == "home")
             {
                 Residence residence = ResidenceManager.GetResidence(context.Session.Player.Name).GetAwaiter().GetResult();
                 if (residence == null)
@@ -42,12 +42,13 @@ namespace NexusForever.WorldServer.Command.Handler
                     else
                     {
                         //donothing
+                        await context.SendMessageAsync("No home to go to :(");
                     }
                 }
 
                 ResidenceEntrance entrance = ResidenceManager.GetResidenceEntrance(residence);
                 context.Session.Player.TeleportTo(entrance.Entry, entrance.Position, 0u, residence.Id);
-                await context.SendMessageAsync("Going home....");
+                await context.SendMessageAsync("Going home...");
             }
             else
             {

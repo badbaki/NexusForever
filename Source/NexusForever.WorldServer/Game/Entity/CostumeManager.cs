@@ -245,7 +245,7 @@ namespace NexusForever.WorldServer.Game.Entity
 
             //Yes I know hard numbers are no bueno. Future me fix later. 
             //Needs to be set to Entitlement.AdditionalCostumeUnlocks from CharacterHandler
-            return entry.Dataint0 + 2000u/* + countFromEntitlements*/;
+            return entry.Dataint0 + 2000u;
         }
 
         /// <summary>
