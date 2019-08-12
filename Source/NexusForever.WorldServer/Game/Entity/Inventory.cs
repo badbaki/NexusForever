@@ -351,7 +351,7 @@ namespace NexusForever.WorldServer.Game.Entity
 
                     uint newStackCount = Math.Min(item.StackCount + count, itemEntry.MaxStackCount);
                     count -= newStackCount - item.StackCount;
-                    ItemStackCountUpdate(item, newStackCount);
+                    ItemStackCountUpdate(item, newStackCount, reason);
                 }
             }
 
@@ -762,7 +762,7 @@ namespace NexusForever.WorldServer.Game.Entity
         /// <summary>
         /// Update <see cref="Item"/> with supplied stack count.
         /// </summary>
-        private void ItemStackCountUpdate(Item item, uint stackCount)
+        private void ItemStackCountUpdate(Item item, uint stackCount, ItemUpdateReason reason = ItemUpdateReason.NoReason)
         {
             if (item == null)
                 throw new ArgumentNullException();
@@ -773,7 +773,7 @@ namespace NexusForever.WorldServer.Game.Entity
             {
                 Guid       = item.Guid,
                 StackCount = stackCount,
-                Reason     = 0
+                Reason     = reason
             });
         }
 
