@@ -6,6 +6,7 @@ using NexusForever.Shared.GameTable.Model;
 using NexusForever.Shared.GameTable.Static;
 using NexusForever.WorldServer.Command.Contexts;
 using NexusForever.WorldServer.Game;
+using NexusForever.WorldServer.Game.Housing;
 
 namespace NexusForever.WorldServer.Command.Handler
 {
@@ -31,13 +32,34 @@ namespace NexusForever.WorldServer.Command.Handler
 
             WorldLocation2Entry zone = SearchManager.Search<WorldLocation2Entry>(zoneName, context.Language, GetTextIds).FirstOrDefault();
 
-            if (zone == null)
-                await context.SendErrorAsync($"Unknown zone: {zoneName}");
+            if (zoneName == "home")
+            {
+                Residence residence = ResidenceManager.GetResidence(context.Session.Player.Name).GetAwaiter().GetResult();
+                if (residence == null)
+                {
+                    if (parameters.Length == 0)
+                        residence = ResidenceManager.CreateResidence(context.Session.Player);
+                    else
+                    {
+                        //donothing
+                    }
+                }
+
+                ResidenceEntrance entrance = ResidenceManager.GetResidenceEntrance(residence);
+                context.Session.Player.TeleportTo(entrance.Entry, entrance.Position, 0u, residence.Id);
+                await context.SendMessageAsync("Going home....");
+            }
             else
             {
-                context.Session?.Player.TeleportTo((ushort)zone.WorldId, zone.Position0, zone.Position1, zone.Position2);
-                await context.SendMessageAsync($"{zoneName}: {zone.WorldId} {zone.Position0} {zone.Position1} {zone.Position2}");
+                if (zone == null)
+                    await context.SendErrorAsync($"Unknown zone: {zoneName}");
+                else
+                {
+                    context.Session?.Player.TeleportTo((ushort)zone.WorldId, zone.Position0, zone.Position1, zone.Position2);
+                    await context.SendMessageAsync($"{zoneName}: {zone.WorldId} {zone.Position0} {zone.Position1} {zone.Position2}");
+                }
             }
+            
         }
     }
 }

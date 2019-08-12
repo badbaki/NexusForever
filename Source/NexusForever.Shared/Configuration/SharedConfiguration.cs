@@ -14,17 +14,21 @@ namespace NexusForever.Shared.Configuration
         private static readonly ILogger log = LogManager.GetCurrentClassLogger();
         public static IConfiguration Configuration { get; private set; }
 
+        private static string fileLocation { get; set; }
+
         public static void Initialise(string file)
         {
             if (Configuration != null)
                 return;
 
-            MigrateDatabaseConfiguration(file);
+            fileLocation = file;
+
+            MigrateDatabaseConfiguration(fileLocation);
 
             var builder = new ConfigurationBuilder();
 
             builder
-                .AddJsonFile(file, false, true)
+                .AddJsonFile(fileLocation, false, true)
                 .AddEnvironmentVariables()
                 .AddCommandLine(Environment.GetCommandLineArgs().Skip(1).ToArray());
 
@@ -99,6 +103,12 @@ namespace NexusForever.Shared.Configuration
 
             selectedToken.Add("ConnectionString", JValue.CreateString(connectionString));
             selectedToken.Add("Provider", JValue.CreateString(DatabaseProvider.MySql.ToString()));
+        }
+
+        public static void Save<T>(object config)
+        {
+            if (fileLocation.Length > 0)
+                File.WriteAllText(fileLocation, JsonConvert.SerializeObject(config, Formatting.Indented));
         }
     }
 }
