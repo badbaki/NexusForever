@@ -221,6 +221,8 @@ namespace NexusForever.Shared.GameTable
         public static GameTable<GossipSetEntry> GossipSet { get; private set; }
         public static GameTable<GuildPerkEntry> GuildPerk { get; private set; }
         public static GameTable<GuildPermissionEntry> GuildPermission { get; private set; }
+
+        [GameData]
         public static GameTable<GuildStandardPartEntry> GuildStandardPart { get; private set; }
         public static GameTable<HazardEntry> Hazard { get; private set; }
         public static GameTable<HookAssetEntry> HookAsset { get; private set; }

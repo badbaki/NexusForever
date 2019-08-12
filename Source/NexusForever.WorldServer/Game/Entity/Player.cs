@@ -18,11 +18,14 @@ using NexusForever.Shared.Network;
 using NexusForever.WorldServer.Database;
 using NexusForever.WorldServer.Database.Character;
 using NexusForever.WorldServer.Database.Character.Model;
+using NexusForever.WorldServer.Game.CharacterCache;
 using NexusForever.WorldServer.Game.Contact;
 using NexusForever.WorldServer.Game.Achievement;
 using NexusForever.WorldServer.Game.Entity.Network;
 using NexusForever.WorldServer.Game.Entity.Network.Model;
 using NexusForever.WorldServer.Game.Entity.Static;
+using NexusForever.WorldServer.Game.Guild;
+using NexusForever.WorldServer.Game.Guild.Static;
 using NexusForever.WorldServer.Game.Map;
 using NexusForever.WorldServer.Game.Quest.Static;
 using NexusForever.WorldServer.Game.Setting;
@@ -35,7 +38,7 @@ using NexusForever.WorldServer.Network.Message.Model.Shared;
 
 namespace NexusForever.WorldServer.Game.Entity
 {
-    public class Player : UnitEntity, ISaveAuth, ISaveCharacter
+    public class Player : UnitEntity, ISaveAuth, ISaveCharacter, ICharacter
     {
         // TODO: move this to the config file
         private const double SaveDuration = 60d;
@@ -45,6 +48,7 @@ namespace NexusForever.WorldServer.Game.Entity
         public Sex Sex { get; private set; }
         public Race Race { get; private set; }
         public Class Class { get; }
+        public Faction Faction { get; }
         public List<float> Bones { get; } = new List<float>();
 
         public uint TotalXp
@@ -156,6 +160,39 @@ namespace NexusForever.WorldServer.Game.Entity
         private LogoutManager logoutManager;
         private PendingTeleport pendingTeleport;
 
+        public ulong GuildId = 0;
+        public List<ulong> GuildMemberships = new List<ulong>();
+        public GuildInvite PendingGuildInvite;
+        public ulong GuildAffiliation
+        {
+            get => guildAffiliation;
+            set
+            {
+                if (guildAffiliation != value)
+                {
+                    guildAffiliation = value;
+                    saveMask |= PlayerSaveMask.Affiliation;
+                }
+            }
+        }
+        private ulong guildAffiliation;
+
+        public GuildHolomark GuildHolomarkMask
+        {
+            get => guildHolomarkMask;
+            set
+            {
+                if (guildHolomarkMask != value)
+                {
+                    guildHolomarkMask = value;
+                    saveMask |= PlayerSaveMask.Holomark;
+                }
+            }
+        }
+        private GuildHolomark guildHolomarkMask;
+
+        public float GetOnlineStatus() => 0f;
+
         /// <summary>
         /// Character Customisation models. Stored for modification purposes.
         /// </summary>
@@ -181,10 +218,13 @@ namespace NexusForever.WorldServer.Game.Entity
             Path            = (Path)model.ActivePath;
             CostumeIndex    = model.ActiveCostumeIndex;
             InputKeySet     = (InputSets)model.InputKeySet;
+            Faction         = (Faction)model.FactionId;
             Faction1        = (Faction)model.FactionId;
             Faction2        = (Faction)model.FactionId;
-            TotalXp = model.TotalXp;
-            XpToNextLevel = GameTableManager.XpPerLevel.Entries.FirstOrDefault(c => c.Id == Level + 1).MinXpForLevel;
+            guildAffiliation = model.GuildAffiliation;
+            guildHolomarkMask = (GuildHolomark)model.GuildHolomarkMask;
+            TotalXp         = model.TotalXp;
+            XpToNextLevel   = GameTableManager.XpPerLevel.Entries.FirstOrDefault(c => c.Id == Level + 1).MinXpForLevel;
             innateIndex     = model.InnateIndex;
 
             CreateTime      = model.CreateTime;
@@ -256,6 +296,9 @@ namespace NexusForever.WorldServer.Game.Entity
             // sprint
             SetStat(Stat.Resource0, 500f);
             SetStat(Stat.Shield, 450u);
+
+            CharacterManager.RegisterPlayer(this);
+            GlobalGuildManager.OnPlayerLogin(Session, this);
         }
 
         public override void Update(double lastTick)
@@ -312,7 +355,7 @@ namespace NexusForever.WorldServer.Game.Entity
 
         protected override IEntityModel BuildEntityModel()
         {
-            return new PlayerEntityModel
+            PlayerEntityModel playerEntityModel = new PlayerEntityModel
             {
                 Id       = CharacterId,
                 RealmId  = WorldServer.RealmId,
@@ -322,8 +365,23 @@ namespace NexusForever.WorldServer.Game.Entity
                 Sex      = Sex,
                 Bones    = Bones,
                 Title    = TitleManager.ActiveTitleId,
+                GuildIds = GuildMemberships,
                 PvPFlag  = PvPFlag.Disabled
             };
+
+            if (GuildAffiliation > 0)
+            {
+                GuildBase guild = GlobalGuildManager.GetGuild(GuildAffiliation);
+                if (guild.GetMember(CharacterId) != null)
+                {
+                    playerEntityModel.GuildName = guild.Name;
+                    playerEntityModel.GuildType = guild.Type;
+                }
+                else
+                    GuildAffiliation = 0;
+            }
+
+            return playerEntityModel;
         }
 
         public override void OnAddToMap(BaseMap map, uint guid, Vector3 vector)
@@ -394,8 +452,10 @@ namespace NexusForever.WorldServer.Game.Entity
 
         private void SendPacketsAfterAddToMap()
         {
+            GlobalGuildManager.SendInitialPackets(Session);
             SendInGameTime();
             PathManager.SendInitialPackets();
+
             BuybackManager.SendBuybackItems(this);
 
             ContactManager.OnLogin(Session);
@@ -636,6 +696,10 @@ namespace NexusForever.WorldServer.Game.Entity
         /// </summary>
         public void CleanUp()
         {
+            // CharacterManager must deregister player first so other events see the user as offline and with relevant data being final
+            CharacterManager.DeregisterPlayer(this);
+
+            GlobalGuildManager.OnPlayerLogout(Session, this);
             CleanupManager.Track(Session.Account);
 
             try
@@ -1084,6 +1148,18 @@ namespace NexusForever.WorldServer.Game.Entity
                 {
                     model.InputKeySet = (sbyte)InputKeySet;
                     entity.Property(p => p.InputKeySet).IsModified = true;
+                }
+
+                if ((saveMask & PlayerSaveMask.Affiliation) != 0)
+                {
+                    model.GuildAffiliation = GuildAffiliation;
+                    entity.Property(p => p.GuildAffiliation).IsModified = true;
+                }
+
+                if ((saveMask & PlayerSaveMask.Holomark) != 0)
+                {
+                    model.GuildHolomarkMask = Convert.ToByte(GuildHolomarkMask);
+                    entity.Property(p => p.GuildHolomarkMask).IsModified = true;
                 }
 
                 if ((saveMask & PlayerSaveMask.Xp) != 0)

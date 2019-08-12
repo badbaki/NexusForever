@@ -8,6 +8,8 @@ using NexusForever.Shared.Configuration;
 using NexusForever.Shared.Network;
 using NexusForever.WorldServer.Game.Entity;
 using NexusForever.WorldServer.Game.Map.Search;
+using NexusForever.WorldServer.Game.Guild;
+using NexusForever.WorldServer.Game.Map;
 using NexusForever.WorldServer.Game.Social.Model;
 using NexusForever.WorldServer.Game.Social.Static;
 using NexusForever.WorldServer.Network;
@@ -182,6 +184,74 @@ namespace NexusForever.WorldServer.Game.Social
             SendChatAccept(session);            
         }
 
+        [ChatChannelHandler(ChatChannel.Guild)]
+        [ChatChannelHandler(ChatChannel.Society)]
+        [ChatChannelHandler(ChatChannel.WarParty)]
+        [ChatChannelHandler(ChatChannel.Community)]
+        private static void HandleGuildChat(WorldSession session, ClientChat chat)
+        {
+            ChatResult result = 0;
+            if (chat.ChatId == 0 || !session.Player.GuildMemberships.Contains(chat.ChatId))
+                result = ChatResult.NotInGuild;
+
+            GuildBase guild = GlobalGuildManager.GetGuild(chat.ChatId);
+            if (guild == null)
+                result = ChatResult.NotInGuild;
+
+            Rank memberRank = guild.GetMember(session.Player.CharacterId).Rank;
+            if ((memberRank.GuildPermission & Guild.Static.GuildRankPermission.MemberChat) == 0)
+                result = ChatResult.NoSpeaking;
+
+            if (result == 0)
+            {
+                ServerChat serverChat = new ServerChat
+                {
+                    Guid = session.Player.Guid,
+                    Channel = chat.Channel,
+                    ChatId = guild.Id,
+                    Name = session.Player.Name,
+                    Text = chat.Message,
+                    Formats = ParseChatLinks(session, chat).ToList(),
+                };
+                guild.SendToOnlineUsers(serverChat, Guild.Static.GuildRankPermission.MemberChat);
+            }
+            else
+                SendChatResult(session, result, chat);
+        }
+
+        [ChatChannelHandler(ChatChannel.GuildOfficer)]
+        [ChatChannelHandler(ChatChannel.WarPartyOfficer)]
+        private static void HandleGuildOfficerChat(WorldSession session, ClientChat chat)
+        {
+            ChatResult result = 0;
+            if (chat.ChatId == 0 || !session.Player.GuildMemberships.Contains(chat.ChatId))
+                result = ChatResult.NotInGuild;
+
+            GuildBase guild = GlobalGuildManager.GetGuild(chat.ChatId);
+            if (guild == null)
+                result = ChatResult.NotInGuild;
+
+            Rank memberRank = guild.GetMember(session.Player.CharacterId).Rank;
+            if ((memberRank.GuildPermission & Guild.Static.GuildRankPermission.OfficerChat) == 0)
+                result = ChatResult.NoSpeaking;
+
+            if (result == 0)
+            {
+                ServerChat serverChat = new ServerChat
+                {
+                    Guid = session.Player.Guid,
+                    Channel = chat.Channel,
+                    ChatId = guild.Id,
+                    Name = session.Player.Name,
+                    Text = chat.Message,
+                    Formats = ParseChatLinks(session, chat).ToList(),
+                };
+                guild.SendToOnlineUsers(serverChat, Guild.Static.GuildRankPermission.OfficerChat);
+            }
+            else
+                SendChatResult(session, result, chat);
+        }
+
         /// <summary>
         /// Handle's whisper messages between 2 clients
         /// </summary>
@@ -332,6 +402,16 @@ namespace NexusForever.WorldServer.Game.Social
                 Channel = channel,
                 Name    = name,
                 Text    = message,
+            });
+        }
+
+        public static void SendChatResult(WorldSession session, ChatResult result, ClientChat clientChat)
+        {
+            session.EnqueueMessageEncrypted(new ServerChatResult
+            {
+                Channel = clientChat.Channel,
+                ChatId = clientChat.ChatId,
+                ChatResult = result
             });
         }
     }
