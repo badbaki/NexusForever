@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Numerics;
 using System.Threading.Tasks;
 using NexusForever.Shared.GameTable;
 using NexusForever.Shared.GameTable.Model;
@@ -38,6 +39,22 @@ namespace NexusForever.WorldServer.Command.Handler
 
             ResidenceEntrance entrance = ResidenceManager.GetResidenceEntrance(residence);
             context.Session.Player.TeleportTo(entrance.Entry, entrance.Position, 0u, residence.Id);
+
+            return Task.CompletedTask;
+        }
+
+        [SubCommandHandler("teleportinside", "[name] - Teleport to a residence, optionally specifying a character")]
+        public Task TeleportInsideSubCommandHandler(CommandContext context, string command, string[] parameters)
+        {
+            WorldLocation2Entry entry = GameTableManager.WorldLocation2.GetEntry(uint.Parse(parameters[0]));
+            if (entry == null)
+                return Task.CompletedTask;
+
+            WorldEntry worldEntry = GameTableManager.World.GetEntry(entry.WorldId);
+            if (worldEntry == null)
+                return Task.CompletedTask;
+
+            context.Session.Player.TeleportTo(worldEntry, new Vector3(entry.Position0, entry.Position1, entry.Position2), 0u, 3u);
 
             return Task.CompletedTask;
         }

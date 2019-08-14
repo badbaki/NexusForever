@@ -22,7 +22,7 @@ namespace NexusForever.WorldServer.Network.Message.Model
             public byte BuildState { get; set; }
             public uint BuildStage { get; set; }
             public float BuildBonus { get; set; }
-            public float BuildStartTime { get; set; }
+            public float BuildStartTime { get; set; } = -44.391f;
 
             public Plot()
             {

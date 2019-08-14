@@ -75,6 +75,7 @@ namespace NexusForever.WorldServer.Game.Map
 
             switch (info.Entry.Type)
             {
+                case 4:
                 case 5:
                     map = new InstancedMap<ResidenceMap>();
                     break;

@@ -11,13 +11,13 @@ namespace NexusForever.WorldServer.Network.Message.Model
 
         public void Read(GamePacketReader reader)
         {
-            TargetPlayerIdentity.Read(reader);
+            TargetPlayerIdentity.Read(reader);// PlotInfo + ResidenceId
 
+            reader.ReadUInt(); // PlugItem
+            reader.ReadUInt(); // PlugFacing?
+            reader.ReadUInt(); // PlotFlags?
             reader.ReadUInt();
-            reader.ReadUInt();
-            reader.ReadUInt();
-            reader.ReadUInt();
-            reader.ReadByte(3u);
+            reader.ReadByte(3u); // Operation
 
             // HousingContribution related, client function that sends this looks up values from HousingContributionInfo.tbl
             reader.ReadBytes(5 * 20);

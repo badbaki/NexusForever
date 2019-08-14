@@ -435,7 +435,7 @@ namespace NexusForever.WorldServer.Network.Message.Handler
             }
 
             CharacterModifyResult result = GetResult();
-            if (result != CharacterModifyResult.DeleteOk)
+            if (result == CharacterModifyResult.DeleteOk)
             {
                 session.CanProcessPackets = false;
 

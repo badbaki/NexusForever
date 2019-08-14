@@ -21,8 +21,8 @@ namespace NexusForever.WorldServer.Game.Entity
         public Vector3 Rotation { get; set; } = Vector3.Zero;
         public Dictionary<Property, PropertyValue> Properties { get; } = new Dictionary<Property, PropertyValue>();
 
-        public uint CreatureId { get; protected set; }
-        public uint DisplayInfo { get; protected set; }
+        public uint CreatureId { get; set; }
+        public uint DisplayInfo { get; set; }
         public ushort OutfitInfo { get; protected set; }
         public Faction Faction1 { get; set; }
         public Faction Faction2 { get; set; }

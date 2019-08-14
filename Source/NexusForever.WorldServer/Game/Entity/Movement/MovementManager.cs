@@ -49,6 +49,7 @@ namespace NexusForever.WorldServer.Game.Entity.Movement
             AddCommand(new SetVelocityDefaultsCommand());
             AddCommand(new SetMoveDefaultsCommand());
             //AddCommand(new SetRotationDefaultsCommand());
+            AddCommand(new SetModeCommand());
         }
 
         public void Update(double lastTick)
@@ -277,7 +278,7 @@ namespace NexusForever.WorldServer.Game.Entity.Movement
         /// <summary>
         /// Add a new <see cref="IEntityCommandModel"/>, this will replaced the existing command of this type.
         /// </summary>
-        private void AddCommand(IEntityCommandModel model, bool dirty = false)
+        public void AddCommand(IEntityCommandModel model, bool dirty = false)
         {
             EntityCommand? command = EntityCommandManager.GetCommand(model.GetType());
             if (command == null)

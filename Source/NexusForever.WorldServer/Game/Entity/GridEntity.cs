@@ -15,7 +15,7 @@ namespace NexusForever.WorldServer.Game.Entity
         public uint Guid { get; protected set; }
         public BaseMap Map { get; private set; }
         public WorldZoneEntry Zone { get; private set; }
-        public Vector3 Position { get; protected set; }
+        public Vector3 Position { get; set; }
 
         /// <summary>
         /// Distance between a <see cref="GridEntity"/> and a <see cref="MapGrid"/> for activation.
