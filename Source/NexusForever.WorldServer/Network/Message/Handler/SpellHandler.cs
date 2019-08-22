@@ -9,11 +9,13 @@ using NexusForever.WorldServer.Game.Entity.Static;
 using NexusForever.WorldServer.Game.Spell;
 using NexusForever.WorldServer.Game.Spell.Static;
 using NexusForever.WorldServer.Network.Message.Model;
+using NLog;
 
 namespace NexusForever.WorldServer.Network.Message.Handler
 {
     public static class SpellHandler
     {
+        private static readonly ILogger log = LogManager.GetCurrentClassLogger();
         [MessageHandler(GameMessageOpcode.ClientCastSpell)]
         public static void HandleCastSpell(WorldSession session, ClientCastSpell castSpell)
         {
@@ -28,13 +30,21 @@ namespace NexusForever.WorldServer.Network.Message.Handler
             // true is button pressed, false is sent on release
             if (!castSpell.ButtonPressed)
                 return;
-
+            log.Info($"SpellId cast: {spell.Info.Entry.Id} by {session.Player.Name}");
             byte tier = session.Player.SpellManager.GetSpellTier(spell.Info.Entry.Id);
-            session.Player.CastSpell(new SpellParameters
+            //check for eng ult cause it crashes things
+            if (spell.Info.Entry.Id == 31779 || spell.Info.Entry.Id == 31794)
             {
-                SpellInfo = spell.Info.GetSpellInfo(tier),
-                UserInitiatedSpellCast = true
-            });
+                //do nothing
+            }
+            else
+            {
+                session.Player.CastSpell(new SpellParameters
+                {
+                    SpellInfo = spell.Info.GetSpellInfo(tier),
+                    UserInitiatedSpellCast = true
+                });
+            }
         }
 
         [MessageHandler(GameMessageOpcode.ClientSpellStopCast)]

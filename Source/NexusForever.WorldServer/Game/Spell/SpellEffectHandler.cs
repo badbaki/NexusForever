@@ -7,6 +7,7 @@ using NexusForever.WorldServer.Game.Entity;
 using NexusForever.WorldServer.Game.Entity.Static;
 using NexusForever.WorldServer.Game.Spell.Static;
 using NexusForever.WorldServer.Network.Message.Model;
+using NLog;
 
 namespace NexusForever.WorldServer.Game.Spell
 {
@@ -14,6 +15,7 @@ namespace NexusForever.WorldServer.Game.Spell
 
     public partial class Spell
     {
+
         [SpellEffectHandler(SpellEffectType.Damage)]
         private void HandleEffectDamage(UnitEntity target, SpellTargetInfo.SpellTargetEffectInfo info)
         {
