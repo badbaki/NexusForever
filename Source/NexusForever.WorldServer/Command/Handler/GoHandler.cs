@@ -37,13 +37,8 @@ namespace NexusForever.WorldServer.Command.Handler
                 Residence residence = ResidenceManager.GetResidence(context.Session.Player.Name).GetAwaiter().GetResult();
                 if (residence == null)
                 {
-                    if (parameters.Length == 0)
-                        residence = ResidenceManager.CreateResidence(context.Session.Player);
-                    else
-                    {
-                        //donothing
-                        await context.SendMessageAsync("No home to go to :(");
-                    }
+                    //no residence has been created yet
+                    await context.SendMessageAsync("No home to go to! Try using !house teleport");
                 }
 
                 ResidenceEntrance entrance = ResidenceManager.GetResidenceEntrance(residence);

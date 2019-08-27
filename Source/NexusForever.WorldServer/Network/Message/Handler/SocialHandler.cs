@@ -66,20 +66,32 @@ namespace NexusForever.WorldServer.Network.Message.Handler
         [MessageHandler(GameMessageOpcode.ClientWhoRequest)]
         public static void HandleWhoRequest(WorldSession session, ClientWhoRequest request)
         {
-            List<ServerWhoResponse.WhoPlayer> players = new List<ServerWhoResponse.WhoPlayer>
+            List<ServerWhoResponse.WhoPlayer> players = new List<ServerWhoResponse.WhoPlayer>();
+
+            List<WorldSession> allSessions = NetworkManager<WorldSession>.GetSessions().ToList();
+            foreach (WorldSession whoSession in allSessions)
             {
-                new ServerWhoResponse.WhoPlayer
+                if (whoSession.Player == null)
+                    continue;
+
+                if (whoSession.Player.IsLoading)
+                    continue;
+
+                if (whoSession.Player.Zone == null)
+                    continue;
+
+                players.Add(new ServerWhoResponse.WhoPlayer
                 {
-                    Name = session.Player.Name,
-                    Level = session.Player.Level,
-                    Race = session.Player.Race,
-                    Class = session.Player.Class,
-                    Path = session.Player.Path,
-                    Faction = Faction.Dominion,
-                    Sex = session.Player.Sex,
-                    Zone = 1417
-                }
-            };
+                    Name = whoSession.Player.Name,
+                    Level = whoSession.Player.Level,
+                    Race = whoSession.Player.Race,
+                    Class = whoSession.Player.Class,
+                    Path = whoSession.Player.Path,
+                    Faction = whoSession.Player.Faction,
+                    Sex = whoSession.Player.Sex,
+                    Zone = whoSession.Player.Zone.Id
+                });
+            }
 
             session.EnqueueMessageEncrypted(new ServerWhoResponse
             {

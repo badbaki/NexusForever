@@ -3,6 +3,6 @@
     public enum RealmType
     {
         PVE,
-        PVP
+        PVP, 
     }
 }
