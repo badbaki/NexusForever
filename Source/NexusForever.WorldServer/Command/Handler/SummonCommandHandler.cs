@@ -18,7 +18,7 @@ namespace NexusForever.WorldServer.Command.Handler
         {
         }
 
-        [SubCommandHandler("entity", "creature2Id - summons entity to the player's location")]
+        //[SubCommandHandler("entity", "creature2Id - summons entity to the player's location")]
         public Task EntitySubCommandHandler(CommandContext context, string command, string[] parameters)
         {
             if (parameters.Length != 1)

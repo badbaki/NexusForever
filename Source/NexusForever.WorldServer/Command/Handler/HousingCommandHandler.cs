@@ -43,7 +43,7 @@ namespace NexusForever.WorldServer.Command.Handler
             return Task.CompletedTask;
         }
 
-        [SubCommandHandler("teleportinside", "[name] - Teleport to a residence, optionally specifying a character")]
+        //[SubCommandHandler("teleportinside", "[name] - Teleport to a residence, optionally specifying a character")]
         public Task TeleportInsideSubCommandHandler(CommandContext context, string command, string[] parameters)
         {
             WorldLocation2Entry entry = GameTableManager.WorldLocation2.GetEntry(uint.Parse(parameters[0]));

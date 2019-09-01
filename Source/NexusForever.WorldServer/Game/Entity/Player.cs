@@ -257,7 +257,7 @@ namespace NexusForever.WorldServer.Game.Entity
             Properties.Add(Property.MoveSpeedMultiplier, new PropertyValue(Property.MoveSpeedMultiplier, 1.5f, 1.5f));
             Properties.Add(Property.JumpHeight, new PropertyValue(Property.JumpHeight, 5f, 5f));
             Properties.Add(Property.GravityMultiplier, new PropertyValue(Property.GravityMultiplier, 1f, 1f));
-            Properties.Add(Property.MountSpeedMultiplier, new PropertyValue(Property.MountSpeedMultiplier, 3f, 3f));
+            Properties.Add(Property.MountSpeedMultiplier, new PropertyValue(Property.MountSpeedMultiplier, 2.2f, 2.2f));
             // sprint
             Properties.Add(Property.ResourceMax0, new PropertyValue(Property.ResourceMax0, 500f, 500f));
             // dash
@@ -484,7 +484,7 @@ namespace NexusForever.WorldServer.Game.Entity
                     {
                         Id    = RewardProperty.ExtraDecorSlots,
                         Type  = 1,
-                        Value = 3000
+                        Value = 5000
                     },
                     new ServerRewardPropertySet.RewardProperty
                     {

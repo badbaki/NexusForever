@@ -35,7 +35,7 @@ namespace NexusForever.WorldServer.Command.Handler
                 await context.SendMessageAsync($"Account {parameters[0]} was unable to be created. Ensure email is unique and does not contain special characters. Please try again.");
         }
 
-        [SubCommandHandler("delete", "email - Delete an account")]
+        //[SubCommandHandler("delete", "email - Delete an account")]
         public async Task HandleAccountDeleteAsync(CommandContext context, string subCommand, string[] parameters)
         {
             if (parameters.Length < 1)

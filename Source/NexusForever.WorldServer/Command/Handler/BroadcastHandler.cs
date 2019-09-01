@@ -9,11 +9,12 @@ using NexusForever.WorldServer.Network.Message.Model.Shared;
 
 namespace NexusForever.WorldServer.Command.Handler
 {
-    [Name("Broadcast")]
+    //[Name("Broadcast")]
     public class BroadcastHandler : NamedCommand
     {
+
         public BroadcastHandler()
-            : base(false, "broadcast", "broadcastTier(0/1/2) message - Broadcast message to the realm using the given broadcast tier.")
+            : base(false/*, "broadcast", "broadcastTier(0/1/2) message - Broadcast message to the realm using the given broadcast tier."*/)
         {
         }
 
