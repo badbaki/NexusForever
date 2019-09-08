@@ -409,7 +409,8 @@ namespace NexusForever.WorldServer.Game.Guild
             if (guildInvite == null)
                 throw new ArgumentNullException("Guild invite is null.");
 
-            if (guilds.TryGetValue(guildInvite.GuildId, out GuildBase guild))
+            guilds.TryGetValue(guildInvite.GuildId, out GuildBase guild);
+            if (guild == null)
                 result = GuildResult.NotAGuild;
             else if (guild.GetMemberCount() >= maxGuildSize[guild.Type])
                 result = GuildResult.CannotInviteGuildFull;

@@ -61,6 +61,7 @@ namespace NexusForever.WorldServer.Game.Spell
             if (!player.CanMount())
                 return;
 
+            player.ResetAppearance();
             var mount = new Mount(player, parameters.SpellInfo.Entry.Id, info.Entry.DataBits00, info.Entry.DataBits01, info.Entry.DataBits04);
             mount.EnqueuePassengerAdd(player, VehicleSeatType.Pilot, 0);
 

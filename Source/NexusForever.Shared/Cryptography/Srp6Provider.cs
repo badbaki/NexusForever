@@ -3,11 +3,13 @@ using System.Linq;
 using System.Numerics;
 using System.Security.Cryptography;
 using System.Text;
+using NLog;
 
 namespace NexusForever.Shared.Cryptography
 {
     public sealed class Srp6Provider
     {
+        private static readonly ILogger log = LogManager.GetCurrentClassLogger();
         public static readonly BigInteger g = 2;
         public static readonly BigInteger N = new BigInteger(new byte[] {
             0xE3, 0x06, 0xEB, 0xC0, 0x2F, 0x1D, 0xC6, 0x9F, 0x5B, 0x43, 0x76, 0x83, 0xFE, 0x38, 0x51, 0xFD,
@@ -36,7 +38,10 @@ namespace NexusForever.Shared.Cryptography
             using (var sha256 = new SHA256Managed())
             {
                 byte[] P = sha256.ComputeHash(Encoding.ASCII.GetBytes($"{I}:{p}"));
+                log.Info($"s: {s.ToHexString()} I: {I} p: {p} P: {P.ToHexString()}");
                 BigInteger x = Hash(true, new BigInteger(s, true), new BigInteger(P, true));
+                log.Info($"x: {x}");
+                log.Info($"return: {BigInteger.ModPow(g, x, N).ToByteArray().ToHexString()}");
                 return BigInteger.ModPow(g, x, N).ToByteArray();
             }
         }
