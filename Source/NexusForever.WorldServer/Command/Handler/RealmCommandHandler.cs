@@ -9,15 +9,15 @@ using NexusForever.WorldServer.Network;
 
 namespace NexusForever.WorldServer.Command.Handler
 {
-    //[Name("Realm Management")]
+    [Name("Realm Management")]
     public class RealmCommandHandler : CommandCategory
     {
         public RealmCommandHandler()
-            : base(false/*, "realm", "server"*/)
+            : base(false, "realm", "server")
         {
         }
 
-        //[SubCommandHandler("motd", "message - Set the realm's Message of the Day and announce to the realm")]
+        [SubCommandHandler("motd", "message - Set the realm's Message of the Day and announce to the realm")]
         public async Task HandleMotd(CommandContext context, string subCommand, string[] parameters)
         {
             if (parameters.Length < 1)
