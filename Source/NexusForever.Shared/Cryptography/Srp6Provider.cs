@@ -41,6 +41,8 @@ namespace NexusForever.Shared.Cryptography
                 log.Info($"s: {s.ToHexString()} I: {I} p: {p} P: {P.ToHexString()}");
                 BigInteger x = Hash(true, new BigInteger(s, true), new BigInteger(P, true));
                 log.Info($"x: {x}");
+                log.Info($"N: {N}");
+                log.Info($"g: {g}");
                 log.Info($"return: {BigInteger.ModPow(g, x, N).ToByteArray().ToHexString()}");
                 return BigInteger.ModPow(g, x, N).ToByteArray();
             }
