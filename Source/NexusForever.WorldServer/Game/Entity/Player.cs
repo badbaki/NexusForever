@@ -488,6 +488,12 @@ namespace NexusForever.WorldServer.Game.Entity
                     },
                     new ServerRewardPropertySet.RewardProperty
                     {
+                        Id    = RewardProperty.CircleMembershipUnlimited,
+                        Type  = 1,
+                        Value = 1
+                    },
+                    new ServerRewardPropertySet.RewardProperty
+                    {
                         Id    = RewardProperty.GuildCreateOrInviteAccess,
                         Type  = 1,
                         Value = 1
