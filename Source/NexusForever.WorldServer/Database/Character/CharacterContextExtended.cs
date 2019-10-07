@@ -40,6 +40,10 @@ namespace NexusForever.WorldServer.Database.Character
             modelBuilder.Entity<CharacterStats>()
                 .Property(p => p.Stat)
                 .ValueGeneratedNever();
+
+            modelBuilder.Entity<ResidencePlot>()
+                .Property(p => p.Index)
+                .ValueGeneratedNever();
         }
     }
 }
