@@ -88,6 +88,10 @@ namespace NexusForever.WorldServer.Database.Character.Model
                     .HasColumnName("activeSpec")
                     .HasDefaultValueSql("'0'");
 
+                entity.Property(e => e.BindPoint)
+                    .HasColumnName("bindPoint")
+                    .HasDefaultValueSql("'0'");
+
                 entity.Property(e => e.Class)
                     .HasColumnName("class")
                     .HasDefaultValueSql("'0'");
@@ -1262,14 +1266,6 @@ namespace NexusForever.WorldServer.Database.Character.Model
 
                 entity.Property(e => e.Scale)
                     .HasColumnName("scale")
-                    .HasDefaultValueSql("'0'");
-
-                entity.Property(e => e.ColourShiftId)
-                    .HasColumnName("colourShiftId")
-                    .HasDefaultValueSql("'0'");
-
-                entity.Property(e => e.DecorParentId)
-                    .HasColumnName("decorParentId")
                     .HasDefaultValueSql("'0'");
 
                 entity.Property(e => e.X)

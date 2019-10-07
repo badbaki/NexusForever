@@ -16,7 +16,8 @@ namespace NexusForever.WorldServer.Game.Entity.Static
         Xp          = 0x0010,
         Affiliation = 0x0020,
         Holomark    = 0x0040,
-        Appearance  = 0x0100,
-        Innate      = 0x0080
+        Innate      = 0x0080,
+        BindPoint   = 0x0100,
+        Appearance  = 0x0200,
     }
 }

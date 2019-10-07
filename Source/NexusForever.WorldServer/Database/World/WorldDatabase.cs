@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using NexusForever.WorldServer.Database.World.Model;
@@ -27,6 +28,12 @@ namespace NexusForever.WorldServer.Database.World
                 return context.Entity.Where(e => e.Area == 0)
                     .AsNoTracking()
                     .ToImmutableList();
+        }
+
+        public static Entity GetEntity(uint creatureId)
+        {
+            using (var context = new WorldContext())
+                return context.Entity.SingleOrDefault(e => e.Creature == creatureId);
         }
 
         public static void UpdateEntities(IEnumerable<Entity> models)

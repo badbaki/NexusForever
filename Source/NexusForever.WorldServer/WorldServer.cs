@@ -67,6 +67,7 @@ namespace NexusForever.WorldServer
             PrerequisiteManager.Initialise();
             GlobalSpellManager.Initialise();
             GlobalQuestManager.Initialise();
+            TargetGroupManager.Initialise();
             ServerManager.Initialise();
 
             ContactManager.Initialise();

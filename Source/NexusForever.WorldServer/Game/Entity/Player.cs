@@ -108,6 +108,17 @@ namespace NexusForever.WorldServer.Game.Entity
         }
         private byte innateIndex;
 
+        public ushort BindPoint
+        {
+            get => bindPoint;
+            set
+            {
+                bindPoint = value;
+                saveMask |= PlayerSaveMask.BindPoint;
+            }
+        }
+        private ushort bindPoint;
+
         public DateTime CreateTime { get; }
         public double TimePlayedTotal { get; private set; }
         public double TimePlayedLevel { get; private set; }
