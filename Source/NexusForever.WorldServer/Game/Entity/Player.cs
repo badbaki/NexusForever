@@ -664,6 +664,7 @@ namespace NexusForever.WorldServer.Game.Entity
         /// </summary>
         public void LogoutStart(double timeToLogout = 3d, LogoutReason reason = LogoutReason.None, bool requested = true)
         {
+            Dismount();
             if (logoutManager != null)
                 return;
 

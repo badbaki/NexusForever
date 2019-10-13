@@ -324,8 +324,8 @@ namespace NexusForever.WorldServer.Game.Map
 
             HousingResult GetResult()
             {
-                if (!IsValidPlotForPosition(update))
-                    return HousingResult.Decor_InvalidPosition;
+                //if (!IsValidPlotForPosition(update))
+                    //return HousingResult.Decor_InvalidPosition;
 
                 return HousingResult.Success;
             }
