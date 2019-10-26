@@ -729,6 +729,7 @@ namespace NexusForever.WorldServer.Game.Entity
             {
                 Save(() =>
                 {
+                    Dismount();
                     RemoveFromMap();
                     SocialManager.LeaveChatChannels(Session);
                     ContactManager.OnLogout(Session);
