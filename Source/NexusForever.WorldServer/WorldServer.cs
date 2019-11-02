@@ -88,7 +88,7 @@ namespace NexusForever.WorldServer
             NetworkManager<WorldSession>.Initialise(ConfigurationManager<WorldServerConfiguration>.Config.Network);
             WorldManager.Initialise(lastTick =>
             {
-                Console.Title = Title + " Current users: " + NetworkManager<WorldSession>.Update(lastTick);
+                NetworkManager<WorldSession>.Update(lastTick);
                 //NetworkManager<WorldSession>.Update(lastTick);
                 MapManager.Update(lastTick);
                 ResidenceManager.Update(lastTick);
@@ -96,6 +96,7 @@ namespace NexusForever.WorldServer
                 GlobalGuildManager.Update(lastTick);
                 ContactManager.Update(lastTick);
                 GlobalQuestManager.Update(lastTick);
+                Console.Title = Title + $": Clients: {NetworkManager<WorldSession>.GetSessions().Count()} | Maps: {MapManager.GetMapCount()}";
             });
 
             using (WorldServerEmbeddedWebServer.Initialise())
