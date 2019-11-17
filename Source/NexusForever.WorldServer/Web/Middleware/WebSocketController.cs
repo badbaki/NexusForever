@@ -9,11 +9,14 @@ using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 using NexusForever.WorldServer.Command;
 using NexusForever.WorldServer.Command.Contexts;
+using NLog;
 
 namespace NexusForever.WorldServer.Web.Middleware
 {
     public class WebSocketMiddleware
     {
+        private static readonly ILogger log = LogManager.GetCurrentClassLogger();
+
         public WebSocketMiddleware(RequestDelegate next)
         {
             Next = next;
@@ -36,6 +39,7 @@ namespace NexusForever.WorldServer.Web.Middleware
                     WebSocket webSocket = await context.WebSockets.AcceptWebSocketAsync();
                     while (webSocket.CloseStatus == null)
                     {
+                        log.Debug("Command sent");
                         (WebSocketReceiveResult result, ClientMessage clientMessage) = await ReceiveObjectAsync<ClientMessage>(webSocket, context.RequestAborted);
                         if (result.CloseStatus != null)
                             continue;
