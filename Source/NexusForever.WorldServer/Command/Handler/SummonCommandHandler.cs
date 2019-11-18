@@ -6,10 +6,11 @@ using NexusForever.WorldServer.Game.Entity;
 using NexusForever.Shared.GameTable.Model;
 using NexusForever.Shared.GameTable;
 using System.Linq;
+using NexusForever.WorldServer.Game.Account.Static;
 
 namespace NexusForever.WorldServer.Command.Handler
 {
-    [Name("Summon")]
+    [Name("Summon", Permission.None)]
     public class SummonCommandHandler : CommandCategory
     {
         private static readonly ILogger log = LogManager.GetCurrentClassLogger();
@@ -18,7 +19,7 @@ namespace NexusForever.WorldServer.Command.Handler
         {
         }
 
-        //[SubCommandHandler("entity", "creature2Id - summons entity to the player's location")]
+        [SubCommandHandler("entity", "creature2Id - summons entity to the player's location", Permission.ModMe)]
         public Task EntitySubCommandHandler(CommandContext context, string command, string[] parameters)
         {
             if (parameters.Length != 1)
@@ -34,7 +35,7 @@ namespace NexusForever.WorldServer.Command.Handler
             return Task.CompletedTask;
         }
 
-        [SubCommandHandler("disguise", "creature2Id - changes player disguise")]
+        [SubCommandHandler("disguise", "creature2Id - changes player disguise", Permission.PRCommands)]
         public Task DisguiseSubCommandHandler(CommandContext context, string command, string[] parameters)
         {
             if (parameters.Length != 1)
@@ -55,7 +56,7 @@ namespace NexusForever.WorldServer.Command.Handler
             return Task.CompletedTask;
         }
 
-        [SubCommandHandler("clear", "clears player disguise")]
+        [SubCommandHandler("clear", "clears player disguise", Permission.PRCommands)]
         public Task ClearSubCommandHandler(CommandContext context, string command, string[] parameters)
         {
             //clear disguise

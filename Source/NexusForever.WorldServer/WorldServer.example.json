@@ -23,5 +23,6 @@
   "RealmId": 1,
   "LengthOfInGameDay": 12600,
   "CrossFactionChat": true,
-  "MessageOfTheDay": ""
+  "MessageOfTheDay": "",
+  "DefaultRole": 1
 }

@@ -4,12 +4,15 @@ using System.Threading.Tasks;
 using NexusForever.Shared.GameTable;
 using NexusForever.Shared.GameTable.Model;
 using NexusForever.Shared.GameTable.Static;
+using NexusForever.WorldServer.Command.Attributes;
 using NexusForever.WorldServer.Command.Contexts;
 using NexusForever.WorldServer.Game;
 using NexusForever.WorldServer.Game.Housing;
+using NexusForever.WorldServer.Game.Account.Static;
 
 namespace NexusForever.WorldServer.Command.Handler
 {
+    [Name("Go", Permission.CommandGo)]
     public class GoHandler : NamedCommand
     {
         public GoHandler()

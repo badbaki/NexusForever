@@ -1,4 +1,5 @@
 using NexusForever.Shared.Configuration;
+using System.Collections.Generic;
 
 namespace NexusForever.WorldServer
 {
@@ -17,5 +18,6 @@ namespace NexusForever.WorldServer
         public uint LengthOfInGameDay { get; set; }
         public bool CrossFactionChat { get; set; } = true;
         public string MessageOfTheDay { get; set; } = "";
+        public ulong DefaultRole { get; set; } = 1;
     }
 }

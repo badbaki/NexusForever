@@ -3,10 +3,11 @@ using NexusForever.WorldServer.Command.Attributes;
 using NexusForever.WorldServer.Command.Contexts;
 using NexusForever.WorldServer.Game;
 using NexusForever.WorldServer.Game.Static;
+using NexusForever.WorldServer.Game.Account.Static;
 
 namespace NexusForever.WorldServer.Command.Handler
 {
-    [Name("Disable")]
+    [Name("Disable", Permission.ModMe)]
     public class DisableCommandHandler : CommandCategory
     {
         public DisableCommandHandler()
@@ -14,7 +15,7 @@ namespace NexusForever.WorldServer.Command.Handler
         {
         }
 
-        [SubCommandHandler("info", "")]
+        [SubCommandHandler("info", "", Permission.ModMe)]
         public async Task DisableInfoCommandHandler(CommandContext context, string command, string[] parameters)
         {
             if (parameters.Length != 2
@@ -35,7 +36,7 @@ namespace NexusForever.WorldServer.Command.Handler
             await context.SendMessageAsync($"Type: {(DisableType)disableType}, ObjectId: {objectId}, Note: {note}");
         }
 
-        [SubCommandHandler("reload", "")]
+        [SubCommandHandler("reload", "", Permission.ModMe)]
         public async Task DisableReloadCommandHandler(CommandContext context, string command, string[] parameters)
         {
             DisableManager.Instance.Initialise();

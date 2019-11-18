@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using NexusForever.WorldServer.Command.Contexts;
+using NexusForever.WorldServer.Game.Account.Static;
 using NLog;
 
 namespace NexusForever.WorldServer.Command.Handler
@@ -12,6 +13,7 @@ namespace NexusForever.WorldServer.Command.Handler
 
 
         public abstract int Order { get; }
+        public abstract Permission RequiredPermission { get; }
 
         public abstract IEnumerable<string> GetCommands();
         public abstract Task HandleAsync(CommandContext session, string text);

@@ -2,11 +2,12 @@
 using NexusForever.WorldServer.Command.Attributes;
 using NexusForever.WorldServer.Command.Contexts;
 using NexusForever.WorldServer.Game.Entity.Static;
+using NexusForever.WorldServer.Game.Account.Static;
 
 
 namespace NexusForever.WorldServer.Command.Handler
 {
-    [Name("Character Boosts and Unlocks")]
+    [Name("Character Boosts and Unlocks", Permission.None)]
     public class BoostCommandHandler : CommandCategory
     {
         public BoostCommandHandler()
@@ -14,7 +15,7 @@ namespace NexusForever.WorldServer.Command.Handler
         {
         }
 
-        [SubCommandHandler("level", "Boosts your character to level 50, restart client for it to take effect")]
+        [SubCommandHandler("level", "Boosts your character to level 50, restart client for it to take effect", Permission.None)]
         public Task LevelSubCommandHandler(CommandContext context, string command, string[] parameters)
         {
             // Bump chracter level to 50
@@ -24,7 +25,7 @@ namespace NexusForever.WorldServer.Command.Handler
             return Task.CompletedTask;
         }
 
-        [SubCommandHandler("money", "Grants some character currencies")]
+        [SubCommandHandler("money", "Grants some character currencies", Permission.None)]
         public Task MoneySubCommandHandler(CommandContext context, string command, string[] parameters)
         {
             // Adds to major player currencies
@@ -39,7 +40,7 @@ namespace NexusForever.WorldServer.Command.Handler
             return Task.CompletedTask;
         }
 
-        [SubCommandHandler("all", "Level boost, currencies and unlock all dyes")]
+        [SubCommandHandler("all", "Level boost, currencies and unlock all dyes", Permission.None)]
         public Task AllSubCommandHandler(CommandContext context, string command, string[] parameters)
         {
             //Unlocks all dyes on account

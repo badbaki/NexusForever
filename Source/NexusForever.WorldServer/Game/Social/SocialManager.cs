@@ -4,6 +4,8 @@ using System.Diagnostics;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using NexusForever.WorldServer.Game.Account;
+using NexusForever.WorldServer.Game.Account.Static;
 using NexusForever.Shared.GameTable;
 using NexusForever.Shared.GameTable.Model;
 using NexusForever.Shared.Configuration;
@@ -124,7 +126,8 @@ namespace NexusForever.WorldServer.Game.Social
             session.EnqueueMessageEncrypted(new ServerChatAccept
             {
                 Name = session.Player.Name,
-                Guid = session.Player.Guid
+                Guid = session.Player.Guid,
+                GM = RoleManager.HasPermission(session, Permission.GMFlag),
             });
         }
 
@@ -168,6 +171,7 @@ namespace NexusForever.WorldServer.Game.Social
                 Guid    = session.Player.Guid,
                 Channel = chat.Channel,
                 Name    = session.Player.Name,
+                GM = RoleManager.HasPermission(session, Permission.GMFlag),
                 Text    = chat.Message,
                 Formats = ParseChatLinks(session, chat.Formats).ToList(),
             };

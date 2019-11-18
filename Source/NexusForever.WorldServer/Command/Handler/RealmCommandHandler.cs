@@ -6,10 +6,11 @@ using NexusForever.WorldServer.Command.Attributes;
 using NexusForever.WorldServer.Command.Contexts;
 using NexusForever.WorldServer.Game.Social;
 using NexusForever.WorldServer.Network;
+using NexusForever.WorldServer.Game.Account.Static;
 
 namespace NexusForever.WorldServer.Command.Handler
 {
-    [Name("Realm Management")]
+    [Name("Realm Management", Permission.ModMe)]
     public class RealmCommandHandler : CommandCategory
     {
         public RealmCommandHandler()
@@ -17,7 +18,7 @@ namespace NexusForever.WorldServer.Command.Handler
         {
         }
 
-        [SubCommandHandler("motd", "message - Set the realm's Message of the Day and announce to the realm")]
+        [SubCommandHandler("motd", "message - Set the realm's Message of the Day and announce to the realm", Permission.ModMe)]
         public async Task HandleMotd(CommandContext context, string subCommand, string[] parameters)
         {
             if (parameters.Length < 1)

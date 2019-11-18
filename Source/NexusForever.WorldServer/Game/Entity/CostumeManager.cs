@@ -34,7 +34,7 @@ namespace NexusForever.WorldServer.Game.Entity
         private double costumeSwapCooldown;
 
         /// <summary>
-        /// Create a new <see cref="CurrencyManager"/> from existing <see cref="Account"/> and <see cref="Character"/> database models.
+        /// Create a new <see cref="CurrencyManager"/> from existing <see cref="AccountModel"/> and <see cref="Character"/> database models.
         /// </summary>
         public CostumeManager(Player owner, AccountModel accountModel, Character characterModel)
         {

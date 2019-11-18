@@ -3,10 +3,11 @@ using NexusForever.WorldServer.Command.Attributes;
 using NexusForever.WorldServer.Command.Contexts;
 using NexusForever.WorldServer.Game.Quest;
 using NexusForever.WorldServer.Game.Quest.Static;
+using NexusForever.WorldServer.Game.Account.Static;
 
 namespace NexusForever.WorldServer.Command.Handler
 {
-    [Name("Quest")]
+    [Name("Quest", Permission.None)]
     public class QuestCommandHandler : CommandCategory
     {
         public QuestCommandHandler()
@@ -14,7 +15,7 @@ namespace NexusForever.WorldServer.Command.Handler
         {
         }
 
-        [SubCommandHandler("add", "questId - Add a new quest")]
+        [SubCommandHandler("add", "questId - Add a new quest", Permission.Quest)]
         public async Task QuestAddCommandHandler(CommandContext context, string command, string[] parameters)
         {
             if (parameters.Length != 1 || !ushort.TryParse(parameters[0], out ushort questId))
@@ -33,7 +34,7 @@ namespace NexusForever.WorldServer.Command.Handler
             context.Session.Player.QuestManager.QuestAdd(info);
         }
 
-        [SubCommandHandler("achieve", "questId - Complete all objectives for quest")]
+        [SubCommandHandler("achieve", "questId - Complete all objectives for quest", Permission.Quest)]
         public async Task QuestAchieveCommandHandler(CommandContext context, string command, string[] parameters)
         {
             if (parameters.Length != 1 || !ushort.TryParse(parameters[0], out ushort questId))
@@ -45,7 +46,7 @@ namespace NexusForever.WorldServer.Command.Handler
             context.Session.Player.QuestManager.QuestAchieve(questId);
         }
 
-        [SubCommandHandler("achieveobjective", "questId, objectiveIndex - Complete a single objective for quest")]
+        [SubCommandHandler("achieveobjective", "questId, objectiveIndex - Complete a single objective for quest", Permission.Quest)]
         public async Task QuestObjectiveAchieveCommandHandler(CommandContext context, string command, string[] parameters)
         {
             if (parameters.Length != 2
@@ -59,7 +60,7 @@ namespace NexusForever.WorldServer.Command.Handler
             context.Session.Player.QuestManager.QuestAchieveObjective(questId, index);
         }
 
-        [SubCommandHandler("objective", "objectiveType, data - Update all quest objectives with type and data by 1")]
+        [SubCommandHandler("objective", "objectiveType, data - Update all quest objectives with type and data by 1", Permission.Quest)]
         public async Task QuestObjectiveCommandHandler(CommandContext context, string command, string[] parameters)
         {
             if (parameters.Length != 2

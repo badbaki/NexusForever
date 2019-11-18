@@ -3,7 +3,12 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Threading.Tasks;
+using NexusForever.WorldServer.Command.Attributes;
 using NexusForever.WorldServer.Command.Contexts;
+using NexusForever.WorldServer.Game.Account.Static;
+using NexusForever.Shared.Configuration;
+using Microsoft.Extensions.Configuration;
+using NexusForever.WorldServer.Game.Account;
 
 namespace NexusForever.WorldServer.Command.Handler
 {
@@ -11,6 +16,7 @@ namespace NexusForever.WorldServer.Command.Handler
     {
 
         public override int Order { get; } = 100;
+        public override Permission RequiredPermission { get; } = Permission.Everything;
         public virtual string HelpText { get; }
         public bool SupportsHelp => !string.IsNullOrWhiteSpace(HelpText);
 
@@ -22,6 +28,14 @@ namespace NexusForever.WorldServer.Command.Handler
         {
             CommandNames = commandNames.ToImmutableArray();
             RequiresSession = requiresSession;
+            var NameAttributeValue = GetType().GetCustomAttributes(typeof(NameAttribute), true);
+            if (NameAttributeValue.Length > 0)
+            {
+                var nameAttribute = (NameAttribute)NameAttributeValue[0];
+                RequiredPermission = nameAttribute.PermissionRequired;
+
+                Logger.Trace($"{nameAttribute.Name} default permission: {RequiredPermission}");
+            }
         }
 
         public override IEnumerable<string> GetCommands()
@@ -38,7 +52,12 @@ namespace NexusForever.WorldServer.Command.Handler
                 return;
             }
 
-            await HandleCommandAsync(session, command, parameters);
+            bool isConsole = session.Session == null;
+
+            if (isConsole || RoleManager.HasPermission(session.Session, RequiredPermission))
+                await HandleCommandAsync(session, command, parameters);
+            else
+                await session.SendMessageAsync($"Your account status is too low for this command: !{command} (Requires permission: {RequiredPermission})");
         }
 
         private bool IsHelpRequest(string text)

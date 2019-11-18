@@ -12,6 +12,8 @@ namespace NexusForever.Shared.Database.Auth.Model
             AccountEntitlement = new HashSet<AccountEntitlement>();
             AccountGenericUnlock = new HashSet<AccountGenericUnlock>();
             AccountKeybinding = new HashSet<AccountKeybinding>();
+            AccountPermission = new HashSet<AccountPermission>();
+            AccountRole = new HashSet<AccountRole>();
         }
 
         public uint Id { get; set; }
@@ -27,5 +29,7 @@ namespace NexusForever.Shared.Database.Auth.Model
         public virtual ICollection<AccountEntitlement> AccountEntitlement { get; set; }
         public virtual ICollection<AccountGenericUnlock> AccountGenericUnlock { get; set; }
         public virtual ICollection<AccountKeybinding> AccountKeybinding { get; set; }
+        public virtual ICollection<AccountPermission> AccountPermission { get; set; }
+        public virtual ICollection<AccountRole> AccountRole { get; set; }
     }
 }
