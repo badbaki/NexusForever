@@ -40,7 +40,7 @@ namespace NexusForever.WorldServer.Command.Handler
             return Task.CompletedTask;
         }
 
-        [SubCommandHandler("all", "Level boost, currencies and unlock all dyes", Permission.None)]
+        [SubCommandHandler("all", "Level boost, currencies and unlocks", Permission.None)]
         public Task AllSubCommandHandler(CommandContext context, string command, string[] parameters)
         {
             //Unlocks all dyes on account
@@ -48,6 +48,11 @@ namespace NexusForever.WorldServer.Command.Handler
 
             context.Session.Player.Level = 50;
             context.Session.Player.SpellManager.GrantSpells();
+
+            context.Session.EntitlementManager.SetAccountEntitlement((EntitlementType)12, 12);
+            context.Session.EntitlementManager.SetAccountEntitlement((EntitlementType)36, 2000);
+            context.Session.EntitlementManager.SetAccountEntitlement((EntitlementType)61, 1);
+            context.Session.EntitlementManager.SetAccountEntitlement((EntitlementType)62, 1);
 
             context.Session.Player.CurrencyManager.CurrencyAddAmount(CurrencyType.Credits, 500000000);
             context.Session.Player.CurrencyManager.CurrencyAddAmount(CurrencyType.Renown, 500000);
