@@ -56,5 +56,103 @@ namespace NexusForever.WorldServer.Command.Handler
 
             return Task.CompletedTask;
         }
+
+        [SubCommandHandler("properties", "[property] [amount] -- change a selection of character properties", Permission.PRCommands)]
+        public Task PropertiesSubCommandHandler(CommandContext context, string command, string[] parameters)
+        {
+            if (parameters.Length != 2)
+            {
+                context.SendMessageAsync("Avaliable properties: speed, mountspeed, gravity, jumpheight");
+            }
+            else
+            {
+                if (parameters[0].ToLower() == "speed")
+                {
+                    //change movement speed
+                    float fValue = 0;
+                    bool result = float.TryParse(parameters[1], out fValue);
+                    if (result == true)
+                    {
+                        if ((fValue >= -5) & (fValue <= 8))
+                        {
+                            context.Session.Player.SetProperty(Property.MoveSpeedMultiplier, fValue, fValue);
+                        }
+                        else
+                        {
+                            context.SendMessageAsync("Invalid value. Enter a speed value between -5 and 8.");
+                        }
+                    }
+                    else
+                    {
+                        context.SendMessageAsync("Invalid value. Enter a speed value between -5 and 8.");
+                    }
+                }
+                else if (parameters[0].ToLower() == "mountspeed")
+                {
+                    //change mount speed
+                    float fValue = 0;
+                    bool result = float.TryParse(parameters[1], out fValue);
+                    if (result == true)
+                    {
+                        if ((fValue >= 0) & (fValue <= 5))
+                        {
+                            context.Session.Player.SetProperty(Property.MountSpeedMultiplier, fValue, fValue);
+                        }
+                        else
+                        {
+                            context.SendMessageAsync("Invalid value. Enter a mountspeed value between 0 and 5.");
+                        }
+                    }
+                    else
+                    {
+                        context.SendMessageAsync("Invalid value. Enter a mountspeed value between 0 and 5.");
+                    }
+                }
+                else if (parameters[0].ToLower() == "gravity")
+                {
+                    //change gravity
+                    float fValue = 0;
+                    bool result = float.TryParse(parameters[1], out fValue);
+                    if (result == true)
+                    {
+                        if ((fValue >= 0.1) & (fValue <= 5))
+                        {
+                            context.Session.Player.SetProperty(Property.GravityMultiplier, fValue, fValue);
+                        }
+                        else
+                        {
+                            context.SendMessageAsync("Invalid value. Enter a mountspeed value between 0.1 and 5.");
+                        }
+                    }
+                    else
+                    {
+                        context.SendMessageAsync("Invalid value. Enter a mountspeed value between 0.1 and 5.");
+                    }
+                }
+                else if (parameters[0].ToLower() == "jumpheight")
+                {
+                    //change jump
+                    float fValue = 0;
+                    bool result = float.TryParse(parameters[1], out fValue);
+                    if (result == true)
+                    {
+                        if ((fValue >= 0) & (fValue <= 50))
+                        {
+                            context.Session.Player.SetProperty(Property.JumpHeight, fValue, fValue);
+                        }
+                        else
+                        {
+                            context.SendMessageAsync("Invalid value. Enter a mountspeed value between 0 and 50.");
+                        }
+                    }
+                    else
+                    {
+                        context.SendMessageAsync("Invalid value. Enter a mountspeed value between 0 and 50.");
+                    }
+                }
+
+            }
+            return Task.CompletedTask;
+        }
     }
 }

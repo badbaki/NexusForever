@@ -19,7 +19,7 @@ namespace NexusForever.WorldServer.Game.Entity
         public EntityType Type { get; }
         public EntityCreateFlag CreateFlags { get; set; }
         public Vector3 Rotation { get; set; } = Vector3.Zero;
-        public Dictionary<Property, PropertyValue> Properties { get; } = new Dictionary<Property, PropertyValue>();
+        public Dictionary<Property, PropertyValue> Properties { get; set; } = new Dictionary<Property, PropertyValue>();
 
         public uint CreatureId { get; set; }
         public uint DisplayInfo { get; set; }
@@ -174,7 +174,7 @@ namespace NexusForever.WorldServer.Game.Entity
             // deliberately empty
         }
 
-        protected void SetProperty(Property property, float value, float baseValue = 0.0f)
+        public void SetProperty(Property property, float value, float baseValue = 0.0f)
         {
             if (Properties.ContainsKey(property))
                 Properties[property].Value = value;

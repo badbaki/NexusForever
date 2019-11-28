@@ -7,6 +7,7 @@ using NexusForever.Shared.GameTable.Model;
 using NexusForever.Shared.GameTable;
 using System.Linq;
 using NexusForever.WorldServer.Game.Account.Static;
+using NexusForever.WorldServer.Game.Entity.Static;
 
 namespace NexusForever.WorldServer.Command.Handler
 {
@@ -61,6 +62,46 @@ namespace NexusForever.WorldServer.Command.Handler
         {
             //clear disguise
             context.Session.Player.ResetAppearance();
+            return Task.CompletedTask;
+        }
+
+        [SubCommandHandler("clearPet", "clears player pet", Permission.PRCommands)]
+        public Task ClearPetSubCommandHandler(CommandContext context, string command, string[] parameters)
+        {
+            //clear pet (hopefully all if many are summoned)
+            VanityPet oldVanityPet = context.Session.Player.GetVisible<VanityPet>(context.Session.Player.VanityPetGuid.Value);
+            oldVanityPet?.RemoveFromMap();
+            context.Session.Player.VanityPetGuid = 0u;
+            return Task.CompletedTask;
+        }
+
+        [SubCommandHandler("nitro", "Zoom zoom", Permission.BakiBreaks)]
+        public Task NitroSubCommandHandler(CommandContext context, string command, string[] parameters)
+        {
+            if (parameters[0].ToLower() == "speed")
+            {
+                //change movement speed
+                float changeTo = float.Parse(parameters[1]);
+                context.Session.Player.SetProperty(Property.MoveSpeedMultiplier, changeTo, changeTo);
+            }
+            else if (parameters[0].ToLower() == "mspeed")
+            {
+                //change mount speed
+                float changeTo = float.Parse(parameters[1]);
+                context.Session.Player.SetProperty(Property.MountSpeedMultiplier, changeTo, changeTo);
+            }
+            else if (parameters[0].ToLower() == "gravity")
+            {
+                //change gravity
+                float changeTo = float.Parse(parameters[1]);
+                context.Session.Player.SetProperty(Property.GravityMultiplier, changeTo, changeTo);
+            }
+            else if (parameters[0].ToLower() == "jump")
+            {
+                //change jump
+                float changeTo = float.Parse(parameters[1]);
+                context.Session.Player.SetProperty(Property.JumpHeight, changeTo, changeTo);
+            }
             return Task.CompletedTask;
         }
     }

@@ -265,7 +265,7 @@ namespace NexusForever.WorldServer.Game.Entity
             // temp
             Properties.Add(Property.BaseHealth, new PropertyValue(Property.BaseHealth, 200f, 800f));
             Properties.Add(Property.ShieldCapacityMax, new PropertyValue(Property.ShieldCapacityMax, 0f, 450f));
-            Properties.Add(Property.MoveSpeedMultiplier, new PropertyValue(Property.MoveSpeedMultiplier, 1.5f, 1.5f));
+            Properties.Add(Property.MoveSpeedMultiplier, new PropertyValue(Property.MoveSpeedMultiplier, 1f, 1f));
             Properties.Add(Property.JumpHeight, new PropertyValue(Property.JumpHeight, 5f, 5f));
             Properties.Add(Property.GravityMultiplier, new PropertyValue(Property.GravityMultiplier, 1f, 1f));
             Properties.Add(Property.MountSpeedMultiplier, new PropertyValue(Property.MountSpeedMultiplier, 2.2f, 2.2f));

@@ -164,7 +164,7 @@ namespace NexusForever.WorldServer.Game.Social
         [ChatChannelHandler(ChatChannel.Say)]
         [ChatChannelHandler(ChatChannel.Yell)]
         [ChatChannelHandler(ChatChannel.Emote)]
-        private static void HandleLocalChat(WorldSession session, ClientChat chat)
+        public static void HandleLocalChat(WorldSession session, ClientChat chat)
         {
             var serverChat = new ServerChat
             {
@@ -216,6 +216,7 @@ namespace NexusForever.WorldServer.Game.Social
                     Channel = chat.Channel,
                     ChatId = guild.Id,
                     Name = session.Player.Name,
+                    GM = RoleManager.HasPermission(session, Permission.GMFlag),
                     Text = chat.Message,
                     Formats = ParseChatLinks(session, chat.Formats).ToList(),
                 };

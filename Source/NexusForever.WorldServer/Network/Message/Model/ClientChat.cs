@@ -9,9 +9,9 @@ namespace NexusForever.WorldServer.Network.Message.Model
     [Message(GameMessageOpcode.ClientChat)]
     public class ClientChat : IReadable
     {
-        public ChatChannel Channel { get; private set; }
+        public ChatChannel Channel { get; set; }
         public ulong ChatId { get; set; }
-        public string Message { get; private set; }
+        public string Message { get; set; }
         public List<ChatFormat> Formats { get; } = new List<ChatFormat>();
         public ushort Unknown0 { get; private set; }
 

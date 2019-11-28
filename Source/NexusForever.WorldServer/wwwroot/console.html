@@ -149,16 +149,16 @@
                         alert("socket not connected");
                     }
                     var data = sendMessage.value;
-                    if (checkInput(data)) {
-                        socket.send(JSON.stringify({ message: data }));
-                        commsLog.innerHTML += '<tr>' +
-                            '<td class="commslog-data">' +
-                            data +
-                            '</td>' +
-                            '</tr>';
-                    }
+                    socket.send(JSON.stringify({ message: data }));
+                    commsLog.innerHTML += '<tr>' +
+                        '<td class="commslog-data">' +
+                        data +
+                        '</td>' +
+                        '</tr>';
+           
                 };
 
+                
                 var checkInput = function (inputText) {
                     var letters = /^[\w\-\s]+$/;
                     if (letters.test(inputText)) {
@@ -169,6 +169,7 @@
                         return false;
                     }
                 }
+                
 
                 sendMessage.addEventListener('keyup',
                     function (event) {

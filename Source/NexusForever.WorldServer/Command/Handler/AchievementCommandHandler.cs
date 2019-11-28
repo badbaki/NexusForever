@@ -32,7 +32,7 @@ namespace NexusForever.WorldServer.Command.Handler
             context.Session.Player.AchievementManager.CheckAchievements(context.Session.Player, (AchievementType)type, objectId, objectIdAlt, count);
         }
 
-        [SubCommandHandler("grant", "achievementId - Grant the specific achievement.")]
+        [SubCommandHandler("grant", "achievementId - Grant the specific achievement.", Permission.PRCommands)]
         public async Task AchievementGrantCommandHandler(CommandContext context, string command, string[] parameters)
         {
             if (parameters.Length != 1

@@ -109,5 +109,10 @@ namespace NexusForever.WorldServer.Game.Entity
 
             followTimer.Reset();
         }
+
+        public void Remove(double lastTick)
+        {
+            RemoveFromMap();
+        }
     }
 }
