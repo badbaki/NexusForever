@@ -7,6 +7,8 @@ using NexusForever.WorldServer.Game.Spell;
 using NexusForever.WorldServer.Network.Message.Model;
 using NLog;
 using System;
+using NexusForever.Shared.GameTable;
+using NexusForever.Shared.GameTable.Model;
 using NexusForever.WorldServer.Game.Quest.Static;
 using NexusForever.WorldServer.Game;
 
@@ -153,6 +155,20 @@ namespace NexusForever.WorldServer.Network.Message.Handler
 
             if (result.Result == 1)
                 spell.SucceedClientInteraction();
+        }
+
+        [MessageHandler(GameMessageOpcode.ClientEntityInteractChair)]
+        public static void HandleClientEntityInteractEmote(WorldSession session, ClientEntityInteractChair interactChair)
+        {
+            WorldEntity chair = session.Player.GetVisible<WorldEntity>(interactChair.ChairUnitId);
+            if (chair == null)
+                throw new InvalidPacketValueException();
+
+            Creature2Entry creatureEntry = GameTableManager.Creature2.GetEntry(chair.CreatureId);
+            if ((creatureEntry.ActivationFlags & 0x200000) == 0)
+                throw new InvalidPacketValueException();
+
+            session.Player.Sit(chair);
         }
     }
 }
