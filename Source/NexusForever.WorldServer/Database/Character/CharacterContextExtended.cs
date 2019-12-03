@@ -33,6 +33,10 @@ namespace NexusForever.WorldServer.Database.Character
                 .Property(p => p.Index)
                 .ValueGeneratedNever();
 
+            modelBuilder.Entity<CharacterPath>()
+                .Property(p => p.Path)
+                .ValueGeneratedNever();
+
             modelBuilder.Entity<CharacterStats>()
                 .Property(p => p.Stat)
                 .ValueGeneratedNever();

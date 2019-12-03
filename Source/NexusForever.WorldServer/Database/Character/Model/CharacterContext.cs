@@ -42,6 +42,7 @@ namespace NexusForever.WorldServer.Database.Character.Model
         public virtual DbSet<CharacterStats> CharacterStats { get; set; }
         public virtual DbSet<CharacterTitle> CharacterTitle { get; set; }
         public virtual DbSet<CharacterZonemapHexgroup> CharacterZonemapHexgroup { get; set; }
+        public virtual DbSet<Contacts> Contacts { get; set; }
         public virtual DbSet<Item> Item { get; set; }
         public virtual DbSet<Residence> Residence { get; set; }
         public virtual DbSet<ResidenceDecor> ResidenceDecor { get; set; }
@@ -1166,6 +1167,54 @@ namespace NexusForever.WorldServer.Database.Character.Model
                     .WithMany(p => p.ResidencePlot)
                     .HasForeignKey(d => d.Id)
                     .HasConstraintName("FK__residence_plot_id__residence_id");
+            });
+
+            modelBuilder.Entity<Contacts>(entity =>
+            {
+                entity.HasKey(e => new { e.Id, e.OwnerId, e.ContactId })
+                    .HasName("PRIMARY");
+
+                entity.ToTable("contacts");
+
+                entity.Property(e => e.Accepted)
+                    .HasColumnName("accepted")
+                    .HasDefaultValueSql("'0'");
+
+                entity.Property(e => e.ContactId)
+                    .HasColumnName("contactId")
+                    .HasDefaultValueSql("'0'");
+
+                entity.Property(e => e.Id)
+                    .HasColumnName("id")
+                    .HasDefaultValueSql("'0'");
+
+                entity.Property(e => e.InviteMessage)
+                    .HasColumnName("inviteMessage")
+                    .HasColumnType("varchar(100)")
+                    .HasDefaultValueSql("''");
+
+                entity.Property(e => e.OwnerId)
+                    .HasColumnName("ownerId")
+                    .HasDefaultValueSql("'0'");
+
+                entity.Property(e => e.PrivateNote)
+                    .HasColumnName("privateNote")
+                    .HasColumnType("varchar(100)")
+                    .HasDefaultValueSql("''");
+
+                entity.Property(e => e.RequestTime)
+                    .HasColumnName("requestTime")
+                    .HasColumnType("datetime")
+                    .HasDefaultValueSql("'CURRENT_TIMESTAMP'");
+
+                entity.Property(e => e.Type)
+                    .HasColumnName("type")
+                    .HasDefaultValueSql("'0'");
+
+                entity.HasOne(d => d.IdNavigation)
+                    .WithMany(p => p.Contacts)
+                    .HasForeignKey(d => d.OwnerId)
+                    .HasConstraintName("FK__contacts_ownerId__character_id");
             });
         }
     }

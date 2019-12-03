@@ -2,6 +2,7 @@
 using NexusForever.WorldServer.Command.Attributes;
 using NexusForever.WorldServer.Command.Contexts;
 using NexusForever.WorldServer.Game.Entity.Static;
+using NexusForever.WorldServer.Network.Message.Handler;
 using NLog;
 
 namespace NexusForever.WorldServer.Command.Handler
@@ -19,14 +20,28 @@ namespace NexusForever.WorldServer.Command.Handler
         [SubCommandHandler("activate", "pathId - Activate a path for this player.")]
         public Task AddPathActivateSubCommand(CommandContext context, string command, string[] parameters)
         {
-            if (parameters.Length <= 0)
+            if (parameters.Length < 1 || parameters.Length > 1)
+            {
+                context.SendMessageAsync($"invalid parameters. Ensure you pass the pathId you wish to activate.");
                 return Task.CompletedTask;
+            }
 
-            uint newPath = 0;
-            if (parameters.Length > 0)
-                newPath = uint.Parse(parameters[0]);
+            if (uint.TryParse(parameters[0], out uint newPath))
+            {
+                if (newPath > 3)
+                {
+                    context.SendMessageAsync($"Path not recognised.");
+                    return Task.CompletedTask;
+                }
 
-            context.Session.Player.PathManager.ActivatePath((Path)newPath);
+                PathHandler.HandlePathActivate(context.Session, new Network.Message.Model.ClientPathActivate
+                {
+                    Path = (Path)newPath,
+                    UseTokens = true
+                });
+            }
+            else
+                context.SendMessageAsync($"Path not recognised.");
 
             return Task.CompletedTask;
         }
@@ -34,11 +49,27 @@ namespace NexusForever.WorldServer.Command.Handler
         [SubCommandHandler("unlock", "pathId - Unlock a path for this player.")]
         public Task AddPathUnlockSubCommand(CommandContext context, string command, string[] parameters)
         {
-            if (parameters.Length > 0)
+            if (parameters.Length < 1 || parameters.Length > 1)
             {
-                uint unlockPath = uint.Parse(parameters[0]);
-                context.Session.Player.PathManager.UnlockPath((Path)unlockPath);
+                context.SendMessageAsync($"invalid parameters. Ensure you pass the pathId you wish to unlock.");
+                return Task.CompletedTask;
             }
+
+            if (uint.TryParse(parameters[0], out uint unlockPath))
+            {
+                if (unlockPath > 3)
+                {
+                    context.SendMessageAsync($"Path not recognised.");
+                    return Task.CompletedTask;
+                }
+
+                PathHandler.HandlePathUnlock(context.Session, new Network.Message.Model.ClientPathUnlock
+                {
+                    Path = (Path)unlockPath
+                });
+            }
+            else
+                context.SendMessageAsync($"Path not recognised.");
 
             return Task.CompletedTask;
         }
@@ -46,11 +77,16 @@ namespace NexusForever.WorldServer.Command.Handler
         [SubCommandHandler("addxp", "xp - Add the XP value to the player's curent Path XP.")]
         public Task AddPathAddXPSubCommand(CommandContext context, string command, string[] parameters)
         {
-            if (parameters.Length > 0)
+            if (parameters.Length < 1 || parameters.Length > 1)
             {
-                uint xp = uint.Parse(parameters[0]);
-                context.Session.Player.PathManager.AddXp(xp);
+                context.SendMessageAsync($"invalid parameters. Ensure you pass the pathId you wish to unlock.");
+                return Task.CompletedTask;
             }
+
+            if (uint.TryParse(parameters[0], out uint xp) && xp > 0)
+                context.Session.Player.PathManager.AddXp(xp);
+            else
+                context.SendMessageAsync($"XP value not recognised.");
 
             return Task.CompletedTask;
         }

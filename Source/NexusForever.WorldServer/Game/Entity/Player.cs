@@ -26,6 +26,7 @@ using NexusForever.WorldServer.Game.Setting;
 using NexusForever.WorldServer.Game.Setting.Static;
 using NexusForever.WorldServer.Game.Social;
 using NexusForever.WorldServer.Game.Static;
+using NexusForever.WorldServer.Game.Contact;
 using NexusForever.WorldServer.Network;
 using NexusForever.WorldServer.Network.Message.Model;
 using NexusForever.WorldServer.Network.Message.Model.Shared;
@@ -50,10 +51,12 @@ namespace NexusForever.WorldServer.Game.Entity
             set
             {
                 path = value;
+                PathActivatedTime = DateTime.UtcNow;
                 saveMask |= PlayerSaveMask.Path;
             }
         }
         private Path path;
+        public DateTime PathActivatedTime { get; private set; }
 
         public sbyte CostumeIndex
         {
@@ -112,6 +115,9 @@ namespace NexusForever.WorldServer.Game.Entity
         /// </summary>
         public uint? VanityPetGuid { get; set; }
 
+        public List<ulong> IgnoreList { get; set; }
+        public bool IsIgnoring(ulong value) => IgnoreList.Contains(value);
+
         public bool IsSitting => currentChairGuid != null;
         private uint? currentChairGuid;
 
@@ -157,7 +163,8 @@ namespace NexusForever.WorldServer.Game.Entity
             Sex             = (Sex)model.Sex;
             Race            = (Race)model.Race;
             Class           = (Class)model.Class;
-            Path            = (Path)model.ActivePath;
+            path            = (Path)model.ActivePath;
+            PathActivatedTime = model.PathActivatedTimestamp;
             CostumeIndex    = model.ActiveCostumeIndex;
             InputKeySet     = (InputSets)model.InputKeySet;
             Faction1        = (Faction)model.FactionId;
@@ -182,6 +189,7 @@ namespace NexusForever.WorldServer.Game.Entity
             ZoneMapManager          = new ZoneMapManager(this, model);
             QuestManager            = new QuestManager(this, model);
             AchievementManager      = new CharacterAchievementManager(this, model);
+            IgnoreList              = ContactManager.GetIgnoreList(model);
 
             Session.EntitlementManager.OnNewCharacter(model);
 
@@ -386,6 +394,12 @@ namespace NexusForever.WorldServer.Game.Entity
                     },
                     new ServerRewardPropertySet.RewardProperty
                     {
+                        Id    = RewardProperty.BagSlots,
+                        Type  = 1,
+                        Value = 4
+                    },
+                    new ServerRewardPropertySet.RewardProperty
+                    {
                         Id    = RewardProperty.Trading,
                         Type  = 1,
                         Value = 1
@@ -441,6 +455,7 @@ namespace NexusForever.WorldServer.Game.Entity
             Session.AccountCurrencyManager.SendInitialPackets();
             QuestManager.SendInitialPackets();
             AchievementManager.SendInitialPackets();
+            ContactManager.OnLogin(Session);
 
             Session.EnqueueMessageEncrypted(new ServerPlayerInnate
             {
@@ -586,6 +601,7 @@ namespace NexusForever.WorldServer.Game.Entity
                 Save(() =>
                 {
                     RemoveFromMap();
+                    ContactManager.OnLogout(Session);
                     Session.Player = null;
                 });
             }
@@ -785,6 +801,8 @@ namespace NexusForever.WorldServer.Game.Entity
                 {
                     model.ActivePath = (uint)Path;
                     entity.Property(p => p.ActivePath).IsModified = true;
+                    model.PathActivatedTimestamp = PathActivatedTime;
+                    entity.Property(p => p.PathActivatedTimestamp).IsModified = true;
                 }
 
                 if ((saveMask & PlayerSaveMask.Costume) != 0)

@@ -8,6 +8,7 @@ using NexusForever.WorldServer.Command;
 using NexusForever.WorldServer.Game.Entity.Static;
 using NexusForever.WorldServer.Game.Social;
 using NexusForever.WorldServer.Network.Message.Model;
+using NexusForever.WorldServer.Network.Message.Model.Shared;
 using NLog;
 
 namespace NexusForever.WorldServer.Network.Message.Handler
@@ -25,11 +26,15 @@ namespace NexusForever.WorldServer.Network.Message.Handler
             {
                 try
                 {
-                    CommandManager.Instance.HandleCommand(session, chat.Message, true);
+                    IEnumerable<ChatFormat> chatLinks = SocialManager.Instance.ParseChatLinks(session, chat.Formats);
+                    CommandManager.Instance.HandleCommand(session, chat.Message, true, chatLinks);
+                    //CommandManager.ParseCommand(chat.Message, out string command, out string[] parameters);
+                    //CommandHandlerDelegate handler = CommandManager.GetCommandHandler(command);
+                    //handler?.Invoke(session, parameters);
                 }
                 catch (Exception e)
                 {
-                    log.Warn(e.Message);
+                    log.Warn($"{e.Message}: {e.StackTrace}");
                 }
             }
             else

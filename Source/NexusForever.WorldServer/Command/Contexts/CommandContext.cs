@@ -1,6 +1,9 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using NexusForever.Shared.GameTable.Static;
 using NexusForever.WorldServer.Network;
+using NexusForever.WorldServer.Network.Message.Model.Shared;
 using NLog;
 
 namespace NexusForever.WorldServer.Command.Contexts
@@ -10,6 +13,7 @@ namespace NexusForever.WorldServer.Command.Contexts
         protected ILogger Logger { get; } = LogManager.GetCurrentClassLogger();
         public WorldSession Session { get; set; }
         public Language Language { get; } = Language.English;
+        public IEnumerable<ChatFormat> ChatLinks { get; set; } = Enumerable.Empty<ChatFormat>();
 
         protected CommandContext(WorldSession session)
         {

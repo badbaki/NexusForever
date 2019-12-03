@@ -9,6 +9,7 @@ using NexusForever.Shared.Database;
 using NexusForever.Shared.Game;
 using NexusForever.Shared.GameTable;
 using NexusForever.Shared.Network;
+using NexusForever.WorldServer.Game.Contact;
 using NexusForever.Shared.Network.Message;
 using NexusForever.WorldServer.Command;
 using NexusForever.WorldServer.Command.Contexts;
@@ -68,6 +69,7 @@ namespace NexusForever.WorldServer
             ServerManager.Instance.Initialise();
 
             CharacterManager.Instance.Initialise();
+            ContactManager.Initialise();
             ResidenceManager.Instance.Initialise();
             GlobalStorefrontManager.Instance.Initialise();
 
@@ -88,6 +90,7 @@ namespace NexusForever.WorldServer
                 MapManager.Instance.Update(lastTick);
                 ResidenceManager.Instance.Update(lastTick);
                 BuybackManager.Instance.Update(lastTick);
+                ContactManager.Update(lastTick);
                 GlobalQuestManager.Instance.Update(lastTick);
             });
 

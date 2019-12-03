@@ -1,7 +1,9 @@
 ﻿using NexusForever.Shared.Network.Message;
 using NexusForever.WorldServer.Game.Entity;
+using NexusForever.WorldServer.Game.Static;
 using NexusForever.WorldServer.Network.Message.Model;
 using NLog;
+using System;
 
 namespace NexusForever.WorldServer.Network.Message.Handler
 {
@@ -12,31 +14,58 @@ namespace NexusForever.WorldServer.Network.Message.Handler
         [MessageHandler(GameMessageOpcode.ClientPathActivate)]
         public static void HandlePathActivate(WorldSession session, ClientPathActivate clientPathActivate)
         {
-            log.Debug($"ClientPathActivate: Path: {clientPathActivate.Path}, UseTokens: {clientPathActivate.UseTokens}");
             Player player = session.Player;
 
-            if (clientPathActivate.UseTokens)
+            bool needToUseTokens = DateTime.UtcNow.Subtract(player.PathActivatedTime).TotalMinutes < 30;
+            GenericError errorCode = GenericError.Ok;
+            bool hasEnoughTokens = true; // TODO: Check user has enough tokens
+
+            if (needToUseTokens && !clientPathActivate.UseTokens)
+                errorCode = GenericError.PathChangeOnCooldown;
+
+            if (needToUseTokens && clientPathActivate.UseTokens && !hasEnoughTokens)
+                errorCode = GenericError.PathChangeInsufficientFunds;
+
+            if (!player.PathManager.IsPathUnlocked(clientPathActivate.Path))
+                errorCode = GenericError.PathChangeNotUnlocked;
+
+            if (player.PathManager.IsPathActive(clientPathActivate.Path))
+                errorCode = GenericError.PathChangeRequested;
+
+            if (errorCode == GenericError.Ok)
             {
-                // TODO: Implement block if not enough tokens
-                // TODO: Remove tokens from account and send relevant packet updates
+                player.PathManager.ActivatePath(clientPathActivate.Path);
+
+                if (needToUseTokens)
+                    return; // TODO: Deduct tokens
             }
-            player.PathManager.ActivatePath(clientPathActivate.Path);
+            else
+                player.PathManager.SendServerPathActivateResult(errorCode);
         }
 
         [MessageHandler(GameMessageOpcode.ClientPathUnlock)]
         public static void HandlePathUnlock(WorldSession session, ClientPathUnlock clientPathUnlock)
         {
-            log.Debug($"ClientPathUnlock: Path: {clientPathUnlock.Path}");
 
             Player player = session.Player;
-            // TODO: Handle removing service tokens
-            // TODO: Return proper error codes
 
+            GenericError errorCode = GenericError.Ok;
+            bool hasEnoughTokens = true; // TODO: Check user has enough tokens
 
-            // TODO: HasEnoughTokens should be a request to a currency manager of somesort
-            bool HasEnoughTokens = true;
-            if (HasEnoughTokens)
+            if (!hasEnoughTokens)
+                errorCode = GenericError.PathInsufficientFunds;
+
+            if (player.PathManager.IsPathUnlocked(clientPathUnlock.Path))
+                errorCode = GenericError.PathAlreadyUnlocked;
+
+            if (errorCode == GenericError.Ok)
+            {
                 player.PathManager.UnlockPath(clientPathUnlock.Path);
+                // TODO: Deduct tokens
+            }
+            else
+                player.PathManager.SendServerPathUnlockResult(errorCode);
+
         }
     }
 }

@@ -1,16 +1,20 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using NexusForever.WorldServer.Game.Social;
 using NexusForever.WorldServer.Network;
 using NexusForever.WorldServer.Network.Message.Model;
+using NexusForever.WorldServer.Network.Message.Model.Shared;
 
 namespace NexusForever.WorldServer.Command.Contexts
 {
     public class WorldSessionCommandContext : CommandContext
     {
-        public WorldSessionCommandContext(WorldSession session)
+        public WorldSessionCommandContext(WorldSession session, IEnumerable<ChatFormat> chatLinks = null)
             : base(session)
         {
+            ChatLinks = chatLinks ?? Enumerable.Empty<ChatFormat>();
         }
 
         public override Task SendErrorAsync(string text)
