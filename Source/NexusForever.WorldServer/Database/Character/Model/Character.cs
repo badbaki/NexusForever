@@ -57,6 +57,8 @@ namespace NexusForever.WorldServer.Database.Character.Model
         public DateTime? DeleteTime { get; set; }
         public string OriginalName { get; set; }
         public DateTime? LastOnline { get; set; }
+        public ulong GuildAffiliation { get; set; }
+        public byte GuildHolomarkMask { get; set; }
 
         public virtual Residence Residence { get; set; }
         public virtual ICollection<CharacterAchievement> CharacterAchievement { get; set; }

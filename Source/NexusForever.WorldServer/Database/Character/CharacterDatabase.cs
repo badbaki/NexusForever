@@ -7,6 +7,8 @@ using NexusForever.WorldServer.Database.Character.Model;
 using ItemEntity = NexusForever.WorldServer.Game.Entity.Item;
 using ResidenceEntity = NexusForever.WorldServer.Game.Housing.Residence;
 using ContactEntity = NexusForever.WorldServer.Game.Contact.Contact;
+using GuildEntity = NexusForever.WorldServer.Game.Guild.GuildBase;
+using IGuild = NexusForever.WorldServer.Game.Guild.IGuild;
 
 namespace NexusForever.WorldServer.Database.Character
 {
@@ -31,6 +33,12 @@ namespace NexusForever.WorldServer.Database.Character
         {
             using (var context = new CharacterContext())
                 return context.Character.DefaultIfEmpty().Max(s => s.Id);
+        }
+
+        public static async Task<List<Model.Character>> GetAllCharactersAsync()
+        {
+            using (var context = new CharacterContext())
+                return await context.Character.ToListAsync();
         }
 
         public static async Task<Model.Character> GetCharacterById(ulong characterId)
@@ -195,6 +203,33 @@ namespace NexusForever.WorldServer.Database.Character
             {
                 contactEntity.Save(context);
                 await context.SaveChangesAsync();
+            }
+        }
+
+        public static async Task SaveGuild(IGuild guild)
+        {
+            using (var context = new CharacterContext())
+            {
+                guild.Save(context);
+                await context.SaveChangesAsync();
+            }
+        }
+
+        public static ulong GetNextGuildId()
+        {
+            using (var context = new CharacterContext())
+                return context.Guild.DefaultIfEmpty().Max(r => r.Id);
+        }
+
+        public static List<Guild> GetGuilds()
+        {
+            using (var context = new CharacterContext())
+            {
+                return context.Guild
+                    .Include(g => g.GuildRank)
+                    .Include(g => g.GuildMember)
+                    .Include(g => g.GuildData)
+                    .ToList();
             }
         }
     }
