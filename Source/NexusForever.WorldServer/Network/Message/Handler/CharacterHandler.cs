@@ -419,6 +419,8 @@ namespace NexusForever.WorldServer.Network.Message.Handler
                 }
 
                 // TODO: Ensure character is not a guild master
+                if (characterToDelete.GuildAffiliation > 0)
+                    return CharacterModifyResult.DeleteFailed_GuildMaster;
 
                 return CharacterModifyResult.DeleteOk;
             }
@@ -446,7 +448,7 @@ namespace NexusForever.WorldServer.Network.Message.Handler
 
                 model.DeleteTime = DateTime.UtcNow;
                 entity.Property(e => e.DeleteTime).IsModified = true;
-                
+
                 model.OriginalName = characterToDelete.Name;
                 entity.Property(e => e.OriginalName).IsModified = true;
 
@@ -456,16 +458,16 @@ namespace NexusForever.WorldServer.Network.Message.Handler
 
             session.EnqueueEvent(new TaskEvent(CharacterDatabase.Save(Save),
                 () =>
-            {
-                session.CanProcessPackets = true;
-
-                CharacterManager.Instance.DeleteCharacter(characterToDelete.Id);
-
-                session.EnqueueMessageEncrypted(new ServerCharacterDeleteResult
                 {
-                    Result = result
-                });
-            }));
+                    session.CanProcessPackets = true;
+
+                    CharacterManager.Instance.DeleteCharacter(characterToDelete.Id);
+
+                    session.EnqueueMessageEncrypted(new ServerCharacterDeleteResult
+                    {
+                        Result = result
+                    });
+                }));
         }
 
         [MessageHandler(GameMessageOpcode.ClientCharacterSelect)]
@@ -550,6 +552,12 @@ namespace NexusForever.WorldServer.Network.Message.Handler
         public static void HandleClientTarget(WorldSession session, ClientEntitySelect target)
         {
             session.Player.TargetGuid = target.Guid;
+        }
+
+        [MessageHandler(GameMessageOpcode.ClientReplayLevelRequest)]
+        public static void HandleReplayLevel(WorldSession session, ClientReplayLevelUp request)
+        {
+            session.Player.CastSpell(53378, (byte)(request.Level - 1), new SpellParameters());
         }
 
         [MessageHandler(GameMessageOpcode.ClientRequestPlayed)]

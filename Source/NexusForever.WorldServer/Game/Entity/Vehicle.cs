@@ -161,6 +161,7 @@ namespace NexusForever.WorldServer.Game.Entity
             });
 
             // TODO: research this...
+            // Kirmmin: This is used on both mounting up and dismounting
             player.Session.EnqueueMessageEncrypted(new Server0639
             {
             });
@@ -200,10 +201,19 @@ namespace NexusForever.WorldServer.Game.Entity
             player.VehicleGuid = Guid;
             player.MovementManager.SetPosition(Vector3.Zero);
             player.MovementManager.SetRotation(Vector3.Zero);
-            player.MovementManager.BroadcastCommands();
 
             passengers.Add(passenger);
             OnPassengerAdd(player, passenger.SeatType, passenger.SeatPosition);
+        }
+
+        /// <summary>
+        /// This is used to destroy a <see cref="Vehicle"/> ignoring any rules.
+        /// </summary>
+        /// <remarks>Should be used as part of a logout or for removing from map</remarks>
+        public void Destroy()
+        {
+            passengers.Clear();
+            RemoveFromMap();
         }
 
         /// <summary>

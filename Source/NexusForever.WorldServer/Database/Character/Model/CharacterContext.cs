@@ -166,6 +166,10 @@ namespace NexusForever.WorldServer.Database.Character.Model
                     .HasColumnName("race")
                     .HasDefaultValueSql("'0'");
 
+                entity.Property(e => e.RestBonusXp)
+                    .HasColumnName("restBonusXp")
+                    .HasDefaultValueSql("'0'");
+
                 entity.Property(e => e.Sex)
                     .HasColumnName("sex")
                     .HasDefaultValueSql("'0'");
@@ -180,6 +184,10 @@ namespace NexusForever.WorldServer.Database.Character.Model
 
                 entity.Property(e => e.Title)
                     .HasColumnName("title")
+                    .HasDefaultValueSql("'0'");
+
+                entity.Property(e => e.TotalXp)
+                    .HasColumnName("totalXp")
                     .HasDefaultValueSql("'0'");
 
                 entity.Property(e => e.WorldId)

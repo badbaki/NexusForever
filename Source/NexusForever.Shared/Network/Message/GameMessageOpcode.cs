@@ -92,6 +92,8 @@ namespace NexusForever.Shared.Network.Message
         ServerChatAccept                = 0x01C2,
         ClientChat                      = 0x01C3,
         ServerChat                      = 0x01C8,
+        ClientChatWhisper               = 0x01D4,
+        ServerChatZoneChange            = 0x01DA,
         ServerChatResult                = 0x01D3,
         Server0237                      = 0x0237, // UI related, opens or closes different UI windows (bank, barber, ect...)
         ClientPing                      = 0x0241,
@@ -244,6 +246,7 @@ namespace NexusForever.Shared.Network.Message
         ClientTitleSet                  = 0x078E,
         ServerNewRealm                  = 0x07A1,
         ClientRealmList                 = 0x07A4,
+        ClientReplayLevelRequest        = 0x07A5,
         ClientCharacterSelect           = 0x07DD,
         ClientCharacterList             = 0x07E0,
         ClientEntityInteract            = 0x07EA,

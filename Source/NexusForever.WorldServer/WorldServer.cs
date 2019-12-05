@@ -26,6 +26,7 @@ using NexusForever.WorldServer.Game.Social;
 using NexusForever.WorldServer.Game.Spell;
 using NexusForever.WorldServer.Game.Storefront;
 using NexusForever.WorldServer.Network;
+using NexusForever.WorldServer.Game.Guild;
 using NexusForever.WorldServer.Game.CharacterCache;
 
 namespace NexusForever.WorldServer
@@ -71,6 +72,7 @@ namespace NexusForever.WorldServer
             CharacterManager.Instance.Initialise();
             ContactManager.Initialise();
             ResidenceManager.Instance.Initialise();
+            GuildManager.Initialise();
             GlobalStorefrontManager.Instance.Initialise();
 
             GlobalAchievementManager.Instance.Initialise();
@@ -90,6 +92,7 @@ namespace NexusForever.WorldServer
                 MapManager.Instance.Update(lastTick);
                 ResidenceManager.Instance.Update(lastTick);
                 BuybackManager.Instance.Update(lastTick);
+                GuildManager.Update(lastTick);
                 ContactManager.Update(lastTick);
                 GlobalQuestManager.Instance.Update(lastTick);
             });
