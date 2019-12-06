@@ -56,6 +56,36 @@ namespace NexusForever.WorldServer.Game.Spell
 
                     return Vector3.Distance(Position, position) < TelegraphDamage.Param01;
                 }
+                case DamageShape.Rectangle:
+                {
+                    float Width = TelegraphDamage.Param00;
+                    float Length = TelegraphDamage.Param01;
+                    float Height = TelegraphDamage.Param02;
+
+                    //Find the point offsets in location to the player
+                    var bottomRight = new Vector3(-Width, 0, 0);
+                    var bottomLeft = new Vector3(Width, 0, 0);
+                    var topRight = new Vector3(-Width, 0, Length);
+                    var topLeft = new Vector3(Width, 0, Length);
+
+                    //Translate the points back to the global cordinate system and rotate them the same
+                    //way the player if facing
+                    bottomLeft = Vector3.Add(RotatePoint(bottomLeft, Rotation.X), Position);
+                    bottomRight = Vector3.Add(RotatePoint(bottomRight, Rotation.X), Position);
+                    topLeft = Vector3.Add(RotatePoint(topLeft, Rotation.X), Position);
+                    topRight = Vector3.Add(RotatePoint(topRight, Rotation.X), Position);
+
+
+                    //Create a polygon to test with the rotated points
+                    Vector2[] RotatedRectangle = new Vector2[]{
+                        new Vector2(bottomLeft.X, bottomLeft.Z),
+                        new Vector2(bottomRight.X, bottomRight.Z),
+                        new Vector2(topLeft.X, topLeft.Z),
+                        new Vector2(topRight.X, topRight.Z)
+                    };
+
+                    return IsPointInPolygon(RotatedRectangle, new Vector2(position.X, position.Z)) && position.Y <= Position.Y + Height && Position.Y - Height <= position.Y;
+                }
                 default:
                     log.Warn($"Unhandled telegraph shape {(DamageShape)TelegraphDamage.DamageShapeEnum}.");
                     return false;
@@ -68,9 +98,40 @@ namespace NexusForever.WorldServer.Game.Spell
             {
                 case DamageShape.Cone:
                     return TelegraphDamage.Param01;
+                case DamageShape.Rectangle:
+                    return TelegraphDamage.Param01 / 2f;
                 default:
                     return 0f;
             }
+        }
+
+        private bool IsPointInPolygon(Vector2[] polygon, Vector2 testPoint)
+        {
+            bool result = false;
+            int j = polygon.Length - 1;
+            for (int i = 0; i < polygon.Length; i++)
+            {
+                if (polygon[i].Y < testPoint.Y && polygon[j].Y >= testPoint.Y || polygon[j].Y < testPoint.Y && polygon[i].Y >= testPoint.Y)
+                {
+                    if (polygon[i].X + (testPoint.Y - polygon[i].Y) / (polygon[j].Y - polygon[i].Y) * (polygon[j].X - polygon[i].X) < testPoint.X)
+                    {
+                        result = !result;
+                    }
+                }
+                j = i;
+            }
+            return result;
+        }
+
+        private Vector3 RotatePoint(Vector3 Point, float Rotation)
+        {
+            var newX = ((Point.X) * MathF.Cos(Rotation) + (Point.Z) * MathF.Sin(Rotation));
+            var newY = ((-Point.X) * MathF.Sin(Rotation) + (Point.Z) * MathF.Cos(Rotation));
+
+            newX = -newX;
+            newY = -newY;
+
+            return new Vector3(newX, Point.Y, newY);
         }
     }
 }

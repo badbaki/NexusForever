@@ -29,6 +29,10 @@ namespace NexusForever.WorldServer.Database.Character
                 .Property(p => p.InputActionId)
                 .ValueGeneratedNever();
 
+            modelBuilder.Entity<CharacterBone>()
+                .Property(e => e.BoneIndex)
+                .ValueGeneratedNever();
+
             modelBuilder.Entity<CharacterMailAttachment>()
                 .Property(p => p.Index)
                 .ValueGeneratedNever();
@@ -39,6 +43,10 @@ namespace NexusForever.WorldServer.Database.Character
 
             modelBuilder.Entity<CharacterStats>()
                 .Property(p => p.Stat)
+                .ValueGeneratedNever();
+
+            modelBuilder.Entity<ResidencePlot>()
+                .Property(p => p.Index)
                 .ValueGeneratedNever();
         }
     }

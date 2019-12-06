@@ -1,8 +1,10 @@
 ﻿using System;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using NexusForever.Shared.GameTable;
 using NexusForever.Shared.GameTable.Model;
 using NexusForever.WorldServer.Database;
 using NexusForever.WorldServer.Database.Character.Model;
+using NexusForever.WorldServer.Game.Entity;
 using NexusForever.WorldServer.Game.Housing.Static;
 
 namespace NexusForever.WorldServer.Game.Housing
@@ -11,6 +13,7 @@ namespace NexusForever.WorldServer.Game.Housing
     {
         public ulong Id { get; }
         public byte Index { get; }
+        public Plug PlugEntity { get; private set; }
         public HousingPlotInfoEntry PlotEntry { get; }
 
         public HousingPlugItemEntry PlugEntry
@@ -56,10 +59,10 @@ namespace NexusForever.WorldServer.Game.Housing
         /// </summary>
         public Plot(ResidencePlot model)
         {
-            Id         = model.Id;
-            Index      = model.Index;
-            PlotEntry  = GameTableManager.Instance.HousingPlotInfo.GetEntry(model.PlotInfoId);
-            PlugEntry  = GameTableManager.Instance.HousingPlugItem.GetEntry(model.PlugItemId);
+            Id = model.Id;
+            Index = model.Index;
+            PlotEntry = GameTableManager.Instance.HousingPlotInfo.GetEntry(model.PlotInfoId);
+            PlugEntry = GameTableManager.Instance.HousingPlugItem.GetEntry(model.PlugItemId);
             plugFacing = (HousingPlugFacing)model.PlugFacing;
             buildState = model.BuildState;
         }
@@ -69,9 +72,9 @@ namespace NexusForever.WorldServer.Game.Housing
         /// </summary>
         public Plot(ulong id, HousingPlotInfoEntry entry)
         {
-            Id         = id;
-            Index      = (byte)entry.HousingPropertyPlotIndex;
-            PlotEntry      = entry;
+            Id = id;
+            Index = (byte)entry.HousingPropertyPlotIndex;
+            PlotEntry = entry;
             plugFacing = HousingPlugFacing.East;
 
             if (entry.HousingPlugItemIdDefault != 0u)
@@ -93,8 +96,8 @@ namespace NexusForever.WorldServer.Game.Housing
                 // plot doesn't exist in database, all infomation must be saved
                 context.Add(new ResidencePlot
                 {
-                    Id         = Id,
-                    Index      = Index,
+                    Id = Id,
+                    Index = Index,
                     PlotInfoId = (ushort)PlotEntry.Id,
                     PlugItemId = (ushort)(PlugEntry?.Id ?? 0u),
                     PlugFacing = (byte)PlugFacing,
@@ -104,17 +107,55 @@ namespace NexusForever.WorldServer.Game.Housing
             else
             {
                 // plot already exists in database, save only data that has been modified
-                // TODO
+                var model = new ResidencePlot
+                {
+                    Id = Id,
+                    Index = Index
+                };
+
+                // could probably clean this up with reflection, works for the time being
+                EntityEntry<ResidencePlot> entity = context.Attach(model);
+                if ((saveMask & PlotSaveMask.PlugItemId) != 0)
+                {
+                    model.PlugItemId = (ushort)(PlugEntry?.Id ?? 0u);
+                    entity.Property(p => p.PlugItemId).IsModified = true;
+                }
+                if ((saveMask & PlotSaveMask.PlugFacing) != 0)
+                {
+                    model.PlugFacing = (byte)PlugFacing;
+                    entity.Property(p => p.PlugFacing).IsModified = true;
+                }
+                if ((saveMask & PlotSaveMask.BuildState) != 0)
+                {
+                    model.BuildState = BuildState;
+                    entity.Property(p => p.BuildState).IsModified = true;
+                }
             }
 
             saveMask = PlotSaveMask.None;
         }
 
-        public void SetPlug(ushort plugItemId)
+        public void SetPlug(uint plugItemId, HousingPlugFacing plugFacing = HousingPlugFacing.East)
         {
             // TODO
-            PlugEntry  = GameTableManager.Instance.HousingPlugItem.GetEntry(plugItemId);
-            BuildState = 4;
+            PlugEntry = GameTableManager.Instance.HousingPlugItem.GetEntry(plugItemId);
+            PlugFacing = plugFacing;
+
+            // BuildState needs to be cleared to get rid of the plug entity properly
+            BuildState = 0;
+        }
+
+        public void RemovePlug()
+        {
+            PlugEntry = null;
+            PlugEntity = null;
+            PlugFacing = HousingPlugFacing.East;
+            BuildState = 0;
+        }
+
+        public void SetPlugEntity(Plug plugEntity)
+        {
+            PlugEntity = plugEntity;
         }
     }
 }

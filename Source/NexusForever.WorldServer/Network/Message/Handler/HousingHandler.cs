@@ -9,11 +9,14 @@ using NexusForever.WorldServer.Game.Housing;
 using NexusForever.WorldServer.Game.Housing.Static;
 using NexusForever.WorldServer.Game.Map;
 using NexusForever.WorldServer.Network.Message.Model;
+using NLog;
 
 namespace NexusForever.WorldServer.Network.Message.Handler
 {
     public static class HousingHandler
     {
+        private static readonly ILogger log = LogManager.GetCurrentClassLogger();
+
         [MessageHandler(GameMessageOpcode.ClientHousingResidencePrivacyLevel)]
         public static void HandleHousingSetPrivacyLevel(WorldSession session, ClientHousingSetPrivacyLevel housingSetPrivacyLevel)
         {
@@ -53,7 +56,21 @@ namespace NexusForever.WorldServer.Network.Message.Handler
         [MessageHandler(GameMessageOpcode.ClientHousingPlugUpdate)]
         public static void HandleHousingPlugUpdate(WorldSession session, ClientHousingPlugUpdate housingPlugUpdate)
         {
-            // TODO
+            if (!(session.Player.Map is ResidenceMap residenceMap))
+                throw new InvalidPacketValueException();
+
+            switch (housingPlugUpdate.Operation)
+            {
+                case PlugUpdateOperation.Place:
+                    residenceMap.SetPlug(session.Player, housingPlugUpdate);
+                    break;
+                case PlugUpdateOperation.Remove:
+                    residenceMap.RemovePlug(session.Player, housingPlugUpdate);
+                    break;
+                default:
+                    log.Warn($"Operation {housingPlugUpdate.Operation} is unhandled.");
+                    break;
+            }
         }
 
         [MessageHandler(GameMessageOpcode.ClientHousingVendorList)]
@@ -63,7 +80,7 @@ namespace NexusForever.WorldServer.Network.Message.Handler
             {
                 ListType = 0
             };
-            
+
             // TODO: this isn't entirely correct
             foreach (HousingPlugItemEntry entry in GameTableManager.Instance.HousingPlugItem.Entries)
             {
@@ -72,7 +89,7 @@ namespace NexusForever.WorldServer.Network.Message.Handler
                     PlugItemId = entry.Id
                 });
             }
-            
+
             session.EnqueueMessageEncrypted(serverHousingVendorList);
         }
 
@@ -112,10 +129,10 @@ namespace NexusForever.WorldServer.Network.Message.Handler
             {
                 serverHousingRandomResidenceList.Residences.Add(new ServerHousingRandomResidenceList.Residence
                 {
-                    RealmId     = WorldServer.RealmId,
+                    RealmId = WorldServer.RealmId,
                     ResidenceId = residence.ResidenceId,
-                    Owner       = residence.Owner,
-                    Name        = residence.Name
+                    Owner = residence.Owner,
+                    Name = residence.Name
                 });
             }
 
@@ -138,31 +155,31 @@ namespace NexusForever.WorldServer.Network.Message.Handler
 
             session.EnqueueEvent(new TaskGenericEvent<Residence>(residenceTask,
                 residence =>
-            {
-                if (residence == null)
                 {
-                    // TODO: show error
-                    return;
-                }
-
-                switch (residence.PrivacyLevel)
-                {
-                    case ResidencePrivacyLevel.Private:
+                    if (residence == null)
                     {
                         // TODO: show error
                         return;
                     }
-                    // TODO: check if player is either a neighbour or roommate
-                    case ResidencePrivacyLevel.NeighborsOnly:
-                        break;
-                    case ResidencePrivacyLevel.RoommatesOnly:
-                        break;
-                }
 
-                // teleport player to correct residence instance
-                ResidenceEntrance entrance = ResidenceManager.Instance.GetResidenceEntrance(residence);
-                session.Player.TeleportTo(entrance.Entry, entrance.Position, 0u, residence.Id);
-            }));
+                    switch (residence.PrivacyLevel)
+                    {
+                        case ResidencePrivacyLevel.Private:
+                            {
+                                // TODO: show error
+                                return;
+                            }
+                        // TODO: check if player is either a neighbour or roommate
+                        case ResidencePrivacyLevel.NeighborsOnly:
+                            break;
+                        case ResidencePrivacyLevel.RoommatesOnly:
+                            break;
+                    }
+
+                    // teleport player to correct residence instance
+                    ResidenceEntrance entrance = ResidenceManager.Instance.GetResidenceEntrance(residence);
+                    session.Player.TeleportTo(entrance.Entry, entrance.Position, 0u, residence.Id);
+                }));
         }
 
         [MessageHandler(GameMessageOpcode.ClientHousingEditMode)]
