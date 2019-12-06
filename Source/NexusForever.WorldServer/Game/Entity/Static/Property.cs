@@ -12,9 +12,9 @@
         BaseHealth                                  = 7,
         HealthRegenMultiplier                       = 8,
         /// <summary>
-        /// Endurance
+        /// Endurance (Sprint)
         /// </summary>
-        ResourceMax0                                = 9,
+        ResourceMax0 = 9,
         /// <summary>
         /// Kinetic Energy (Warrior), Psi Points (Esper), Volatile Energy (Engineer), Medic Cores (Medic)
         /// </summary>
@@ -51,7 +51,10 @@
         AssaultRating                               = 35,
         SupportRating                               = 36,
         RatingCriticalMitigation                    = 37,
-        ResourceMax7                                = 38,
+        /// <summary>
+        /// Dash Energy
+        /// </summary>
+        ResourceMax7 = 38,
         ResourceRegenMultiplier7                    = 39,
         Stamina                                     = 40,
         ShieldCapacityMax                           = 41,

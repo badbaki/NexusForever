@@ -180,6 +180,12 @@ namespace NexusForever.WorldServer.Database.Character
                 return context.CharacterMail.DefaultIfEmpty().Max(s => s.Id);
         }
 
+        public static List<PropertyBase> GetProperties(uint type)
+        {
+            using (var context = new CharacterContext())
+                return context.PropertyBase.Where(p => p.Type == type).ToList();
+        }
+
         public static List<Contacts> GetAllContacts()
         {
             using (var context = new CharacterContext())
