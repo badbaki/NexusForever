@@ -8,6 +8,7 @@ using NexusForever.WorldServer.Database;
 using NexusForever.WorldServer.Database.Character.Model;
 using NexusForever.WorldServer.Game.Entity;
 using NexusForever.WorldServer.Game.Housing.Static;
+using NexusForever.WorldServer.Game.Map;
 using ResidenceModel = NexusForever.WorldServer.Database.Character.Model.Residence;
 
 namespace NexusForever.WorldServer.Game.Housing
@@ -440,7 +441,7 @@ namespace NexusForever.WorldServer.Game.Housing
         /// <summary>
         /// Set this <see cref="Residence"/> house plug to the supplied <see cref="HousingPlugItemEntry"/>. Returns <see cref="true"/> if successful
         /// </summary>
-        public bool SetHouse(HousingPlugItemEntry plugItemEntry)
+        public bool SetHouse(HousingPlugItemEntry plugItemEntry, ResidenceMap map)
         {
             if (plugItemEntry == null)
                 throw new ArgumentNullException();
@@ -465,12 +466,7 @@ namespace NexusForever.WorldServer.Game.Housing
             return false;
         }
 
-        /// <summary>
-        /// Returns a <see cref="HousingResidenceInfoEntry"/> ID if the plug ID is known.
-        /// </summary>
-        private uint GetResidenceEntryForPlug(uint plugItemId)
-        {
-            Dictionary<uint, uint> residenceLookup = new Dictionary<uint, uint>
+        private readonly Dictionary<uint, uint> residenceLookup = new Dictionary<uint, uint>
             {
                 { 83, 14 },     // Cozy Aurin House
                 { 295, 19 },    // Cozy Chua House
@@ -491,6 +487,11 @@ namespace NexusForever.WorldServer.Game.Housing
                 { 557, 25 }     // Royal Piglet
             };
 
+        /// <summary>
+        /// Returns a <see cref="HousingResidenceInfoEntry"/> ID if the plug ID is known.
+        /// </summary>
+        private uint GetResidenceEntryForPlug(uint plugItemId)
+        {
             return residenceLookup.TryGetValue(plugItemId, out uint residenceId) ? residenceId : 0u;
         }
 

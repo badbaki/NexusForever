@@ -106,14 +106,14 @@ namespace NexusForever.WorldServer.Game.Housing
         /// </summary>
         public Decor(ResidenceDecor model)
         {
-            Id            = model.Id;
-            DecorId       = model.DecorId;
-            Entry         = GameTableManager.Instance.HousingDecorInfo.GetEntry(model.DecorInfoId);
-            type          = (DecorType)model.DecorType;
-            plotIndex     = model.PlotIndex;
-            position      = new Vector3(model.X, model.Y, model.Z);
-            rotation      = new Quaternion(model.Qx, model.Qy, model.Qz, model.Qw);
-            scale         = model.Scale;
+            Id = model.Id;
+            DecorId = model.DecorId;
+            Entry = GameTableManager.Instance.HousingDecorInfo.GetEntry(model.DecorInfoId);
+            type = (DecorType)model.DecorType;
+            plotIndex = model.PlotIndex;
+            position = new Vector3(model.X, model.Y, model.Z);
+            rotation = new Quaternion(model.Qx, model.Qy, model.Qz, model.Qw);
+            scale = model.Scale;
             decorParentId = model.DecorParentId;
             colourShiftId = model.ColourShiftId;
 
@@ -125,10 +125,10 @@ namespace NexusForever.WorldServer.Game.Housing
         /// </summary>
         public Decor(ulong id, ulong decorId, HousingDecorInfoEntry entry)
         {
-            Id       = id;
-            DecorId  = decorId;
-            Entry    = entry;
-            type     = DecorType.Crate;
+            Id = id;
+            DecorId = decorId;
+            Entry = entry;
+            type = DecorType.Crate;
             position = Vector3.Zero;
             rotation = Quaternion.Identity;
 
@@ -153,19 +153,19 @@ namespace NexusForever.WorldServer.Game.Housing
                 // decor doesn't exist in database, all infomation must be saved
                 context.Add(new ResidenceDecor
                 {
-                    Id            = Id,
-                    DecorId       = DecorId,
-                    DecorInfoId   = Entry.Id,
-                    DecorType     = (uint)Type,
-                    PlotIndex     = PlotIndex,
-                    X             = Position.X,
-                    Y             = Position.Y,
-                    Z             = Position.Z,
-                    Qx            = Rotation.X,
-                    Qy            = Rotation.Y,
-                    Qz            = Rotation.Z,
-                    Qw            = Rotation.W,
-                    Scale         = Scale,
+                    Id = Id,
+                    DecorId = DecorId,
+                    DecorInfoId = Entry.Id,
+                    DecorType = (uint)Type,
+                    PlotIndex = PlotIndex,
+                    X = Position.X,
+                    Y = Position.Y,
+                    Z = Position.Z,
+                    Qx = Rotation.X,
+                    Qy = Rotation.Y,
+                    Qz = Rotation.Z,
+                    Qw = Rotation.W,
+                    Scale = Scale,
                     DecorParentId = DecorParentId,
                     ColourShiftId = ColourShiftId
                 });
@@ -174,7 +174,7 @@ namespace NexusForever.WorldServer.Game.Housing
             {
                 var model = new ResidenceDecor
                 {
-                    Id      = Id,
+                    Id = Id,
                     DecorId = DecorId
                 };
 
@@ -185,7 +185,7 @@ namespace NexusForever.WorldServer.Game.Housing
                 // decor already exists in database, save only data that has been modified
                 var model = new ResidenceDecor
                 {
-                    Id      = Id,
+                    Id = Id,
                     DecorId = DecorId
                 };
 
@@ -246,10 +246,10 @@ namespace NexusForever.WorldServer.Game.Housing
         /// </summary>
         public void Move(DecorType type, Vector3 position, Quaternion rotation, float scale)
         {
-            Type     = type;
+            Type = type;
             Position = position;
             Rotation = rotation;
-            Scale    = scale;
+            Scale = scale;
         }
 
         /// <summary>

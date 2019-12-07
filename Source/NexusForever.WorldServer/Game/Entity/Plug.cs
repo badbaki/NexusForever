@@ -1,4 +1,5 @@
 ﻿using NexusForever.Shared.GameTable.Model;
+using WorldEntityModel = NexusForever.WorldServer.Database.World.Model.Entity;
 using NexusForever.WorldServer.Game.Entity.Network;
 using NexusForever.WorldServer.Game.Entity.Network.Model;
 using NexusForever.WorldServer.Game.Entity.Static;
@@ -7,6 +8,7 @@ using System.Numerics;
 
 namespace NexusForever.WorldServer.Game.Entity
 {
+    [DatabaseEntity(EntityType.Plug)]
     public class Plug : WorldEntity
     {
         public HousingPlotInfoEntry PlotEntry { get; }
@@ -27,14 +29,14 @@ namespace NexusForever.WorldServer.Game.Entity
             PlugEntry = plugEntry;
         }
 
-        /*
+
         public override void Initialise(WorldEntityModel model)
         {
             PlugId = (ushort)model.Creature;
 
             base.Initialise(model);
         }
-        */
+
         protected override IEntityModel BuildEntityModel()
         {
             return new PlugModel

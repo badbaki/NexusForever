@@ -29,6 +29,8 @@ namespace NexusForever.WorldServer.Game.Map
         {
             base.Initialise(info, player);
 
+            IsStatic = true;
+
             if (info.ResidenceId != 0u)
             {
                 residence = ResidenceManager.Instance.GetCachedResidence(info.ResidenceId);
@@ -329,7 +331,6 @@ namespace NexusForever.WorldServer.Game.Map
                 }
 
                 return HousingResult.Success;
-
             }
 
             HousingResult result = GetResult();
@@ -555,7 +556,7 @@ namespace NexusForever.WorldServer.Game.Map
             //       Telling the client that the Plots were updated looks to be the only trigger for the building animation.
 
             // Update the Plot and queue necessary plug updates
-            if (residence.SetHouse(plugItemEntry))
+            if (residence.SetHouse(plugItemEntry, this))
             {
                 HandleHouseChange(player, plot, housingPlugUpdate);
             }
@@ -737,6 +738,5 @@ namespace NexusForever.WorldServer.Game.Map
 
             HandleHouseChange(player, plot);
         }
-
     }
 }

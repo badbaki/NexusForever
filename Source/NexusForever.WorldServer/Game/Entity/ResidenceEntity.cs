@@ -17,7 +17,7 @@ namespace NexusForever.WorldServer.Game.Entity
             PlotEntry = housingPlotInfoEntry;
 
             CreatureId = creatureId;
-            SocketId = (ushort)PlotEntry.WorldSocketId;
+            WorldSocketId = (ushort)PlotEntry.WorldSocketId;
         }
 
         protected override IEntityModel BuildEntityModel()

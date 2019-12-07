@@ -25,6 +25,15 @@ namespace NexusForever.WorldServer.Network
         public AccountCurrencyManager AccountCurrencyManager { get; set; }
         public EntitlementManager EntitlementManager { get; set; }
 
+        public TimeSpan Uptime
+        {
+            get
+            {
+                return DateTime.UtcNow.Subtract(sessionCreated);
+            }
+        }
+        private DateTime sessionCreated;
+
         public override void OnAccept(Socket newSocket)
         {
             base.OnAccept(newSocket);
@@ -66,6 +75,8 @@ namespace NexusForever.WorldServer.Network
             GenericUnlockManager   = new GenericUnlockManager(this, account);
             AccountCurrencyManager = new AccountCurrencyManager(this, account);
             EntitlementManager     = new EntitlementManager(this, account);
+
+            sessionCreated = DateTime.UtcNow;
         }
 
         public void SetEncryptionKey(byte[] sessionKey)

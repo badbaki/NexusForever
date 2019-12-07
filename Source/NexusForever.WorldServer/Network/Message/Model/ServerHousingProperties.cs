@@ -15,7 +15,7 @@ namespace NexusForever.WorldServer.Network.Message.Model
             public ulong NeighbourhoodId { get; set; }
             public ulong CharacterIdOwner { get; set; }
             public ulong GuildIdOwner { get; set; }
-            public uint RealmIdOwner{ get; set; }
+            public uint RealmIdOwner { get; set; }
             public uint Type { get; set; }
             public uint TileId { get; set; }
             public string Name { get; set; }
@@ -45,9 +45,9 @@ namespace NexusForever.WorldServer.Network.Message.Model
                 writer.WriteStringWide(Name);
                 writer.Write(PropertyInfoId);
                 writer.Write(ResidenceInfoId);
-                writer.Write(Roof);
                 writer.Write(WallpaperExterior);
                 writer.Write(Entryway);
+                writer.Write(Roof);
                 writer.Write(Door);
                 writer.Write(Sky);
                 writer.Write(Music);
@@ -61,7 +61,7 @@ namespace NexusForever.WorldServer.Network.Message.Model
         }
 
         public List<Residence> Residences { get; } = new List<Residence>();
-        
+
         public void Write(GamePacketWriter writer)
         {
             writer.Write(Residences.Count);

@@ -62,7 +62,7 @@ namespace NexusForever.Shared.Network
                 message.Write(writer);
                 writer.FlushBits();
 
-                byte[] data      = stream.ToArray();
+                byte[] data = stream.ToArray();
                 byte[] encrypted = encryption.Encrypt(data, data.Length);
                 EnqueueMessage(BuildEncryptedMessage(encrypted));
             }
@@ -77,16 +77,16 @@ namespace NexusForever.Shared.Network
             using (var writer = new GamePacketWriter(stream))
             {
                 writer.Write(opcode, 16);
-                
+
                 byte[] body = Enumerable.Range(0, hex.Length)
                     .Where(x => x % 2 == 0)
                     .Select(x => Convert.ToByte(hex.Substring(x, 2), 16))
                     .ToArray();
                 writer.WriteBytes(body);
-                
+
                 writer.FlushBits();
 
-                byte[] data      = stream.ToArray();
+                byte[] data = stream.ToArray();
                 byte[] encrypted = encryption.Encrypt(data, data.Length);
                 EnqueueMessage(BuildEncryptedMessage(encrypted));
             }

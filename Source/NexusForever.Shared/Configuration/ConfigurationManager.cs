@@ -6,6 +6,7 @@ namespace NexusForever.Shared.Configuration
     public sealed class ConfigurationManager<T> : Singleton<ConfigurationManager<T>>
     {
         public T Config { get; private set; }
+        public IConfiguration GetConfiguration() => SharedConfiguration.Configuration;
 
         private ConfigurationManager()
         {
@@ -17,12 +18,9 @@ namespace NexusForever.Shared.Configuration
             Config = SharedConfiguration.Configuration.Get<T>();
         }
 
-        public bool Save()
+        public void Save()
         {
-            if (SharedConfiguration.Save<T>(Config))
-                return true;
-            else
-                return false;
+            SharedConfiguration.Save<T>(Config);
         }
     }
 }

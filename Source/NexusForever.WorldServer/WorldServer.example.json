@@ -34,6 +34,15 @@
   },
   "RealmId": 1,
   "LengthOfInGameDay": 12600,
-  "CrossFactionChat": true,
+  "Store": {
+    "ForcedProtobucksPrice": 0,
+    "ForcedOmnibitsPrice": 0,
+    "CurrencyProtobucksEnabled": true,
+    "CurrencyOmnibitsEnabled": true
+  },
+  "Rules": {
+    "CrossFactionChat": true
+  },
+  "DefaultRole": 4,
   "MessageOfTheDay": ""
 }

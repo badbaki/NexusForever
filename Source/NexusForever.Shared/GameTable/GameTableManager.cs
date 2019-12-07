@@ -54,7 +54,10 @@ namespace NexusForever.Shared.GameTable
         public GameTable<ArchiveLinkEntry> ArchiveLink { get; private set; }
         public GameTable<AttributeMilestoneGroupEntry> AttributeMilestoneGroup { get; private set; }
         public GameTable<AttributeMiniMilestoneGroupEntry> AttributeMiniMilestoneGroup { get; private set; }
+
+        [GameData]
         public GameTable<BindPointEntry> BindPoint { get; private set; }
+
         public GameTable<BinkMovieEntry> BinkMovie { get; private set; }
         public GameTable<BinkMovieSubtitleEntry> BinkMovieSubtitle { get; private set; }
         public GameTable<BugCategoryEntry> BugCategory { get; private set; }
@@ -225,7 +228,6 @@ namespace NexusForever.Shared.GameTable
         [GameData]
         public GameTable<GuildStandardPartEntry> GuildStandardPart { get; private set; }
 
-
         public GameTable<HazardEntry> Hazard { get; private set; }
         public GameTable<HookAssetEntry> HookAsset { get; private set; }
         public GameTable<HookTypeEntry> HookType { get; private set; }
@@ -265,6 +267,8 @@ namespace NexusForever.Shared.GameTable
         public GameTable<HousingWarplotPlugInfoEntry> HousingWarplotPlugInfo { get; private set; }
         public GameTable<InputActionEntry> InputAction { get; private set; }
         public GameTable<InputActionCategoryEntry> InputActionCategory { get; private set; }
+
+        [GameData]
         public GameTable<InstancePortalEntry> InstancePortal { get; private set; }
 
         [GameData("Item2.tbl")]
@@ -642,7 +646,9 @@ namespace NexusForever.Shared.GameTable
         [GameData]
         public GameTable<WorldSkyEntry> WorldSky { get; private set; }
 
+        [GameData]
         public GameTable<WorldSocketEntry> WorldSocket { get; private set; }
+
         public GameTable<WorldWaterEnvironmentEntry> WorldWaterEnvironment { get; private set; }
         public GameTable<WorldWaterFogEntry> WorldWaterFog { get; private set; }
         public GameTable<WorldWaterLayerEntry> WorldWaterLayer { get; private set; }

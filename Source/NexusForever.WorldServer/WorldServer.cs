@@ -8,7 +8,6 @@ using NexusForever.Shared.Database;
 using NexusForever.Shared.Game;
 using NexusForever.Shared.GameTable;
 using NexusForever.Shared.Network;
-using NexusForever.WorldServer.Game.Contact;
 using NexusForever.Shared.Network.Message;
 using NexusForever.WorldServer.Command;
 using NexusForever.WorldServer.Command.Contexts;
@@ -25,8 +24,11 @@ using NexusForever.WorldServer.Game.Social;
 using NexusForever.WorldServer.Game.Spell;
 using NexusForever.WorldServer.Game.Storefront;
 using NexusForever.WorldServer.Network;
+using NexusForever.WorldServer.Game.Contact;
 using NexusForever.WorldServer.Game.Guild;
 using NexusForever.WorldServer.Game.CharacterCache;
+using NexusForever.WorldServer.Game.Account;
+using System.Linq;
 
 namespace NexusForever.WorldServer
 {
@@ -41,6 +43,14 @@ namespace NexusForever.WorldServer
         private static readonly ILogger log = LogManager.GetCurrentClassLogger();
 
         public static ushort RealmId { get; private set; }
+        public static TimeSpan Uptime
+        {
+            get
+            {
+                return DateTime.UtcNow.Subtract(bootTime);
+            }
+        }
+        private static DateTime bootTime;
 
         private static void Main()
         {
@@ -68,12 +78,13 @@ namespace NexusForever.WorldServer
             GlobalQuestManager.Instance.Initialise();
 
             CharacterManager.Instance.Initialise();
-            ContactManager.Initialise();
             ResidenceManager.Instance.Initialise();
-            GuildManager.Initialise();
             GlobalStorefrontManager.Instance.Initialise();
 
             GlobalAchievementManager.Instance.Initialise();
+            ContactManager.Initialise();
+
+            GuildManager.Initialise();
 
             RealmId = ConfigurationManager<WorldServerConfiguration>.Instance.Config.RealmId;
             ServerManager.Instance.Initialise(RealmId); 
@@ -91,7 +102,10 @@ namespace NexusForever.WorldServer
                 GuildManager.Update(lastTick);
                 ContactManager.Update(lastTick);
                 GlobalQuestManager.Instance.Update(lastTick);
+                Console.Title = Title + $":: Clients: {NetworkManager<WorldSession>.Instance.GetSessions().Count()} | Maps: {MapManager.Instance.GetMapCount()}";
             });
+
+            bootTime = DateTime.UtcNow;
 
             using (WorldServerEmbeddedWebServer.Initialise())
             {
