@@ -8,7 +8,6 @@ using NexusForever.WorldServer.Database;
 using NexusForever.WorldServer.Database.Character.Model;
 using NexusForever.WorldServer.Game.Entity;
 using NexusForever.WorldServer.Game.Housing.Static;
-using NexusForever.WorldServer.Game.Map;
 using ResidenceModel = NexusForever.WorldServer.Database.Character.Model.Residence;
 
 namespace NexusForever.WorldServer.Game.Housing
@@ -441,7 +440,7 @@ namespace NexusForever.WorldServer.Game.Housing
         /// <summary>
         /// Set this <see cref="Residence"/> house plug to the supplied <see cref="HousingPlugItemEntry"/>. Returns <see cref="true"/> if successful
         /// </summary>
-        public bool SetHouse(HousingPlugItemEntry plugItemEntry, ResidenceMap map)
+        public bool SetHouse(HousingPlugItemEntry plugItemEntry)
         {
             if (plugItemEntry == null)
                 throw new ArgumentNullException();
@@ -466,7 +465,12 @@ namespace NexusForever.WorldServer.Game.Housing
             return false;
         }
 
-        private readonly Dictionary<uint, uint> residenceLookup = new Dictionary<uint, uint>
+        /// <summary>
+        /// Returns a <see cref="HousingResidenceInfoEntry"/> ID if the plug ID is known.
+        /// </summary>
+        private uint GetResidenceEntryForPlug(uint plugItemId)
+        {
+            Dictionary<uint, uint> residenceLookup = new Dictionary<uint, uint>
             {
                 { 83, 14 },     // Cozy Aurin House
                 { 295, 19 },    // Cozy Chua House
@@ -482,15 +486,11 @@ namespace NexusForever.WorldServer.Game.Housing
                 { 291, 27 },    // Spacious Granok House
                 { 530, 32 },    // Underground Bunker
                 { 534, 34 },    // Blackhole House
-                { 543, 35 },     // Osun House
+                { 543, 35 },    // Osun House
                 { 554, 37 },    // Bird house
                 { 557, 25 }     // Royal Piglet
             };
-        /// <summary>
-        /// Returns a <see cref="HousingResidenceInfoEntry"/> ID if the plug ID is known.
-        /// </summary>
-        private uint GetResidenceEntryForPlug(uint plugItemId)
-        {
+
             return residenceLookup.TryGetValue(plugItemId, out uint residenceId) ? residenceId : 0u;
         }
 
@@ -515,7 +515,6 @@ namespace NexusForever.WorldServer.Game.Housing
 
         /// <summary>
         /// Return <see cref="Plot"/> that matches the supploed Plot Info ID.
-        /// /// </summary>
         public Plot GetPlot(uint plotInfoId)
         {
             return plots.FirstOrDefault(i => i.PlotEntry.Id == plotInfoId);

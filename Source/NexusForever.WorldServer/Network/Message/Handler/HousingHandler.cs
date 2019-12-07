@@ -17,6 +17,7 @@ namespace NexusForever.WorldServer.Network.Message.Handler
     {
         private static readonly ILogger log = LogManager.GetCurrentClassLogger();
 
+
         [MessageHandler(GameMessageOpcode.ClientHousingResidencePrivacyLevel)]
         public static void HandleHousingSetPrivacyLevel(WorldSession session, ClientHousingSetPrivacyLevel housingSetPrivacyLevel)
         {

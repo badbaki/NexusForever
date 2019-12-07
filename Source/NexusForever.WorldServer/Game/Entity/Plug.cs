@@ -13,6 +13,12 @@ namespace NexusForever.WorldServer.Game.Entity
         public HousingPlugItemEntry PlugEntry { get; }
 
         private Plug ReplacementPlug { get; set; }
+        public ushort PlugId { get; private set; }
+
+        public Plug()
+            : base(EntityType.Plug)
+        {
+        }
 
         public Plug(HousingPlotInfoEntry plotEntry, HousingPlugItemEntry plugEntry)
             : base(EntityType.Plug)
@@ -21,6 +27,14 @@ namespace NexusForever.WorldServer.Game.Entity
             PlugEntry = plugEntry;
         }
 
+        /*
+        public override void Initialise(WorldEntityModel model)
+        {
+            PlugId = (ushort)model.Creature;
+
+            base.Initialise(model);
+        }
+        */
         protected override IEntityModel BuildEntityModel()
         {
             return new PlugModel
