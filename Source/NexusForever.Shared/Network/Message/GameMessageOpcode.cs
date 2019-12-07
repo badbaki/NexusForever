@@ -10,7 +10,7 @@ namespace NexusForever.Shared.Network.Message
         ServerAuthEncrypted             = 0x0076,
         ServerLogoutUpdate              = 0x0092,
         ClientActivateUnitCast          = 0x0097, // not sure about the name - almost the same as 0x00B3, but also initiates 0x07FD
-        Client009A                      = 0x009A, // client spell cast request, very similiar to 0x04DB, but for non-abilities -> mount, teleport, etc.
+        ClientCastSpell                 = 0x009A, // client spell cast request, very similiar to 0x04DB, but for non-abilities -> mount, teleport, etc.
         ServerChangeWorld               = 0x00AD,
         ServerAchievementInit           = 0x00AE,
         ServerAchievementUpdate         = 0x00AF,
@@ -169,7 +169,7 @@ namespace NexusForever.Shared.Network.Message
         ClientGuildOperation            = 0x04B1,
         ServerGuildRankChange           = 0x04C5,
         ServerGuildResult               = 0x04C9,
-        ClientCastSpell                 = 0x04DB,
+        ClientCastSpellContinuous       = 0x04DB,
         ServerHousingResidenceDecor     = 0x04DE,
         ServerHousingProperties         = 0x04DF,
         ServerHousingPlots              = 0x04E1,
@@ -270,11 +270,12 @@ namespace NexusForever.Shared.Network.Message
         ClientSpellStopCast             = 0x0801,
         ClientCancelEffect              = 0x0802,
         ServerCooldown                  = 0x0804,
-        Server0811                      = 0x0811, // spell related: broadcast parts of 0x07FF?
-        ServerSpellBuffRemove           = 0x0813,
-        Server0814                      = 0x0814, // spell related
-        Server0816                      = 0x0816, // spell related: broadcast parts of 0x07FF?
-        Server0817                      = 0x0817, // spell related
+        Server0810                      = 0x0810,
+        ServerSpellBuffRemoved          = 0x0811, // spell related: broadcast parts of 0x07FF?
+        Server0813                      = 0x0813,
+        ServerSpellThresholdClear       = 0x0814,
+        ServerSpellThresholdStart       = 0x0816,
+        ServerSpellThresholdUpdate      = 0x0817,
         Server0818                      = 0x0818,
         ClientStorefrontPurchaseAccount = 0x0828,
         ClientStorefrontPurchaseCharacter = 0x082A,

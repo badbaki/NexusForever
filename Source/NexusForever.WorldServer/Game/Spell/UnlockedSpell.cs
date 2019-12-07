@@ -87,5 +87,54 @@ namespace NexusForever.WorldServer.Game.Spell
 
             saveMask = UnlockedSpellSaveMask.None;
         }
+
+        /// <summary>
+        /// Used for when the client does not have continuous casting enabled
+        /// </summary>
+        public void Cast(Player player)
+        {
+            if (player.HasSpell(Info.GetSpellInfo(Tier).Entry.Id, out Spell spell))
+            {
+                if ((spell.CastMethod == CastMethod.RapidTap || spell.CastMethod == CastMethod.ChargeRelease) && !spell.IsFinished)
+                {
+                    spell.Cast();
+                    return;
+                }
+            }
+
+            CastSpell(player);
+        }
+
+        /// <summary>
+        /// Used for continuous casting when the client has it enabled, or spells with Cast Methods like ChargeRelease
+        /// </summary>
+        public void Cast(Player player, bool buttonPressed)
+        {
+            // TODO: Handle continuous casting of spell for Player if button remains depressed
+
+            if (player.HasSpell(Info.GetSpellInfo(Tier).Entry.Id, out Spell spell))
+            {
+                if ((spell.CastMethod == CastMethod.RapidTap || spell.CastMethod == CastMethod.ChargeRelease) && !spell.IsFinished)
+                {
+                    spell.Cast();
+                    return;
+                }
+            }
+
+            // If the player depresses button after the spell had exceeded its threshold, don't try and recast the spell until button is pressed down again.
+            if (!buttonPressed && (CastMethod)Info.Entry.CastMethod == CastMethod.ChargeRelease)
+                return;
+
+            CastSpell(player);
+        }
+
+        private void CastSpell(Player player)
+        {
+            player.CastSpell(new SpellParameters
+            {
+                SpellInfo = Info.GetSpellInfo(Tier),
+                UserInitiatedSpellCast = true
+            });
+        }
     }
 }
