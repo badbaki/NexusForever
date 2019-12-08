@@ -1,8 +1,9 @@
 ﻿<!DOCTYPE html>
-<html>
+<html class="h-100">
 <head>
     <meta charset="utf-8" />
-    <title></title>
+    <title>Calamity Falls</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
     <style>
         table {
             border: 0
@@ -21,154 +22,197 @@
             background-color: green;
             color: white
         }
+
+        h1.mt-5 {
+            margin-top: 4.5rem !important;
+        }
     </style>
 </head>
-<body>
-    <h1>Nexus Forever - Command Console</h1>
-    <p id="stateLabel">Ready to connect...</p>
-    <div>
-        <!--<label for="connectionUrl">WebSocket Server URL:</label>-->
-        <input id="connectionUrl" type="hidden" />
-        <button id="connectButton" type="submit">Connect</button>
-    </div>
-    <p></p>
+<body class="d-flex flex-column h-100">
+    <header>
+        <!-- Fixed navbar -->
+        <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+            <a class="navbar-brand" href="#">Calamity Falls</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <!--<div class="collapse navbar-collapse" id="navbarCollapse">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item active">
+                        <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Link</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link disabled" href="#">Disabled</a>
+                    </li>
+                </ul>
+            </div>-->
+        </nav>
+    </header>
+    <main role="main" class="flex-shrink-0">
+        <div class="container">
+            <h1 class="mt-5">Nexus Forever - Command Console</h1>
+            <p id="stateLabel">Ready to connect...</p>
+            <div>
+                <!--<label for="connectionUrl">WebSocket Server URL:</label>-->
+                <input id="connectionUrl" type="hidden" />
+                <button id="connectButton" type="submit">Connect</button>
+            </div>
+            <p></p>
 
-    <h2>Communication Log</h2>
-    <table style="width: 800px">
-        <thead>
-            <tr>
-                <td>Message</td>
-            </tr>
-        </thead>
-        <tbody id="commsLog"></tbody>
-    </table>
-    <div>
-        <input id="sendMessage" disabled />
-        <button id="sendButton" type="submit" disabled>Send</button>
-        <button id="closeButton" disabled>Close Socket</button>
-    </div>
-    <script>
+            <h2>Communication Log</h2>
+            <table style="width: 800px">
+                <thead>
+                    <tr>
+                        <td>Message</td>
+                    </tr>
+                </thead>
+                <tbody id="commsLog"></tbody>
+            </table>
+            <div>
+                <input id="sendMessage" disabled />
+                <button id="sendButton" type="submit" disabled>Send</button>
+                <button id="closeButton" disabled>Close Socket</button>
+            </div>
+            <script>
 
-        var connectionForm = document.getElementById("connectionForm");
-        var connectionUrl = document.getElementById("connectionUrl");
-        var connectButton = document.getElementById("connectButton");
-        var stateLabel = document.getElementById("stateLabel");
-        var sendMessage = document.getElementById("sendMessage");
-        var sendButton = document.getElementById("sendButton");
-        var sendForm = document.getElementById("sendForm");
-        var commsLog = document.getElementById("commsLog");
-        var socket;
-        var scheme = document.location.protocol == "https:" ? "wss" : "ws";
-        var port = document.location.port ? (":" + document.location.port) : "";
-        connectionUrl.value = scheme + "://" + document.location.hostname + port + "/ws/commands";
+                var connectionForm = document.getElementById("connectionForm");
+                var connectionUrl = document.getElementById("connectionUrl");
+                var connectButton = document.getElementById("connectButton");
+                var stateLabel = document.getElementById("stateLabel");
+                var sendMessage = document.getElementById("sendMessage");
+                var sendButton = document.getElementById("sendButton");
+                var sendForm = document.getElementById("sendForm");
+                var commsLog = document.getElementById("commsLog");
+                var socket;
+                var scheme = document.location.protocol == "https:" ? "wss" : "ws";
+                var port = document.location.port ? (":" + document.location.port) : "";
+                connectionUrl.value = scheme + "://localhost:5000/ws/commands";
 
-        function updateState() {
-            function disable() {
-                sendMessage.disabled = true;
-                sendButton.disabled = true;
-                closeButton.disabled = true;
-            }
+                function updateState() {
+                    function disable() {
+                        sendMessage.disabled = true;
+                        sendButton.disabled = true;
+                        closeButton.disabled = true;
+                    }
 
-            function enable() {
-                sendMessage.disabled = false;
-                sendButton.disabled = false;
-                closeButton.disabled = false;
-            }
+                    function enable() {
+                        sendMessage.disabled = false;
+                        sendButton.disabled = false;
+                        closeButton.disabled = false;
+                    }
 
-            connectionUrl.disabled = true;
-            connectButton.disabled = true;
+                    connectionUrl.disabled = true;
+                    connectButton.disabled = true;
 
-            if (!socket) {
-                disable();
-            } else {
-                switch (socket.readyState) {
-                    case WebSocket.CLOSED:
-                        stateLabel.innerHTML = "Closed";
+                    if (!socket) {
                         disable();
-                        connectionUrl.disabled = false;
-                        connectButton.disabled = false;
-                        break;
-                    case WebSocket.CLOSING:
-                        stateLabel.innerHTML = "Closing...";
-                        disable();
-                        break;
-                    case WebSocket.CONNECTING:
-                        stateLabel.innerHTML = "Connecting...";
-                        disable();
-                        break;
-                    case WebSocket.OPEN:
-                        stateLabel.innerHTML = "Open";
-                        enable();
-                        break;
-                    default:
-                        stateLabel.innerHTML = "Unknown WebSocket State: " + socket.readyState;
-                        disable();
-                        break;
+                    } else {
+                        switch (socket.readyState) {
+                            case WebSocket.CLOSED:
+                                stateLabel.innerHTML = "Closed";
+                                disable();
+                                connectionUrl.disabled = false;
+                                connectButton.disabled = false;
+                                break;
+                            case WebSocket.CLOSING:
+                                stateLabel.innerHTML = "Closing...";
+                                disable();
+                                break;
+                            case WebSocket.CONNECTING:
+                                stateLabel.innerHTML = "Connecting...";
+                                disable();
+                                break;
+                            case WebSocket.OPEN:
+                                stateLabel.innerHTML = "Open";
+                                enable();
+                                break;
+                            default:
+                                stateLabel.innerHTML = "Unknown WebSocket State: " + socket.readyState;
+                                disable();
+                                break;
+                        }
+                    }
                 }
-            }
-        }
 
-        closeButton.onclick = function () {
-            if (!socket || socket.readyState != WebSocket.OPEN) {
-                alert("socket not connected");
-            }
-            socket.close(1000, "Closing from client");
-        }
-
-        var sendMessageHandler = function() {
-            if (!socket || socket.readyState != WebSocket.OPEN) {
-                alert("socket not connected");
-            }
-            var data = sendMessage.value;
-            socket.send(JSON.stringify({ message: data }));
-            commsLog.innerHTML += '<tr>' +
-                '<td class="commslog-data">' +
-                data +
-                '</td>' +
-                '</tr>';
-        };
-
-
-        sendMessage.addEventListener('keyup',
-            function(event) {
-                if (event.keyCode == 13) {
-                    sendButton.click();
+                closeButton.onclick = function () {
+                    if (!socket || socket.readyState != WebSocket.OPEN) {
+                        alert("socket not connected");
+                    }
+                    socket.close(1000, "Closing from client");
                 }
-            });
 
-        sendButton.onclick = sendMessageHandler;
-        var connect = function () {
-            stateLabel.innerHTML = "Connecting";
-            socket = new WebSocket(connectionUrl.value);
-            socket.onopen = function (event) {
-                updateState();
-                commsLog.innerHTML += '<tr>' +
-                    '<td class="commslog-data">Connection opened</td>' +
-                    '</tr>';
-            };
+                var sendMessageHandler = function () {
+                    if (!socket || socket.readyState != WebSocket.OPEN) {
+                        alert("socket not connected");
+                    }
+                    var data = sendMessage.value;
+                    socket.send(JSON.stringify({ message: data }));
+                    commsLog.innerHTML += '<tr>' +
+                        '<td class="commslog-data">' +
+                        data +
+                        '</td>' +
+                        '</tr>';
+           
+                };
 
-            socket.onclose = function (event) {
-                updateState();
-                commsLog.innerHTML += '<tr>' +
-                    '<td class="commslog-data">Connection closed. Code: ' + event.code + '. Reason: ' + event.reason + '</td>' +
-                    '</tr>';
-            };
+                
+                var checkInput = function (inputText) {
+                    var letters = /^[\w\-\s]+$/;
+                    if (letters.test(inputText)) {
+                        return true;
+                    }
+                    else {
+                        alert('Please input alphanumeric characters only. No emails or special characters.');
+                        return false;
+                    }
+                }
+                
 
-            socket.onerror = updateState;
-            socket.onmessage = function (event) {
-                var obj = JSON.parse(event.data);
-                commsLog.innerHTML += '<tr>' +
-                    '<td class="commslog-data">' + obj.type + '<br /><pre>' + obj.text + '</pre></td>' +
-                    '</tr>';
-                window.scrollTo(0, document.body.scrollHeight);
-            };
-        };
-        connectButton.onclick = connect;
+                sendMessage.addEventListener('keyup',
+                    function (event) {
+                        if (event.keyCode == 13) {
+                            sendButton.click();
+                        }
+                    });
 
-        document.addEventListener("DOMContentLoaded",
-            function (event) {
-                connect();
-            });
-    </script>
+                sendButton.onclick = sendMessageHandler;
+                var connect = function () {
+                    stateLabel.innerHTML = "Connecting";
+                    socket = new WebSocket(connectionUrl.value);
+                    socket.onopen = function (event) {
+                        updateState();
+                        commsLog.innerHTML += '<tr>' +
+                            '<td class="commslog-data">Connection opened</td>' +
+                            '</tr>';
+                    };
+
+                    socket.onclose = function (event) {
+                        updateState();
+                        commsLog.innerHTML += '<tr>' +
+                            '<td class="commslog-data">Connection closed. Code: ' + event.code + '. Reason: ' + event.reason + '</td>' +
+                            '</tr>';
+                    };
+
+                    socket.onerror = updateState;
+                    socket.onmessage = function (event) {
+                        var obj = JSON.parse(event.data);
+                        commsLog.innerHTML += '<tr>' +
+                            '<td class="commslog-data">' + obj.type + '<br /><pre>' + obj.text + '</pre></td>' +
+                            '</tr>';
+                        window.scrollTo(0, document.body.scrollHeight);
+                    };
+                };
+                connectButton.onclick = connect;
+
+                document.addEventListener("DOMContentLoaded",
+                    function (event) {
+                        connect();
+                    });
+            </script>
+        </div>
+    </main>
 </body>
 </html>  
