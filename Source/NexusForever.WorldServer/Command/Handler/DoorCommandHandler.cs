@@ -4,10 +4,11 @@ using NexusForever.WorldServer.Command.Attributes;
 using NexusForever.WorldServer.Command.Contexts;
 using NexusForever.WorldServer.Game.Entity;
 using NexusForever.WorldServer.Game.Map.Search;
+using NexusForever.WorldServer.Game.Account.Static;
 
 namespace NexusForever.WorldServer.Command.Handler
 {
-    [Name("Door")]
+    [Name("Door", Permission.None)]
     public class DoorCommandHandler : CommandCategory
     {
         public DoorCommandHandler()
@@ -15,7 +16,7 @@ namespace NexusForever.WorldServer.Command.Handler
         {
         }
 
-        [SubCommandHandler("open", "[range] - Open all doors within a given range (Defaults to 10m).")]
+        [SubCommandHandler("open", "[range] - Open all doors within a given range (Defaults to 10m).", Permission.None)]
         public Task DoorOpenSubCommand(CommandContext context, string command, string[] parameters)
         {
             float searchRange = 10f;
@@ -39,7 +40,7 @@ namespace NexusForever.WorldServer.Command.Handler
             return Task.CompletedTask;
         }
 
-        [SubCommandHandler("close", "[range] - Close all doors within a given range (Defaults to 10m).")]
+        [SubCommandHandler("close", "[range] - Close all doors within a given range (Defaults to 10m).", Permission.None)]
         public Task DoorCloseSubCommand(CommandContext context, string command, string[] parameters)
         {
             float searchRange = 10f;

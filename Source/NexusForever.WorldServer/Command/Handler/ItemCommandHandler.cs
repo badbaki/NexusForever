@@ -9,11 +9,12 @@ using NexusForever.WorldServer.Game;
 using NexusForever.WorldServer.Game.Social;
 using NexusForever.WorldServer.Game.Social.Model;
 using NexusForever.WorldServer.Network.Message.Model.Shared;
+using NexusForever.WorldServer.Game.Account.Static;
 using NLog;
 
 namespace NexusForever.WorldServer.Command.Handler
 {
-    [Name("Items")]
+    [Name("Items", Permission.None)]
     public class ItemCommandHandler : CommandCategory
     {
         private static readonly ILogger log = LogManager.GetCurrentClassLogger();
@@ -23,7 +24,7 @@ namespace NexusForever.WorldServer.Command.Handler
         {
         }
 
-        [SubCommandHandler("add", "itemId [quantity] [charges] - Add an item to inventory, optionally specifying quantity and charges")]
+        [SubCommandHandler("add", "itemId [quantity] [charges] - Add an item to inventory, optionally specifying quantity and charges", Permission.CommandItemAdd)]
         public Task AddItemSubCommand(CommandContext context, string command, string[] parameters)
         {
             if (parameters.Length <= 0)
@@ -79,7 +80,7 @@ namespace NexusForever.WorldServer.Command.Handler
                 yield return item.LocalizedTextIdName;
         }
 
-        [SubCommandHandler("lookup", "itemName - Search for an item by name.")]
+        [SubCommandHandler("lookup", "itemName - Search for an item by name.", Permission.None)]
         public Task FindItemSubCommand(CommandContext context, string command, string[] parameters)
         {
             if (parameters.Length <= 0)

@@ -2,10 +2,11 @@ using System.Threading.Tasks;
 using NexusForever.Shared.GameTable;
 using NexusForever.WorldServer.Command.Attributes;
 using NexusForever.WorldServer.Command.Contexts;
+using NexusForever.WorldServer.Game.Account.Static;
 
 namespace NexusForever.WorldServer.Command.Handler
 {
-    [Name("Modify")]
+    [Name("Modify", Permission.None)]
     public class ModifyCommandHandler : CommandCategory
     {
         public ModifyCommandHandler()
@@ -13,7 +14,7 @@ namespace NexusForever.WorldServer.Command.Handler
         {
         }
 
-        [SubCommandHandler("displayInfo", "id - Change your look to match that of a creature.")]
+        [SubCommandHandler("displayInfo", "id - Change your look to match that of a creature.", Permission.PRCommands)]
         public async Task DisplayInfoSubCommandHandler(CommandContext context, string command, string[] parameters)
         {
             if (parameters.Length != 1)

@@ -6,10 +6,11 @@ using NexusForever.WorldServer.Command.Contexts;
 using NexusForever.WorldServer.Game.Entity;
 using NexusForever.WorldServer.Game.Map.Search;
 using NexusForever.WorldServer.Game.Spell;
+using NexusForever.WorldServer.Game.Account.Static;
 
 namespace NexusForever.WorldServer.Command.Handler
 {
-    [Name("Spell")]
+    [Name("Spell", Permission.None)]
     public class SpellCommandHandler : CommandCategory
     {
         public SpellCommandHandler()
@@ -17,7 +18,7 @@ namespace NexusForever.WorldServer.Command.Handler
         {
         }
 
-        [SubCommandHandler("add", "spell4BaseId - Add a spell to the character")]
+        [SubCommandHandler("add", "spell4BaseId - Add a spell to the character", Permission.CommandSpellAdd)]
         public Task AddSpellSubCommand(CommandContext context, string command, string[] parameters)
         {
             if (parameters.Length == 0)
@@ -27,7 +28,7 @@ namespace NexusForever.WorldServer.Command.Handler
             return Task.CompletedTask;
         }
 
-        [SubCommandHandler("cast", "spell4BaseId [tier] - Cast a spell, optionally supplying the tier")]
+        [SubCommandHandler("cast", "spell4BaseId [tier] - Cast a spell, optionally supplying the tier", Permission.CommandSpellCast)]
         public Task CastSpellSubCommand(CommandContext context, string command, string[] parameters)
         {
             if (parameters.Length == 0)
@@ -42,7 +43,7 @@ namespace NexusForever.WorldServer.Command.Handler
             return Task.CompletedTask;
         }
 
-        [SubCommandHandler("targetcast", "spell4Id - Make your target cast a spell")]
+        [SubCommandHandler("targetcast", "spell4Id - Make your target cast a spell", Permission.CommandSpellCast)]
         public Task TargetCastSpellSubCommand(CommandContext context, string command, string[] parameters)
         {
             if (parameters.Length == 0)
@@ -64,7 +65,7 @@ namespace NexusForever.WorldServer.Command.Handler
             return Task.CompletedTask;
         }
 
-        [SubCommandHandler("resetcooldown", "[spell4Id] - Reset a single spell cooldown, if no spell if supplyed all cooldowns will be reset")]
+        [SubCommandHandler("resetcooldown", "[spell4Id] - Reset a single spell cooldown, if no spell if supplyed all cooldowns will be reset", Permission.CommandSpellResetCooldowns)]
         public Task ResetCooldownSubCommand(CommandContext context, string command, string[] parameters)
         {
             if (parameters.Length > 0)

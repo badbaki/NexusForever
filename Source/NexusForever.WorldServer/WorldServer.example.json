@@ -43,6 +43,6 @@
   "Rules": {
     "CrossFactionChat": true
   },
-  "DefaultRole": 4,
+  "DefaultRole": 1,
   "MessageOfTheDay": ""
 }

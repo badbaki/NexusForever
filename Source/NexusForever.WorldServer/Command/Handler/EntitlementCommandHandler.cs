@@ -4,10 +4,11 @@ using NexusForever.WorldServer.Command.Attributes;
 using NexusForever.WorldServer.Command.Contexts;
 using NexusForever.WorldServer.Game.Entity;
 using NexusForever.WorldServer.Game.Entity.Static;
+using NexusForever.WorldServer.Game.Account.Static;
 
 namespace NexusForever.WorldServer.Command.Handler
 {
-    [Name("Entitlement")]
+    [Name("Entitlement", Permission.None)]
     public class EntitlementCommandHandler : CommandCategory
     {
         public EntitlementCommandHandler()
@@ -15,7 +16,7 @@ namespace NexusForever.WorldServer.Command.Handler
         {
         }
 
-        [SubCommandHandler("account", "entitlementId amount - Create or update account entitlement.")]
+        [SubCommandHandler("account", "entitlementId amount - Create or update account entitlement.", Permission.PRCommands)]
         public async Task EntitlementAccountCommandHandler(CommandContext context, string command, string[] parameters)
         {
             if (parameters.Length != 2
@@ -35,7 +36,7 @@ namespace NexusForever.WorldServer.Command.Handler
             context.Session.EntitlementManager.SetAccountEntitlement((EntitlementType)entitlementId, value);
         }
 
-        [SubCommandHandler("character", "entitlementId amount - Create or update character entitlement.")]
+        [SubCommandHandler("character", "entitlementId amount - Create or update character entitlement.", Permission.PRCommands)]
         public async Task EntitlementCharacterCommandHandler(CommandContext context, string command, string[] parameters)
         {
             if (parameters.Length != 2
@@ -55,7 +56,7 @@ namespace NexusForever.WorldServer.Command.Handler
             context.Session.EntitlementManager.SetCharacterEntitlement((EntitlementType)entitlementId, value);
         }
 
-        [SubCommandHandler("list", "List all entitlements for account and character.")]
+        [SubCommandHandler("list", "List all entitlements for account and character.", Permission.PRCommands)]
         public async Task EntitlementListCommandHandler(CommandContext context, string command, string[] parameters)
         {
             await context.SendMessageAsync($"Entitlements for account {context.Session.Account.Id}:");

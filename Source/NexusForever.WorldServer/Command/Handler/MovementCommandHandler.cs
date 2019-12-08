@@ -6,10 +6,11 @@ using NexusForever.WorldServer.Command.Contexts;
 using NexusForever.WorldServer.Game.Entity;
 using NexusForever.WorldServer.Game.Entity.Movement.Generator;
 using NexusForever.WorldServer.Game.Entity.Movement.Spline.Static;
+using NexusForever.WorldServer.Game.Account.Static;
 
 namespace NexusForever.WorldServer.Command.Handler
 {
-    [Name("Movement")]
+    [Name("Movement", Permission.None)]
     public class MovementCommandHandler : CommandCategory
     {
         private static readonly Dictionary<uint, List<Vector3>> entityNodes = new Dictionary<uint, List<Vector3>>();
@@ -19,7 +20,7 @@ namespace NexusForever.WorldServer.Command.Handler
         {
         }
 
-        [SubCommandHandler("direct", "")]
+        [SubCommandHandler("direct", "", Permission.CommandMovementSplineAdd)]
         public async Task DebugDirectGenerator(CommandContext context, string command, string[] parameters)
         {
             WorldEntity entity = context.Session.Player.GetVisible<WorldEntity>(context.Session.Player.TargetGuid);
@@ -39,7 +40,7 @@ namespace NexusForever.WorldServer.Command.Handler
             entity.MovementManager.LaunchGenerator(generator, 3f);
         }
 
-        [SubCommandHandler("random", "")]
+        [SubCommandHandler("random", "", Permission.CommandMovementSplineAdd)]
         public async Task DebugRandomGenerator(CommandContext context, string command, string[] parameters)
         {
             WorldEntity entity = context.Session.Player.GetVisible<WorldEntity>(context.Session.Player.TargetGuid);
@@ -60,7 +61,7 @@ namespace NexusForever.WorldServer.Command.Handler
             entity.MovementManager.LaunchGenerator(generator, 3f);
         }
 
-        [SubCommandHandler("splineadd", "")]
+        [SubCommandHandler("splineadd", "", Permission.CommandMovementSplineAdd)]
         public async Task DebugSplineAddCommandHandler(CommandContext context, string command, string[] parameters)
         {
             WorldEntity entity = context.Session.Player.GetVisible<WorldEntity>(context.Session.Player.TargetGuid);
@@ -82,7 +83,7 @@ namespace NexusForever.WorldServer.Command.Handler
             await context.SendMessageAsync($"Added spline node X:{position.X}, Y:{position.Y}, Z:{position.Z} to entity {entity.Guid}.");
         }
 
-        [SubCommandHandler("splineclear", "")]
+        [SubCommandHandler("splineclear", "", Permission.CommandMovementSplineClear)]
         public async Task DebugSplineClearCommandHandler(CommandContext context, string command, string[] parameters)
         {
             WorldEntity entity = context.Session.Player.GetVisible<WorldEntity>(context.Session.Player.TargetGuid);
@@ -99,7 +100,7 @@ namespace NexusForever.WorldServer.Command.Handler
             await context.SendMessageAsync($"Cleared {nodes.Count} spline nodes for entity {entity.Guid}.");
         }
 
-        [SubCommandHandler("splinelaunch", "")]
+        [SubCommandHandler("splinelaunch", "", Permission.CommandMovementSplineLaunch)]
         public async Task DebugSplineLaunchCommandHandler(CommandContext context, string command, string[] parameters)
         {
             if (parameters.Length != 0 && parameters.Length != 2)

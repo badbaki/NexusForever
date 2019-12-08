@@ -6,10 +6,11 @@ using NexusForever.WorldServer.Command.Contexts;
 using NexusForever.WorldServer.Network;
 using NexusForever.WorldServer.Network.Message.Model;
 using NexusForever.WorldServer.Network.Message.Model.Shared;
+using NexusForever.WorldServer.Game.Account.Static;
 
 namespace NexusForever.WorldServer.Command.Handler
 {
-    [Name("Broadcast")]
+    [Name("Broadcast", Permission.CommandBroadcast)]
     public class BroadcastHandler : NamedCommand
     {
         public BroadcastHandler()

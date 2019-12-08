@@ -72,6 +72,8 @@ namespace NexusForever.WorldServer
             EntityCacheManager.Instance.Initialise();
             GlobalMovementManager.Instance.Initialise();
 
+            RoleManager.Initialise();
+
             AssetManager.Instance.Initialise();
             PrerequisiteManager.Instance.Initialise();
             GlobalSpellManager.Instance.Initialise();

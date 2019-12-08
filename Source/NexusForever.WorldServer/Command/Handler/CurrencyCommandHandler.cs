@@ -7,10 +7,11 @@ using NexusForever.WorldServer.Command.Attributes;
 using NexusForever.WorldServer.Command.Contexts;
 using NexusForever.WorldServer.Game.Entity;
 using NexusForever.WorldServer.Game.Entity.Static;
+using NexusForever.WorldServer.Game.Account.Static;
 
 namespace NexusForever.WorldServer.Command.Handler
 {
-    [Name("Currency")]
+    [Name("Currency", Permission.None)]
     public class CurrencyCommandHandler : CommandCategory
     {
         public CurrencyCommandHandler()
@@ -18,7 +19,7 @@ namespace NexusForever.WorldServer.Command.Handler
         {
         }
 
-        [SubCommandHandler("add", "currencyId amount - Adds currency to character.")]
+        [SubCommandHandler("add", "currencyId amount - Adds currency to character.", Permission.None)]
         public Task AddSubCommand(CommandContext context, string command, string[] parameters)
         {
             if (parameters.Length != 2)
@@ -50,7 +51,7 @@ namespace NexusForever.WorldServer.Command.Handler
             return Task.CompletedTask;
         }
 
-        [SubCommandHandler("list", "Lists currency IDs and names")]
+        [SubCommandHandler("list", "Lists currency IDs and names", Permission.None)]
         public Task ListSubCommand(CommandContext context, string command, string[] parameters)
         {
             foreach (var entry in GameTableManager.Instance.CurrencyType.Entries)

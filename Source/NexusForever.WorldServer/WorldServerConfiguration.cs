@@ -32,6 +32,7 @@ namespace NexusForever.WorldServer
         public MapConfig Map { get; set; }
         public bool UseCache { get; set; } = false;
         public ushort RealmId { get; set; }
+        public ulong DefaultRole { get; set; } = 1;
         public uint LengthOfInGameDay { get; set; }
         public RulesConfig Rules { get; set; } = new RulesConfig();
         public string MessageOfTheDay { get; set; } = "";

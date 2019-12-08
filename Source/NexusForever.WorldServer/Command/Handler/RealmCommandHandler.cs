@@ -9,10 +9,11 @@ using NexusForever.WorldServer.Command.Contexts;
 using NexusForever.WorldServer.Game.Social;
 using NexusForever.WorldServer.Network;
 using NexusForever.WorldServer.Network.Message.Model.Shared;
+using NexusForever.WorldServer.Game.Account.Static;
 
 namespace NexusForever.WorldServer.Command.Handler
 {
-    [Name("Realm Management")]
+    [Name("Realm Management", Permission.None)]
     public class RealmCommandHandler : CommandCategory
     {
         public RealmCommandHandler()
@@ -20,7 +21,7 @@ namespace NexusForever.WorldServer.Command.Handler
         {
         }
 
-        [SubCommandHandler("motd", "message - Set the realm's Message of the Day and announce to the realm")]
+        [SubCommandHandler("motd", "message - Set the realm's Message of the Day and announce to the realm", Permission.ModMe)]
         public async Task HandleMotd(CommandContext context, string subCommand, string[] parameters)
         {
             if (parameters.Length < 1)
@@ -39,8 +40,8 @@ namespace NexusForever.WorldServer.Command.Handler
             await context.SendMessageAsync($"MOTD Updated!");
         }
 
-        [SubCommandHandler("online", "Displays the users online")]
-        [SubCommandHandler("o", "Displays the users online")]
+        [SubCommandHandler("online", "Displays the users online", Permission.ModMe)]
+        [SubCommandHandler("o", "Displays the users online", Permission.ModMe)]
         public async Task HandleOnlineCheck(CommandContext context, string subCommand, string[] parameters)
         {
             List<WorldSession> allSessions = NetworkManager<WorldSession>.Instance.GetSessions().ToList();
@@ -65,7 +66,7 @@ namespace NexusForever.WorldServer.Command.Handler
             await Task.CompletedTask;
         }
 
-        [SubCommandHandler("uptime", "Displaye the current uptime of the server.")]
+        [SubCommandHandler("uptime", "Displaye the current uptime of the server.", Permission.ModMe)]
         public async Task HandleUptimeCheck(CommandContext context, string subCommand, string[] parameters)
         {
             await context.SendMessageAsync($"Currently up for {WorldServer.Uptime:%d}d {WorldServer.Uptime:%h}h {WorldServer.Uptime:%m}m {WorldServer.Uptime:%s}s");

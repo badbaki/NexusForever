@@ -1,14 +1,21 @@
+using System.Collections.Generic;
+using System.Linq;
 using System.Numerics;
 using System.Threading.Tasks;
 using NexusForever.Shared;
 using NexusForever.Shared.GameTable;
 using NexusForever.Shared.GameTable.Model;
+using NexusForever.Shared.Network;
 using NexusForever.WorldServer.Command.Attributes;
 using NexusForever.WorldServer.Command.Contexts;
+using NexusForever.WorldServer.Game.Account.Static;
+using NexusForever.WorldServer.Game.Social;
+using NexusForever.WorldServer.Network;
+using NexusForever.WorldServer.Network.Message.Model;
 
 namespace NexusForever.WorldServer.Command.Handler
 {
-    [Name("Teleport")]
+    [Name("Teleport", Permission.CommandTeleport)]
     public class TeleportCommandHandler : CommandCategory
     {
         public TeleportCommandHandler()
@@ -16,7 +23,7 @@ namespace NexusForever.WorldServer.Command.Handler
         {
         }
 
-        [SubCommandHandler("coordinates", "x, y, z, [worldId] - Teleport to the specified coordinates optionally specifying the world.")]
+        [SubCommandHandler("coordinates", "x, y, z, [worldId] - Teleport to the specified coordinates optionally specifying the world.", Permission.CommandTeleport)]
         public async Task TeleportCoordinatesSubCommandHandler(CommandContext context, string command, string[] parameters)
         {
             if (parameters.Length < 3 || parameters.Length > 4
@@ -43,7 +50,7 @@ namespace NexusForever.WorldServer.Command.Handler
                 context.Session.Player.TeleportTo((ushort)context.Session.Player.Map.Entry.Id, x, y, z);
         }
 
-        [SubCommandHandler("location", "worldLocation2Id - Teleport to the specified world location.")]
+        [SubCommandHandler("location", "worldLocation2Id - Teleport to the specified world location.", Permission.CommandTeleport)]
         public async Task TeleportLocationSubCommandHandler(CommandContext context, string command, string[] parameters)
         {
             if (parameters.Length != 1 || !uint.TryParse(parameters[0], out uint worldLocation2Id))
@@ -62,6 +69,46 @@ namespace NexusForever.WorldServer.Command.Handler
             var rotation = new Quaternion(entry.Facing0, entry.Facing1, entry.Facing2, entry.Facing3);
             context.Session.Player.Rotation = rotation.ToEulerDegrees();
             context.Session.Player.TeleportTo((ushort)entry.WorldId, entry.Position0, entry.Position1, entry.Position2);
+        }
+        [SubCommandHandler("to", "playername - teleport to another player's location.", Permission.CommandTeleport)]
+        public async Task TeleportToSubCommandHandler(CommandContext context, string command, string[] parameters)
+        {
+            //find online players to teleport to
+            List<WorldSession> allSessions = NetworkManager<WorldSession>.Instance.GetSessions().ToList();
+            string name = string.Join(" ", parameters);
+
+            if (name != "")
+            {
+                foreach (WorldSession whoSession in allSessions)
+                {
+                    if (whoSession.Player == null)
+                        continue;
+
+                    if (whoSession.Player.IsLoading)
+                        continue;
+
+                    if (whoSession.Player.Zone == null)
+                        continue;
+
+                    if (whoSession.Player.Name == name)
+                    {
+                        if (whoSession.Player.Map.Entry.Id == 1229)
+                        {
+                            await context.SendMessageAsync($"{name} is on their house plot! Try using !house teleport {name} instead!");
+                        }
+                        else
+                            context.Session.Player.TeleportTo((ushort)whoSession.Player.Map.Entry.Id, whoSession.Player.Position.X, whoSession.Player.Position.Y + 2, whoSession.Player.Position.Z);
+                    }
+                    else
+                    {
+                        //do nothing
+                    }
+
+                }
+            }
+            else
+                await context.SendMessageAsync($"Name not valid.");
+
         }
     }
 }
