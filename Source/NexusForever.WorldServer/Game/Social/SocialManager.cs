@@ -164,7 +164,7 @@ namespace NexusForever.WorldServer.Game.Social
         [ChatChannelHandler(ChatChannel.Say)]
         [ChatChannelHandler(ChatChannel.Yell)]
         [ChatChannelHandler(ChatChannel.Emote)]
-        public static void HandleLocalChat(WorldSession session, ClientChat chat)
+        private static void HandleLocalChat(WorldSession session, ClientChat chat)
         {
             var serverChat = new ServerChat
             {
