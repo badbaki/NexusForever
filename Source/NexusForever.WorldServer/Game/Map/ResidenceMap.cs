@@ -29,7 +29,8 @@ namespace NexusForever.WorldServer.Game.Map
         {
             base.Initialise(info, player);
 
-            IsStatic = true;
+            IsStatic = false;
+            //Stops residence maps from updating if set to true. 
 
             if (info.ResidenceId != 0u)
             {
