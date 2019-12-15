@@ -29,7 +29,6 @@ namespace NexusForever.WorldServer.Game.Entity
             PlugEntry = plugEntry;
         }
 
-
         public override void Initialise(WorldEntityModel model)
         {
             PlugId = (ushort)model.Creature;
@@ -41,8 +40,8 @@ namespace NexusForever.WorldServer.Game.Entity
         {
             return new PlugModel
             {
-                SocketId  = (ushort)PlotEntry.WorldSocketId,
-                PlugId    = (ushort)PlugEntry.WorldIdPlug00,
+                SocketId = (ushort)(PlotEntry?.WorldSocketId ?? WorldSocketId),
+                PlugId = (ushort)(PlugEntry?.WorldIdPlug02 ?? PlugId),
                 PlugFlags = 63
             };
         }
@@ -60,7 +59,7 @@ namespace NexusForever.WorldServer.Game.Entity
         {
             if (ReplacementPlug != null)
             {
-                Map.EnqueueAdd(ReplacementPlug, Position);
+                Map.EnqueueAdd(ReplacementPlug, Vector3.Zero);
                 ReplacementPlug = null;
             }
 

@@ -30,7 +30,6 @@ namespace NexusForever.WorldServer.Game.Map
             base.Initialise(info, player);
 
             IsStatic = true;
-            //Stops residence maps from updating if set to true. 
 
             if (info.ResidenceId != 0u)
             {
@@ -409,7 +408,6 @@ namespace NexusForever.WorldServer.Game.Map
                 });
             }
         }
-
 
         private void DecorDelete(ClientHousingDecorUpdate.DecorUpdate update)
         {

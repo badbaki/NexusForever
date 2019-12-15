@@ -481,12 +481,9 @@ namespace NexusForever.WorldServer.Game.Housing
                 { 86, 17 },     // Spacious Exile Human House
                 { 291, 27 },    // Spacious Granok House
                 { 530, 32 },    // Underground Bunker
-                { 534, 34 },    // Blackhole House - additional houses - BAKI
-                { 543, 35 },    // Osun House
-                { 554, 37 },    // Bird house
-                { 557, 25 }     // Royal Piglet
+                { 534, 34 },    // Blackhole House
+                { 543, 35 }     // Osun House
             };
-
         /// <summary>
         /// Returns a <see cref="HousingResidenceInfoEntry"/> ID if the plug ID is known.
         /// </summary>
@@ -516,6 +513,7 @@ namespace NexusForever.WorldServer.Game.Housing
 
         /// <summary>
         /// Return <see cref="Plot"/> that matches the supploed Plot Info ID.
+        /// /// </summary>
         public Plot GetPlot(uint plotInfoId)
         {
             return plots.FirstOrDefault(i => i.PlotEntry.Id == plotInfoId);
