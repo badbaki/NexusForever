@@ -133,10 +133,6 @@ namespace NexusForever.WorldServer.Game.Entity
         public WorldSession Session { get; }
         public bool IsLoading { get; private set; } = true;
 
-        /// <summary>
-        /// Returns a <see cref="float"/> representing decimal value, in days, since Player was last online. Used by <see cref="ICharacter"/>.
-        /// </summary>
-        public float GetOnlineStatus() => 0f;
 
         public Inventory Inventory { get; }
         public CurrencyManager CurrencyManager { get; }
@@ -203,6 +199,10 @@ namespace NexusForever.WorldServer.Game.Entity
             }
         }
         private GuildHolomark guildHolomarkMask;
+        /// <summary>
+        /// Returns a <see cref="float"/> representing decimal value, in days, since Player was last online. Used by <see cref="ICharacter"/>.
+        /// </summary>
+        public float GetOnlineStatus() => 0f;
 
         public Player(WorldSession session, Character model)
             : base(EntityType.Player)
@@ -289,6 +289,9 @@ namespace NexusForever.WorldServer.Game.Entity
             SetStat(Stat.Shield, 450u);
 
             CharacterManager.Instance.RegisterPlayer(this);
+            GuildManager.OnPlayerLogin(Session, this);
+
+            CharacterManager.Instance.RegisterPlayer(this);
         }
 
         public override void BuildBaseProperties()
@@ -298,8 +301,9 @@ namespace NexusForever.WorldServer.Game.Entity
             {
                 float value = propertyValue.Value; // Intentionally copying value so that the PropertyValue does not get modified inside AssetManager
 
-                if (propertyValue.Property == Property.BaseHealth || propertyValue.Property == Property.AssaultRating || propertyValue.Property == Property.SupportRating)
-                    value *= Level;
+                //comment out for now - BAKI
+                /*if (propertyValue.Property == Property.BaseHealth || propertyValue.Property == Property.AssaultRating || propertyValue.Property == Property.SupportRating)
+                    value *= Level;*/
 
                 SetBaseProperty(propertyValue.Property, value);
             }
@@ -660,7 +664,7 @@ namespace NexusForever.WorldServer.Game.Entity
         /// <summary>
         /// Start delayed logout with optional supplied time and <see cref="LogoutReason"/>.
         /// </summary>
-        public void LogoutStart(double timeToLogout = 30d, LogoutReason reason = LogoutReason.None, bool requested = true)
+        public void LogoutStart(double timeToLogout = 3d, LogoutReason reason = LogoutReason.None, bool requested = true)
         {
             if (logoutManager != null)
                 return;

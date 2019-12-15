@@ -43,15 +43,16 @@ namespace NexusForever.WorldServer.Database.Character.Model
         public virtual DbSet<CharacterTitle> CharacterTitle { get; set; }
         public virtual DbSet<CharacterZonemapHexgroup> CharacterZonemapHexgroup { get; set; }
         public virtual DbSet<Contacts> Contacts { get; set; }
+        public virtual DbSet<Guild> Guild { get; set; }
+        public virtual DbSet<GuildRank> GuildRank { get; set; }
+        public virtual DbSet<GuildMember> GuildMember { get; set; }
+        public virtual DbSet<GuildData> GuildData { get; set; }
         public virtual DbSet<Item> Item { get; set; }
         public virtual DbSet<PropertyBase> PropertyBase { get; set; }
         public virtual DbSet<Residence> Residence { get; set; }
         public virtual DbSet<ResidenceDecor> ResidenceDecor { get; set; }
         public virtual DbSet<ResidencePlot> ResidencePlot { get; set; }
-        public virtual DbSet<Guild> Guild { get; set; }
-        public virtual DbSet<GuildRank> GuildRank { get; set; }
-        public virtual DbSet<GuildMember> GuildMember { get; set; }
-        public virtual DbSet<GuildData> GuildData { get; set; }
+        
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

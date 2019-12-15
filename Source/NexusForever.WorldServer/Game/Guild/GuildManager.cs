@@ -46,13 +46,13 @@ namespace NexusForever.WorldServer.Game.Guild
         private static readonly HashSet<GuildBase> deletedGuilds = new HashSet<GuildBase>();
         private static readonly Dictionary<GuildType, uint> maxGuildSize = new Dictionary<GuildType, uint>
         {
-            { GuildType.Guild, 40u },
-            { GuildType.Circle, 20u },
+            { GuildType.Guild, 400u },
+            { GuildType.Circle, 200u },
             { GuildType.ArenaTeam5v5, 9u },
             { GuildType.ArenaTeam3v3, 5u },
             { GuildType.ArenaTeam2v2, 3u },
             { GuildType.WarParty, 80u},
-            { GuildType.Community, 5u }
+            { GuildType.Community, 20u }
         };
 
         private static double timeToSave = SaveDuration;
