@@ -35,7 +35,7 @@ namespace NexusForever.WorldServer.Command.Handler
 
             WorldLocation2Entry zone = SearchManager.Instance.Search<WorldLocation2Entry>(zoneName, context.Language, GetTextIds).FirstOrDefault();
 
-            if (zoneName.ToLower() == "home")
+            if (zoneName.ToLower() == "home")//Go Home -BAKI
             {
                 Residence residence = ResidenceManager.Instance.GetResidence(context.Session.Player.Name).GetAwaiter().GetResult();
                 if (residence == null)

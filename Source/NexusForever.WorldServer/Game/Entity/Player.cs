@@ -452,12 +452,15 @@ namespace NexusForever.WorldServer.Game.Entity
 
                 TextTable tt = GameTableManager.Instance.GetTextTable(Language.English);
 
+                //shhh zone spam - BAKI
+                /*
                 Session.EnqueueMessageEncrypted(new ServerChat
                 {
                     Guid    = Session.Player.Guid,
                     Channel = ChatChannel.System,
                     Text    = $"New Zone: ({Zone.Id}){tt.GetEntry(Zone.LocalizedTextIdName)}"
                 });
+                */
 
                 uint tutorialId = AssetManager.Instance.GetTutorialIdForZone(Zone.Id);
                 if (tutorialId > 0)
@@ -502,7 +505,7 @@ namespace NexusForever.WorldServer.Game.Entity
                     {
                         Id    = RewardProperty.ExtraDecorSlots,
                         Type  = 1,
-                        Value = 2000
+                        Value = 20000 //not that it stops ppl anywayyyyy -BAKI
                     },
                     new ServerRewardPropertySet.RewardProperty
                     {
@@ -664,10 +667,13 @@ namespace NexusForever.WorldServer.Game.Entity
         /// <summary>
         /// Start delayed logout with optional supplied time and <see cref="LogoutReason"/>.
         /// </summary>
-        public void LogoutStart(double timeToLogout = 3d, LogoutReason reason = LogoutReason.None, bool requested = true)
+        public void LogoutStart(double timeToLogout = 3d, LogoutReason reason = LogoutReason.None, bool requested = true) //Set to 3seconds - BAKI
         {
             if (logoutManager != null)
                 return;
+            //Dismount when logging out - BAKI
+            if (VehicleGuid != 0u)
+                Dismount();
 
             logoutManager = new LogoutManager(timeToLogout, reason, requested);
 

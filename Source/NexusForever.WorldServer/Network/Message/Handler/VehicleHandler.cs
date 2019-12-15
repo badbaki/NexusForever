@@ -10,6 +10,7 @@ namespace NexusForever.WorldServer.Network.Message.Handler
         [MessageHandler(GameMessageOpcode.ClientVehicleDisembark)]
         public static void HandleVehicleDisembark(WorldSession session, ClientVehicleDisembark disembark)
         {
+            //comment out since it causes client DC with ground mounts - BAKI
             //if (session.Player.VehicleGuid == 0u)
                 //throw new InvalidPacketValueException();
 

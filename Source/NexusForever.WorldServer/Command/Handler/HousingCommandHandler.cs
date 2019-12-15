@@ -8,6 +8,8 @@ using NexusForever.WorldServer.Game;
 using NexusForever.WorldServer.Game.Housing;
 using NexusForever.WorldServer.Game.Map;
 using NexusForever.WorldServer.Game.Account.Static;
+using NexusForever.WorldServer.Network.Message.Model;
+using NexusForever.WorldServer.Game.Housing.Static;
 
 namespace NexusForever.WorldServer.Command.Handler
 {
@@ -86,6 +88,45 @@ namespace NexusForever.WorldServer.Command.Handler
             }
 
             context.SendMessageAsync(sw.ToString());
+            return Task.CompletedTask;
+        }
+
+        [SubCommandHandler("remodel", "remodelType remodelId - Change ground/sky or toggle clutter", Permission.None)] //BAKI
+        public Task RemodelSubCommandHandler(CommandContext context, string command, string[] parameters)
+        {
+
+            //remodel
+            ClientHousingRemodel clientRemod = new ClientHousingRemodel();
+            if (!(context.Session.Player.Map is ResidenceMap residenceMap))
+            {
+                context.SendMessageAsync("You need to be on a housing map to use this command!");
+                return Task.CompletedTask;
+            }
+
+            Residence residence = ResidenceManager.Instance.GetResidence(context.Session.Player.Name).GetAwaiter().GetResult();
+
+            //probably could use some better checks/message when they enter a wrong value
+            if (parameters[0].ToLower() == "clutter")
+            {
+                if (parameters[1].ToLower() == "off")
+                {
+                    residence.Flags = ResidenceFlags.groundClutterOff;
+                }
+                else if (parameters[1].ToLower() == "on")
+                {
+                    residence.Flags = 0;
+                }
+            }
+            else if (parameters[0].ToLower() == "ground")
+            {
+                residence.Ground = ushort.Parse(parameters[1]);
+            }
+            else if (parameters[0].ToLower() == "sky")
+            {
+                residence.Sky = ushort.Parse(parameters[1]);
+            }
+
+            residenceMap.Remodel(context.Session.Player, clientRemod);
             return Task.CompletedTask;
         }
     }

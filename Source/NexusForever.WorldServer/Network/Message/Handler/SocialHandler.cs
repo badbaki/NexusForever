@@ -66,7 +66,7 @@ namespace NexusForever.WorldServer.Network.Message.Handler
             });
         }
 
-        [MessageHandler(GameMessageOpcode.ClientWhoRequest)]
+        [MessageHandler(GameMessageOpcode.ClientWhoRequest)] //Fix /who - BAKI
         public static void HandleWhoRequest(WorldSession session, ClientWhoRequest request)
         {
             List<ServerWhoResponse.WhoPlayer> players = new List<ServerWhoResponse.WhoPlayer>();

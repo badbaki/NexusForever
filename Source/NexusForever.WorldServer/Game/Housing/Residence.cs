@@ -481,7 +481,7 @@ namespace NexusForever.WorldServer.Game.Housing
                 { 86, 17 },     // Spacious Exile Human House
                 { 291, 27 },    // Spacious Granok House
                 { 530, 32 },    // Underground Bunker
-                { 534, 34 },    // Blackhole House
+                { 534, 34 },    // Blackhole House - additional houses - BAKI
                 { 543, 35 },    // Osun House
                 { 554, 37 },    // Bird house
                 { 557, 25 }     // Royal Piglet

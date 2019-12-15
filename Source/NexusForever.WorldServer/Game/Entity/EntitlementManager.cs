@@ -139,7 +139,8 @@ namespace NexusForever.WorldServer.Game.Entity
                 Count       = entitlement.Amount
             });
         }
-
+         
+        //Altered to change value, not add/subtract to it - BAKI
         private static T SetEntitlement<T>(IDictionary<EntitlementType, T> collection, EntitlementEntry entry, int value, Func<T> creator)
             where T : Entitlement
         {
@@ -156,13 +157,13 @@ namespace NexusForever.WorldServer.Game.Entity
             }
             else
             {
-                if (value > 0 && entitlement.Amount + (uint)value > entry.MaxCount)
+                if (value > 0 && (uint)value > entry.MaxCount)
                     throw new ArgumentException($"Failed to update entitlement {entry.Id}, incrementing by {value} exceeds max value!");
 
-                if (value < 0 && (int)entitlement.Amount + value < 0)
+                if (value < 0)
                     throw new ArgumentException($"Failed to update entitlement {entry.Id}, decrementing by {value} subceeds 0!");
 
-                entitlement.Amount = (uint)((int)entitlement.Amount + value);
+                entitlement.Amount = (uint)value;
             }
 
             return entitlement;

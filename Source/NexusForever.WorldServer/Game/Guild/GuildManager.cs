@@ -46,7 +46,7 @@ namespace NexusForever.WorldServer.Game.Guild
         private static readonly HashSet<GuildBase> deletedGuilds = new HashSet<GuildBase>();
         private static readonly Dictionary<GuildType, uint> maxGuildSize = new Dictionary<GuildType, uint>
         {
-            { GuildType.Guild, 400u },
+            { GuildType.Guild, 400u }, //Increase guild type limits - BAKI
             { GuildType.Circle, 200u },
             { GuildType.ArenaTeam5v5, 9u },
             { GuildType.ArenaTeam3v3, 5u },

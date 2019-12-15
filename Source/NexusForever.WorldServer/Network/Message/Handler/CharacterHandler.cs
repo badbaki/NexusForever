@@ -288,11 +288,31 @@ namespace NexusForever.WorldServer.Network.Message.Handler
                     });
                 }
 
-                //TODO: handle starting locations per race
-                character.LocationX = -7683.809f;
-                character.LocationY = -942.5914f;
-                character.LocationZ = -666.6343f;
-                character.WorldId = 870;
+                //TODO: handle starting locations per race - Plopping down in major cities - BAKI
+                if (character.FactionId == 167)
+                {
+                    //Thayd
+                    character.LocationX = 4074.697f;
+                    character.LocationY = -802f;
+                    character.LocationZ = -2335.935f;
+                    character.WorldId = 51;
+                }
+                else if (character.FactionId == 166)
+                {
+                    //Illium
+                    character.LocationX = -3397.079f;
+                    character.LocationY = -889f;
+                    character.LocationZ = -703.5098f;
+                    character.WorldId = 22;
+                }
+                else
+                {
+                    //Wigwalli Village
+                    character.LocationX = 3459.123f;
+                    character.LocationY = -941f;
+                    character.LocationZ = -448.7984f;
+                    character.WorldId = 51;
+                }
 
                 character.ActiveSpec = 0;
 

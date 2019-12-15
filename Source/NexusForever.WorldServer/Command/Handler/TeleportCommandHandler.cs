@@ -70,7 +70,7 @@ namespace NexusForever.WorldServer.Command.Handler
             context.Session.Player.Rotation = rotation.ToEulerDegrees();
             context.Session.Player.TeleportTo((ushort)entry.WorldId, entry.Position0, entry.Position1, entry.Position2);
         }
-        [SubCommandHandler("to", "playername - teleport to another player's location.", Permission.CommandTeleport)]
+        [SubCommandHandler("to", "playername - teleport to another player's location.", Permission.CommandTeleport)] //Teleport to - Baki
         public async Task TeleportToSubCommandHandler(CommandContext context, string command, string[] parameters)
         {
             //find online players to teleport to

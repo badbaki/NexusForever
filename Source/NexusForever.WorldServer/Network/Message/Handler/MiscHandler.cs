@@ -1,9 +1,18 @@
 using System;
+using System.Collections.Generic;
+using NexusForever.Shared.Game.Events;
 using NexusForever.Shared.Network;
 using NexusForever.Shared.Network.Message;
-using NexusForever.WorldServer.Game.Contact.Static;
-using NexusForever.WorldServer.Game.Entity.Static;
+using NexusForever.WorldServer.Database.Character;
+using NexusForever.WorldServer.Database.Character.Model;
+using NexusForever.WorldServer.Game.Account;
+using NexusForever.WorldServer.Game.Account.Static;
 using NexusForever.WorldServer.Game.CharacterCache;
+using NexusForever.WorldServer.Game.Contact.Static;
+using NexusForever.WorldServer.Game.Entity;
+using NexusForever.WorldServer.Game.Entity.Static;
+using NexusForever.WorldServer.Game.Map.Search;
+using NexusForever.WorldServer.Game.Social;
 using NexusForever.WorldServer.Network.Message.Model;
 using NexusForever.WorldServer.Network.Message.Model.Shared;
 
@@ -11,6 +20,8 @@ namespace NexusForever.WorldServer.Network.Message.Handler
 {
     public static class MiscHandler
     {
+        private const float LocalChatDistace = 155f;
+
         [MessageHandler(GameMessageOpcode.ClientPing)]
         public static void HandlePing(WorldSession session, ClientPing ping)
         {
@@ -72,14 +83,31 @@ namespace NexusForever.WorldServer.Network.Message.Handler
             session.Player.Sheathed = toggleWeapons.ToggleState;
         }
 
-        [MessageHandler(GameMessageOpcode.ClientRandomRollRequest)]
+        [MessageHandler(GameMessageOpcode.ClientRandomRollRequest)] //Fix Roll - BAKI
         public static void HandleRandomRoll(WorldSession session, ClientRandomRollRequest randomRoll)
         {
-            if ( randomRoll.MinRandom > randomRoll.MaxRandom)
+            if (randomRoll.MinRandom > randomRoll.MaxRandom)
                 throw new InvalidPacketValueException();
 
             if (randomRoll.MaxRandom > 1000000u)
                 throw new InvalidPacketValueException();
+            int RandRollResult = new Random().Next((int)randomRoll.MinRandom, (int)randomRoll.MaxRandom);
+
+            ServerChat rChat = new ServerChat
+            {
+                Guid = session.Player.Guid,
+                Channel = ChatChannel.Emote,
+                Text = $"(({session.Player.Name} rolls {RandRollResult} (1-{randomRoll.MaxRandom})))"
+            };
+
+            session.Player.Map.Search(
+                session.Player.Position,
+                LocalChatDistace,
+                new SearchCheckRangePlayerOnly(session.Player.Position, LocalChatDistace, session.Player),
+                out List<GridEntity> intersectedEntities
+            );
+
+            intersectedEntities.ForEach(e => ((Player)e).Session.EnqueueMessageEncrypted(rChat));
 
             session.EnqueueMessageEncrypted(new ServerRandomRollResponse
             {
@@ -90,7 +118,7 @@ namespace NexusForever.WorldServer.Network.Message.Handler
                 },
                 MinRandom = randomRoll.MinRandom,
                 MaxRandom = randomRoll.MaxRandom,
-                RandomRollResult = new Random().Next((int)randomRoll.MinRandom, (int)randomRoll.MaxRandom)
+                RandomRollResult = RandRollResult
             });
         }
     }
