@@ -55,10 +55,20 @@ namespace NexusForever.WorldServer.Command.Handler
             Creature2DisplayGroupEntryEntry displayGroupEntry = GameTableManager.Instance.Creature2DisplayGroupEntry.Entries.FirstOrDefault(d => d.Creature2DisplayGroupId == creature2.Creature2DisplayGroupId);
             if (displayGroupEntry == null)
                 return Task.CompletedTask;
+            
+            Creature2OutfitGroupEntryEntry outfitGroupEntry = GameTableManager.Instance.Creature2OutfitGroupEntry.Entries.FirstOrDefault(d => d.Creature2OutfitGroupId == creature2.Creature2OutfitGroupId);
 
-            context.Session.Player.SetDisplayInfo(displayGroupEntry.Creature2DisplayInfoId);
+            if (outfitGroupEntry != null)
+            {
+                context.Session.Player.SetDisplayInfo(displayGroupEntry.Creature2DisplayInfoId, outfitGroupEntry.Creature2OutfitInfoId);
+            }
+            else
+            {
+                context.Session.Player.SetDisplayInfo(displayGroupEntry.Creature2DisplayInfoId);
+            }
             return Task.CompletedTask;
         }
+
 
         [SubCommandHandler("clear", "clears player disguise", Permission.PRCommands)]
         public Task ClearSubCommandHandler(CommandContext context, string command, string[] parameters)

@@ -75,7 +75,7 @@ namespace NexusForever.WorldServer.Command.Handler
             return Task.CompletedTask;
         }
 
-        [SubCommandHandler("clear", "Empties the players bag.", Permission.PRCommands)]
+        [SubCommandHandler("clear", "Empties the players bag.", Permission.PRCommands)] // BAKI
         public Task ClearItemSubCommand(CommandContext context, string command, string[] parameters)
         {
 

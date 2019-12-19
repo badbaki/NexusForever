@@ -642,6 +642,22 @@ namespace NexusForever.WorldServer.Game.Entity
         }
 
         /// <summary>
+        /// Update the display info for the <see cref="WorldEntity"/>, this overrides any other appearance changes. Includes outfit - BAKI
+        /// </summary>
+        public void SetDisplayInfo(uint displayInfo, uint outfitInfo)
+        {
+            DisplayInfo = displayInfo;
+            OutfitInfo = (ushort)outfitInfo;
+
+            EnqueueToVisible(new ServerEntityVisualUpdate
+            {
+                UnitId = Guid,
+                DisplayInfo = DisplayInfo,
+                OutfitInfo = OutfitInfo
+            }, true);
+        }
+
+        /// <summary>
         /// Enqueue broadcast of <see cref="IWritable"/> to all visible <see cref="Player"/>'s in range.
         /// </summary>
         public void EnqueueToVisible(IWritable message, bool includeSelf = false)

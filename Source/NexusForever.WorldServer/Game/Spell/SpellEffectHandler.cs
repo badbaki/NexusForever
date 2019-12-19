@@ -93,8 +93,17 @@ namespace NexusForever.WorldServer.Game.Spell
             Creature2DisplayGroupEntryEntry displayGroupEntry = GameTableManager.Instance.Creature2DisplayGroupEntry.Entries.FirstOrDefault(d => d.Creature2DisplayGroupId == creature2.Creature2DisplayGroupId);
             if (displayGroupEntry == null)
                 return;
+            //Handle for outfits - BAKI
+            Creature2OutfitGroupEntryEntry outfitGroupEntry = GameTableManager.Instance.Creature2OutfitGroupEntry.Entries.FirstOrDefault(d => d.Creature2OutfitGroupId == creature2.Creature2OutfitGroupId);
 
-            player.SetDisplayInfo(displayGroupEntry.Creature2DisplayInfoId);
+            if (outfitGroupEntry != null)
+            {
+                player.SetDisplayInfo(displayGroupEntry.Creature2DisplayInfoId, outfitGroupEntry.Creature2OutfitInfoId);
+            }
+            else
+            {
+                player.SetDisplayInfo(displayGroupEntry.Creature2DisplayInfoId);
+            }
         }
 
         [SpellEffectHandler(SpellEffectType.SummonMount)]
