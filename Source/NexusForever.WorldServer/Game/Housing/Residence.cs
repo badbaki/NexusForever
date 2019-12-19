@@ -482,7 +482,9 @@ namespace NexusForever.WorldServer.Game.Housing
                 { 291, 27 },    // Spacious Granok House
                 { 530, 32 },    // Underground Bunker
                 { 534, 34 },    // Blackhole House
-                { 543, 35 }     // Osun House
+                { 543, 35 },     // Osun House
+                { 554, 37 },    // Bird house
+                { 557, 25 }     // Royal Piglet
             };
         /// <summary>
         /// Returns a <see cref="HousingResidenceInfoEntry"/> ID if the plug ID is known.
