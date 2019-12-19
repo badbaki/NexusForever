@@ -243,7 +243,7 @@ namespace NexusForever.WorldServer.Game.Entity
             if (entry == null)
                 return 1000u;
 
-            return entry.Dataint0/* + countFromEntitlements*/;
+            return entry.Dataint0 + 2000u; /* + countFromEntitlements*/ //Increase cap for now -- BAKI
         }
 
         /// <summary>

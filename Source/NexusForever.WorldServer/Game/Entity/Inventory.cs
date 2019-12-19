@@ -672,6 +672,21 @@ namespace NexusForever.WorldServer.Game.Entity
         }
 
         /// <summary>
+        /// Clear <see cref="InventoryLocation.Inventory"/> for <see cref="Player"/>
+        /// </summary>
+        /// <returns></returns>
+        public void EmptyBag()
+        {
+            Bag bag = GetBag(InventoryLocation.Inventory);
+            foreach (Item item in bag)
+            {
+                ItemDelete(bag, item, ItemUpdateReason.NoReason);
+            }
+
+            return;
+        }
+
+        /// <summary>
         /// Return the amount of free bag indexes in <see cref="InventoryLocation.Inventory"/>.
         /// </summary>
         public uint GetInventoryFreeBagIndexCount()

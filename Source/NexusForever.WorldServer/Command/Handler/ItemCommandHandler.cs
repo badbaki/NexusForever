@@ -11,6 +11,8 @@ using NexusForever.WorldServer.Game.Social.Model;
 using NexusForever.WorldServer.Network.Message.Model.Shared;
 using NexusForever.WorldServer.Game.Account.Static;
 using NLog;
+using NexusForever.WorldServer.Game.Entity.Static;
+using NexusForever.WorldServer.Game.Entity;
 
 namespace NexusForever.WorldServer.Command.Handler
 {
@@ -73,6 +75,15 @@ namespace NexusForever.WorldServer.Command.Handler
             return Task.CompletedTask;
         }
 
+        [SubCommandHandler("clear", "Empties the players bag.", Permission.PRCommands)]
+        public Task ClearItemSubCommand(CommandContext context, string command, string[] parameters)
+        {
+
+            context.Session.Player.Inventory.EmptyBag();
+            context.SendMessageAsync($"Bye, bye bag!");
+
+            return Task.CompletedTask;
+        }
         private IEnumerable<uint> GetTextIds(Item2Entry entry)
         {
             Item2Entry item = GameTableManager.Instance.Item.GetEntry(entry.Id);
