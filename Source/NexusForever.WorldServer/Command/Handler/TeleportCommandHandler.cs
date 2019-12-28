@@ -38,13 +38,22 @@ namespace NexusForever.WorldServer.Command.Handler
             if (parameters.Length == 4)
             {
                 // optional world parameter is supplied, make sure it is valid too
-                if (!ushort.TryParse(parameters[3], out ushort worldId))
+                if (!ushort.TryParse(parameters[3], out ushort worldId) || parameters[3] == "1229")
                 {
-                    await SendHelpAsync(context);
+                    if (parameters[3] == "1229")
+                    {
+                        context.Session.Player.SendSystemMessage("Oi! No using the teleport coordinates command for housing!");
+                    }
+                    context.Session.Player.SendSystemMessage("Teleportation coordinates invalid.");
                     return;
                 }
 
                 context.Session.Player.TeleportTo(worldId, x, y, z);
+            }
+            else if (context.Session.Player.Map.Entry.Id == 1229)
+            {
+                context.Session.Player.SendSystemMessage("Using the teleport coordinates command while at player housing is not recommended. Please use !go to relocate somewhere else first.");
+                return;
             }
             else
                 context.Session.Player.TeleportTo((ushort)context.Session.Player.Map.Entry.Id, x, y, z);

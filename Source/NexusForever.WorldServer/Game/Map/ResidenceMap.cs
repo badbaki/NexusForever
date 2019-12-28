@@ -540,12 +540,13 @@ namespace NexusForever.WorldServer.Game.Map
         /// <summary>
         /// Install a House Plug into a Plot
         /// </summary>
-        private void SetHousePlug(Player player, ClientHousingPlugUpdate housingPlugUpdate, HousingPlugItemEntry plugItemEntry)
+        public void SetHousePlug(Player player, ClientHousingPlugUpdate housingPlugUpdate, HousingPlugItemEntry plugItemEntry) //BAKI - house command
         {
             if (!residence.CanModifyResidence(player.CharacterId))
                 throw new InvalidPacketValueException();
 
             Plot plot = residence.GetPlot(housingPlugUpdate.PlotInfo);
+            log.Debug($"SetHousePlug - PlotInfo: {housingPlugUpdate.PlotInfo}");
             if (plot == null)
                 throw new HousingException();
 

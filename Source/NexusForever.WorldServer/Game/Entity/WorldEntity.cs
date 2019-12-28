@@ -660,7 +660,7 @@ namespace NexusForever.WorldServer.Game.Entity
         /// <summary>
         /// Enqueue broadcast of <see cref="IWritable"/> to all visible <see cref="Player"/>'s in range.
         /// </summary>
-        public void EnqueueToVisible(IWritable message, bool includeSelf = false)
+        public void EnqueueToVisible(IWritable message, bool includeSelf = true)
         {
             // ReSharper disable once PossibleInvalidCastExceptionInForeachLoop
             foreach (WorldEntity entity in visibleEntities.Values)

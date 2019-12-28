@@ -50,7 +50,10 @@ namespace NexusForever.WorldServer.Network.Message.Handler
             {
                 EmotesEntry entry = GameTableManager.Instance.Emotes.GetEntry(emote.EmoteId);
                 if (entry == null)
+                {
+                    session.Player.SendSystemMessage($"EmoteID: {emote.EmoteId} is an invalid emoteID. Possible valid values will fall between 0 and 432.");
                     throw (new InvalidPacketValueException("HandleEmote: Invalid EmoteId"));
+                }
 
                 standState = (StandState)entry.StandState;
             }

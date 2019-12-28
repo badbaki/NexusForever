@@ -489,7 +489,7 @@ namespace NexusForever.WorldServer.Game.Housing
         /// <summary>
         /// Returns a <see cref="HousingResidenceInfoEntry"/> ID if the plug ID is known.
         /// </summary>
-        private uint GetResidenceEntryForPlug(uint plugItemId)
+        public uint GetResidenceEntryForPlug(uint plugItemId)
         {
             return residenceLookup.TryGetValue(plugItemId, out uint residenceId) ? residenceId : 0u;
         }

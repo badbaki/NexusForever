@@ -6,8 +6,8 @@ namespace NexusForever.WorldServer.Network.Message.Model
     [Message(GameMessageOpcode.ClientEmote)]
     public class ClientEmote : IReadable
     {
-        public uint EmoteId { get; private set; }
-        public uint Seed { get; set; }
+        public uint EmoteId { get; set; }
+        public uint Seed {  get; set; }
         public uint TargetUnitId { get; set; }
         public bool Targeted { get; set; }
         public bool Silent { get; set; }

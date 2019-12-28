@@ -116,6 +116,10 @@ namespace NexusForever.WorldServer.Command.Handler
                 {
                     residence.Flags = 0;
                 }
+                else
+                {
+                    context.Session.Player.SendSystemMessage("Invalid argument! Try again.");
+                }
             }
             else if (parameters[0].ToLower() == "ground")
             {
@@ -125,8 +129,56 @@ namespace NexusForever.WorldServer.Command.Handler
             {
                 residence.Sky = ushort.Parse(parameters[1]);
             }
+            else
+            {
+                context.Session.Player.SendSystemMessage("Invalid argument! Try again.");
+            }
 
             residenceMap.Remodel(context.Session.Player, clientRemod);
+            return Task.CompletedTask;
+        }
+
+        [SubCommandHandler("plug", "housePlugID", Permission.PRCommands)] //BAKI
+        public Task PlugSubCommandHandler(CommandContext context, string command, string[] parameters)
+        {
+
+            //remodel
+            ClientHousingRemodel clientRemod = new ClientHousingRemodel();
+            if (!(context.Session.Player.Map is ResidenceMap residenceMap))
+            {
+                context.SendMessageAsync("You need to be on a housing map to use this command!");
+                return Task.CompletedTask;
+            }
+
+            Residence residence = ResidenceManager.Instance.GetResidence(context.Session.Player.Name).GetAwaiter().GetResult();
+
+            //probably could use some better checks/message when they enter a wrong value
+           if (parameters[0] != "")
+            {
+                uint residenceId = residence.GetResidenceEntryForPlug(uint.Parse(parameters[0]));
+                if (residenceId > 0)
+                {
+                    ClientHousingPlugUpdate CHPUpdate = new ClientHousingPlugUpdate
+                    {
+                        PlugItem = uint.Parse(parameters[0]),
+                        PlotInfo = 165
+                    };
+                    HousingPlugItemEntry HPIEntry = new HousingPlugItemEntry
+                    {
+                        Id = uint.Parse(parameters[0])
+                    };
+                    residenceMap.SetHousePlug(context.Session.Player, CHPUpdate, HPIEntry);
+                }
+                else
+                {
+                    context.SendMessageAsync("Oops! That plug ID isn't valid. Try again!");
+                }       
+            }
+            else
+            {
+                context.SendMessageAsync("Oops! That plug ID isn't valid. Try again!");
+            }
+
             return Task.CompletedTask;
         }
     }

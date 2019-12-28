@@ -40,6 +40,7 @@ namespace NexusForever.WorldServer.Game.Account.Static
         ModMe = 32,
         Modify = 33,
         Quest = 34,
+        Testers = 50,
         GMFlag = 100,
     }
 }

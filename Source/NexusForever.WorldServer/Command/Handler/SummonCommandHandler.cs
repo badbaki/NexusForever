@@ -8,6 +8,8 @@ using NexusForever.Shared.GameTable;
 using System.Linq;
 using NexusForever.WorldServer.Game.Account.Static;
 using NexusForever.WorldServer.Game.Entity.Static;
+using NexusForever.WorldServer.Network.Message.Handler;
+using NexusForever.WorldServer.Network.Message.Model;
 
 namespace NexusForever.WorldServer.Command.Handler
 {
@@ -117,5 +119,36 @@ namespace NexusForever.WorldServer.Command.Handler
             }
             return Task.CompletedTask;
         }
+
+        [SubCommandHandler("emote", ">:3c", Permission.Testers)]
+        public Task EmoteSubCommandHandler(CommandContext context, string command, string[] parameters)
+        {
+            if (parameters != null)
+            {
+                uint emoteID = uint.Parse(parameters[0]);
+                log.Warn($"emoteID: {emoteID}");
+                ClientEmote emoteToSend = new ClientEmote
+                {
+                    EmoteId = emoteID,
+                };
+
+                SocialHandler.HandleEmote(context.Session, emoteToSend);
+            }
+            return Task.CompletedTask;
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     }
 }
