@@ -54,7 +54,7 @@ namespace NexusForever.WorldServer.Command.Handler
                     .ConfigureAwait(false);
         }
 
-        [SubCommandHandler("currencyadd", "currencyId amount - Add the amount provided to the currencyId provided")]
+        [SubCommandHandler("currencyadd", "currencyId amount - Add the amount provided to the currencyId provided", Permission.None)]
         public Task HandleAccountCurrencyAdd(CommandContext context, string command, string[] parameters)
         {
             if (context.Session.Account == null)
@@ -93,7 +93,7 @@ namespace NexusForever.WorldServer.Command.Handler
             return Task.CompletedTask;
         }
 
-        [SubCommandHandler("currencylist", "List all account currencies")]
+        [SubCommandHandler("currencylist", "List all account currencies", Permission.None)]
         public Task handleAccountCurrencyList(CommandContext context, string command, string[] parameters)
         {
             var tt = GameTableManager.Instance.GetTextTable(Language.English);

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
@@ -27,6 +28,7 @@ namespace NexusForever.Shared.Database.Auth
         /// </summary>
         public static async Task<Account> GetAccountAsync(string email)
         {
+            email = email.ToLower();
             using (var context = new AuthContext())
                 return await context.Account.SingleOrDefaultAsync(a => a.Email == email);
         }
@@ -36,6 +38,7 @@ namespace NexusForever.Shared.Database.Auth
         /// </summary>
         public static async Task<Account> GetAccountAsync(string email, Guid guid)
         {
+            email = email.ToLower();
             string gameToken = guid.ToByteArray().ToHexString();
             using (var context = new AuthContext())
                 return await context.Account.SingleOrDefaultAsync(a => a.Email == email && a.GameToken == gameToken);
@@ -46,6 +49,7 @@ namespace NexusForever.Shared.Database.Auth
         /// </summary>
         public static async Task<Account> GetAccountAsync(string email, byte[] sessionKeyBytes)
         {
+            email = email.ToLower();
             string sessionKey = BitConverter.ToString(sessionKeyBytes).Replace("-", "");
             using (var context = new AuthContext())
                 return await context.Account
@@ -62,10 +66,19 @@ namespace NexusForever.Shared.Database.Auth
         /// <summary>
         /// Create a new account with the supplied email and password, the password will have a verifier generated that is inserted into the database.
         /// </summary>
-        public static void CreateAccount(string email, string password, ulong defaultRole, ulong[] extraRoles = null)
+        public static async Task<Account> CreateAccount(string email, string password, ulong defaultRole, ulong[] extraRoles = null)
         {
+            email = email.ToLower();
             using (var context = new AuthContext())
             {
+                // Ensure account doesn't already exist with the same email
+                if (context.Account.FirstOrDefault(a => a.Email == email) != null)
+                    return null;
+
+                // Ensure only allowed symbols are used in the email - https://en.wikipedia.org/wiki/Email_address#Local-part
+                if (Regex.IsMatch(email, @"[^A-Za-z0-9@.!#$%&'*+-/=?^_`{|}~]"))
+                    return null;
+
                 byte[] s = RandomProvider.GetBytes(16u);
                 byte[] v = Srp6Provider.GenerateVerifier(s, email, password);
 
@@ -92,7 +105,10 @@ namespace NexusForever.Shared.Database.Auth
                 }
 
                 context.Account.Add(newAccount);
+
                 context.SaveChanges();
+
+                return await context.Account.FirstOrDefaultAsync(a => a.Email == email);
             }
         }
 
@@ -101,6 +117,7 @@ namespace NexusForever.Shared.Database.Auth
         /// </summary>
         public static bool DeleteAccount(string email)
         {
+            email = email.ToLower();
             // Thanks Rawaho!
             using (var context = new AuthContext())
             {
