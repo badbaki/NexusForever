@@ -1,6 +1,5 @@
 ﻿using NexusForever.Shared.Network;
 using NexusForever.Shared.Network.Message;
-using NexusForever.WorldServer.Game.Entity.Static;
 
 namespace NexusForever.WorldServer.Network.Message.Model
 {
@@ -9,7 +8,7 @@ namespace NexusForever.WorldServer.Network.Message.Model
     {
         public ulong Guid { get; set; }
         public uint StackCount { get; set; }
-        public ItemUpdateReason Reason { get; set; }
+        public byte Reason { get; set; }
 
         public void Write(GamePacketWriter writer)
         {

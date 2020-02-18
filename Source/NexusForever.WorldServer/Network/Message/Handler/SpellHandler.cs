@@ -14,11 +14,8 @@ namespace NexusForever.WorldServer.Network.Message.Handler
 {
     public static class SpellHandler
     {
-        /// <summary>
-        /// This handler is used when the player has enabled continous casting in Settings > Controls
-        /// </summary>
-        [MessageHandler(GameMessageOpcode.ClientCastSpellContinuous)]
-        public static void HandleCastSpell(WorldSession session, ClientCastSpellContinuous castSpell)
+        [MessageHandler(GameMessageOpcode.ClientCastSpell)]
+        public static void HandleCastSpell(WorldSession session, ClientCastSpell castSpell)
         {
             Item item = session.Player.Inventory.GetItem(InventoryLocation.Ability, castSpell.BagIndex);
             if (item == null)
@@ -42,21 +39,23 @@ namespace NexusForever.WorldServer.Network.Message.Handler
             session.Player.CancelSpellCast(spellStopCast.CastingId);
         }
 
-        /// <summary>
-        /// This Handler is ued when a player has disabled continuous casting in Settings > Controls
-        /// </summary>
-        [MessageHandler(GameMessageOpcode.ClientCastSpell)]
-        public static void HandleCastSpell(WorldSession session, ClientCastSpell castSpell)
+        [MessageHandler(GameMessageOpcode.Client009A)]
+        public static void HandleCastSpell(WorldSession session, Client009A castSpell)
         {
             Item item = session.Player.Inventory.GetItem(InventoryLocation.Ability, castSpell.BagIndex);
             if (item == null)
                 throw new InvalidPacketValueException();
 
-            UnlockedSpell unlockedSpell = session.Player.SpellManager.GetSpell(item.Id);
-            if (unlockedSpell == null)
+            UnlockedSpell spell = session.Player.SpellManager.GetSpell(item.Id);
+            if (spell == null)
                 throw new InvalidPacketValueException();
 
-            unlockedSpell.Cast(session.Player);
+            byte tier = session.Player.SpellManager.GetSpellTier(spell.Info.Entry.Id);
+            session.Player.CastSpell(new SpellParameters
+            {
+                SpellInfo = spell.Info.GetSpellInfo(tier),
+                UserInitiatedSpellCast = true
+            });
         }
 
         [MessageHandler(GameMessageOpcode.ClientCancelEffect)]
@@ -65,8 +64,8 @@ namespace NexusForever.WorldServer.Network.Message.Handler
             //TODO: integrate into some Spell System removal queue & do the checks & handle stopped effects
             session.Player.EnqueueToVisible(new ServerSpellFinish
             {
-                ServerUniqueId  = cancelSpell.ServerUniqueId
-            },true);
+                ServerUniqueId = cancelSpell.ServerUniqueId
+            }, true);
         }
 
         [MessageHandler(GameMessageOpcode.ClientChangeActiveActionSet)]
@@ -74,7 +73,7 @@ namespace NexusForever.WorldServer.Network.Message.Handler
         {
             session.EnqueueMessageEncrypted(new ServerChangeActiveActionSet
             {
-                SpecError      = session.Player.SpellManager.SetActiveActionSet(changeActiveActionSet.ActionSetIndex),
+                SpecError = session.Player.SpellManager.SetActiveActionSet(changeActiveActionSet.ActionSetIndex),
                 ActionSetIndex = session.Player.SpellManager.ActiveActionSet
             });
 
@@ -122,7 +121,7 @@ namespace NexusForever.WorldServer.Network.Message.Handler
                 foreach (ushort id in newAmps)
                     actionSet.AddAmp(id);
 
-               session.EnqueueMessageEncrypted(actionSet.BuildServerAmpList());
+                session.EnqueueMessageEncrypted(actionSet.BuildServerAmpList());
             }
         }
 
@@ -145,11 +144,11 @@ namespace NexusForever.WorldServer.Network.Message.Handler
             switch (requestActionSetChanges.ShortcutType)
             {
                 case ShortcutType.Item:
-                {
-                    if (GameTableManager.Instance.Item.GetEntry(requestActionSetChanges.ObjectId) == null)
-                        throw new InvalidPacketValueException();
-                    break;
-                }
+                    {
+                        if (GameTableManager.Instance.Item.GetEntry(requestActionSetChanges.ObjectId) == null)
+                            throw new InvalidPacketValueException();
+                        break;
+                    }
                 case ShortcutType.Spell:
                     throw new InvalidPacketValueException();
                 default:

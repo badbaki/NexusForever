@@ -22,7 +22,7 @@ namespace NexusForever.WorldServer.Network.Message.Model
             PlayerName = reader.ReadWideString();
             Unknown0 = reader.ReadWideString();
 
-            Message = reader.ReadWideString();
+            Message  = reader.ReadWideString();
             byte formatCount = reader.ReadByte(5u);
             for (int i = 0; i < formatCount; i++)
             {

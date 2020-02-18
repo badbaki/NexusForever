@@ -19,7 +19,8 @@ namespace NexusForever.WorldServer.Game.Spell
         private static readonly ILogger log = LogManager.GetCurrentClassLogger();
 
         public uint CastingId { get; }
-        public bool IsCasting => parameters.UserInitiatedSpellCast && status == SpellStatus.Casting || ((CastMethod == CastMethod.Channeled || CastMethod == CastMethod.ChanneledField) && (status == SpellStatus.Casting || status == SpellStatus.Executing));
+        public bool IsClientSideInteraction => parameters.ClientSideInteraction != null;
+        public bool IsCasting => parameters.UserInitiatedSpellCast && (status == SpellStatus.Casting || ((CastMethod == CastMethod.Channeled || CastMethod == CastMethod.ChanneledField) && (status == SpellStatus.Casting || status == SpellStatus.Executing)));
         public bool IsFinished => status == SpellStatus.Finished;
         public bool IsFailed => status == SpellStatus.Failed;
         public bool IsWaiting => status == SpellStatus.Waiting;
@@ -45,10 +46,10 @@ namespace NexusForever.WorldServer.Game.Spell
 
         public Spell(UnitEntity caster, SpellParameters parameters)
         {
-            this.caster     = caster;
+            this.caster = caster;
             this.parameters = parameters;
-            CastingId       = GlobalSpellManager.Instance.NextCastingId;
-            status          = SpellStatus.Initiating;
+            CastingId = GlobalSpellManager.Instance.NextCastingId;
+            status = SpellStatus.Initiating;
             CastMethod = (CastMethod)parameters.SpellInfo.BaseInfo.Entry.CastMethod;
 
             if (parameters.RootSpellInfo == null)
@@ -60,14 +61,14 @@ namespace NexusForever.WorldServer.Game.Spell
 
         public void Update(double lastTick)
         {
-            if (status == SpellStatus.Initiating)
-                return;
-
             events.Update(lastTick);
 
             // Prevent Mounts from Ending instantly
             // TODO: Reference this spell to Mount Entity and finish spell when Mount is removed?
             if (parameters.SpellInfo.BaseInfo.Entry.Spell4SpellTypesIdSpellType == 30) // This also happens with the Mount Unlock items. Investigate further.
+                return;
+
+            if ((parameters.SpellInfo.BaseInfo.Entry.Spell4SpellTypesIdSpellType == 82 || parameters.SpellInfo.BaseInfo.Entry.Spell4SpellTypesIdSpellType == 83) && parameters.ParentSpellInfo == null)
                 return;
 
             if (status == SpellStatus.Executing && HasThresholdToCast)
@@ -139,27 +140,36 @@ namespace NexusForever.WorldServer.Game.Spell
                 return;
             }
 
-            if (parameters.UserInitiatedSpellCast) // Skip following checks and logic if this was not cast directly by the entity
-            {
-                if (caster is Player player)
-                    if (parameters.SpellInfo.GlobalCooldown != null && !parameters.IsProxy) // Using UserInitiatedSpellCast to prevent proxies affecting the GCD
-                        player.SpellManager.SetGlobalSpellCooldown(parameters.SpellInfo.GlobalCooldown.CooldownTime / 1000d);
-            }
+            if (caster is Player player)
+                if (parameters.SpellInfo.GlobalCooldown != null && parameters.UserInitiatedSpellCast && !parameters.IsProxy) // Using UserInitiatedSpellCast to prevent proxies affecting the GCD
+                    player.SpellManager.SetGlobalSpellCooldown(parameters.SpellInfo.GlobalCooldown.CooldownTime / 1000d);
+
             log.Trace($"Spell {parameters.SpellInfo.Entry.Id} has started initating.");
 
-            SendSpellStart();
-            InitialiseCastMethod();
+            double castTime = parameters.CastTimeOverride > 0 ? parameters.CastTimeOverride / 1000d : parameters.SpellInfo.Entry.CastTime / 1000d;
+            if (parameters.ClientSideInteraction != null)
+            {
+                SendSpellStartClientInteraction();
+
+                if ((CastMethod)parameters.SpellInfo.BaseInfo.Entry.CastMethod != CastMethod.ClientSideInteraction)
+                    events.EnqueueEvent(new SpellEvent(castTime, SucceedClientInteraction));
+                else if (parameters.ClientSideInteraction.Entry.Duration > 0)
+                    events.EnqueueEvent(new SpellEvent(parameters.ClientSideInteraction.Entry.Duration / 1000d, FailClientInteraction));
+            }
+            else
+            {
+                SendSpellStart();
+                InitialiseCastMethod();
+            }
 
             status = SpellStatus.Casting;
-
             log.Trace($"Spell {parameters.SpellInfo.Entry.Id} has started casting.");
         }
 
         private CastResult CheckCast()
         {
-            CastResult preReqResult = CheckPrerequisites();
-            if (preReqResult != CastResult.Ok)
-                return preReqResult;
+            if (!CheckPrerequisites())
+                return CastResult.SpellPreRequisites;
 
             CastResult ccResult = CheckCCConditions();
             if (ccResult != CastResult.Ok)
@@ -187,22 +197,17 @@ namespace NexusForever.WorldServer.Game.Spell
 
                 if (parameters.SpellInfo.Entry.PrerequisiteIdCasterCast > 0 && !PrerequisiteManager.Instance.Meets(player, parameters.SpellInfo.Entry.PrerequisiteIdCasterCast))
                     return CastResult.PrereqCasterCast;
+
             }
 
             return CastResult.Ok;
         }
 
-        private CastResult CheckPrerequisites()
+        private bool CheckPrerequisites()
         {
-            // TODO: Figure out if non Player entities should adhere to same rules
-            if (!(caster is Player player))
-                return CastResult.Ok;
-
             // TODO
             if (parameters.SpellInfo.CasterCastPrerequisites != null)
             {
-                if (!PrerequisiteManager.Instance.Meets(player, parameters.SpellInfo.Entry.PrerequisiteIdCasterCast))
-                    return CastResult.PrereqCasterCast;
             }
 
             // not sure if this should be for explicit and/or implicit targets
@@ -219,7 +224,7 @@ namespace NexusForever.WorldServer.Game.Spell
             {
             }
 
-            return CastResult.Ok;
+            return true;
         }
 
         private CastResult CheckCCConditions()
@@ -262,8 +267,7 @@ namespace NexusForever.WorldServer.Game.Spell
             {
                 SpellInfo = spellInfo,
                 ParentSpellInfo = parameters.SpellInfo,
-                RootSpellInfo = parameters.SpellInfo,
-                UserInitiatedSpellCast = parameters.UserInitiatedSpellCast,
+                RootSpellInfo = parameters.RootSpellInfo,
                 ThresholdValue = thresholdsEntry.OrderIndex + 1
             });
 
@@ -335,8 +339,8 @@ namespace NexusForever.WorldServer.Game.Spell
                 player.Session.EnqueueMessageEncrypted(new Server07F9
                 {
                     ServerUniqueId = CastingId,
-                    CastResult     = result,
-                    CancelCast     = true
+                    CastResult = result,
+                    CancelCast = true
                 });
             }
 
@@ -365,6 +369,9 @@ namespace NexusForever.WorldServer.Game.Spell
 
             if (parameters.ThresholdValue > 0 && parameters.ParentSpellInfo.Thresholds.Count > 1)
                 SendThresholdUpdate();
+
+            if (parameters.OnExecuteComplete != null)
+                parameters.OnExecuteComplete.Invoke();
         }
 
         private void SetCooldown()
@@ -406,12 +413,14 @@ namespace NexusForever.WorldServer.Game.Spell
                     if (spell4EffectsEntry.PrerequisiteIdCasterApply > 0 && !PrerequisiteManager.Instance.Meets(player, spell4EffectsEntry.PrerequisiteIdCasterApply))
                         continue;
                 }
+
                 if (CastMethod == CastMethod.Multiphase && currentPhase < 255)
                 {
                     int phaseMask = 1 << currentPhase;
                     if (spell4EffectsEntry.PhaseFlags != 1 && (phaseMask & spell4EffectsEntry.PhaseFlags) == 0)
                         continue;
                 }
+
                 // select targets for effect
                 List<SpellTargetInfo> effectTargets = targets
                     .Where(t => (t.Flags & (SpellEffectTargetFlags)spell4EffectsEntry.TargetFlags) != 0)
@@ -432,6 +441,7 @@ namespace NexusForever.WorldServer.Game.Spell
                         handler.Invoke(this, effectTarget.Entity, info);
                     }
                 }
+
                 // Add durations for each effect so that when the Effect timer runs out, the Spell can Finish.
                 if (spell4EffectsEntry.DurationTime > 0)
                     events.EnqueueEvent(new SpellEvent(spell4EffectsEntry.DurationTime / 1000d, () => { /* placeholder for duration */ }));
@@ -447,10 +457,42 @@ namespace NexusForever.WorldServer.Game.Spell
             return parameters.SpellInfo.Entry.CastTime > 0;
         }
 
+        /// <summary>
+        /// Used when a <see cref="ClientInteraction"/> succeeds
+        /// </summary>
+        public void SucceedClientInteraction()
+        {
+            if (parameters.ClientSideInteraction == null)
+                throw new ArgumentException("This can only be used by a Client Interaction Event.");
+
+            parameters.ClientSideInteraction.TriggerSuccess();
+
+            Execute();
+        }
+
+        /// <summary>
+        /// Used when a <see cref="ClientInteraction"/> fails
+        /// </summary>
+        public void FailClientInteraction()
+        {
+            if (parameters.ClientSideInteraction == null)
+                throw new ArgumentException("This can only be used by a Client Interaction Event.");
+
+            parameters.ClientSideInteraction.TriggerFail();
+        }
+
         public void Finish()
         {
             if (status == SpellStatus.Executing || status == SpellStatus.Waiting)
                 SetCooldown();
+
+            foreach (Spell thresholdSpell in thresholdSpells.ToList())
+            {
+                if (thresholdSpell.IsCasting && !thresholdSpell.IsFinished)
+                    thresholdSpell.CancelCast(CastResult.SpellCancelled);
+
+                thresholdSpells.Remove(thresholdSpell);
+            }
 
             thresholdValue = thresholdMax;
             events.CancelEvents();
@@ -466,7 +508,7 @@ namespace NexusForever.WorldServer.Game.Spell
             {
                 player.Session.EnqueueMessageEncrypted(new ServerSpellCastResult
                 {
-                    Spell4Id   = parameters.SpellInfo.Entry.Id,
+                    Spell4Id = parameters.SpellInfo.Entry.Id,
                     CastResult = castResult
                 });
             }
@@ -519,6 +561,21 @@ namespace NexusForever.WorldServer.Game.Spell
             caster.EnqueueToVisible(spellStart, true);
         }
 
+        private void SendSpellStartClientInteraction()
+        {
+            // Shoule we actually emit client interaction events to everyone? - Logs suggest that we only see this packet firing when the client interacts with -something- and is likely only sent to them
+            if (caster is Player player)
+            {
+                player.Session.EnqueueMessageEncrypted(new ServerSpellStartClientInteraction
+                {
+                    ClientUniqueId = parameters.ClientSideInteraction.ClientUniqueId,
+                    CastingId = CastingId,
+                    CasterId = parameters.PrimaryTargetId
+                });
+            }
+
+        }
+
         private void SendSpellFinish()
         {
             if (status != SpellStatus.Finished)
@@ -547,7 +604,7 @@ namespace NexusForever.WorldServer.Game.Spell
                 {
                     UnitId = targetInfo.Entity.Guid,
                     Ndx = targetCount++,
-                    TargetFlags = (byte)targetInfo.Flags,
+                    TargetFlags = 1,
                     InstanceCount = 1,
                     CombatResult = CombatResult.Hit
                 };

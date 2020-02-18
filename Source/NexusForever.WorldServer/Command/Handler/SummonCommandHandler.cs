@@ -130,9 +130,27 @@ namespace NexusForever.WorldServer.Command.Handler
                 ClientEmote emoteToSend = new ClientEmote
                 {
                     EmoteId = emoteID,
+                    Targeted = false,
+                    Silent = false
                 };
 
                 SocialHandler.HandleEmote(context.Session, emoteToSend);
+            }
+            return Task.CompletedTask;
+        }
+
+        [SubCommandHandler("standstates", "breakin things", Permission.BakiBreaks)]
+        public Task StandStateSubCommandHandler(CommandContext context, string command, string[] parameters)
+        {
+            if (parameters != null)
+            {
+                uint standState = uint.Parse(parameters[0]);
+                log.Warn($"StandState: {standState}");
+                context.Session.Player.EnqueueToVisible(new ServerEmote
+                {
+                    Guid = context.Session.Player.Guid,
+                    StandState = (StandState)standState,
+                });
             }
             return Task.CompletedTask;
         }

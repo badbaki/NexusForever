@@ -1,4 +1,4 @@
-﻿using NexusForever.Shared.Network;
+using NexusForever.Shared.Network;
 using NexusForever.Shared.Network.Message;
 using NexusForever.WorldServer.Game.Housing.Static;
 

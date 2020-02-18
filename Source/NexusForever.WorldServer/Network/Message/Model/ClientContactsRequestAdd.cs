@@ -1,4 +1,4 @@
-﻿using NexusForever.Shared.Network;
+using NexusForever.Shared.Network;
 using NexusForever.Shared.Network.Message;
 using NexusForever.WorldServer.Game.Contact.Static;
 
@@ -14,10 +14,10 @@ namespace NexusForever.WorldServer.Network.Message.Model
 
         public void Read(GamePacketReader reader)
         {
-            PlayerName = reader.ReadWideString();
-            Unknown0 = reader.ReadWideString();
-            Type = (ContactType)reader.ReadByte(4);
-            Message = reader.ReadWideString();
+            PlayerName  = reader.ReadWideString();
+            Unknown0  = reader.ReadWideString();
+            Type  = (ContactType)reader.ReadByte(4);
+            Message  = reader.ReadWideString();
         }
     }
 }

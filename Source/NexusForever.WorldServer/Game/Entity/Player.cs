@@ -453,14 +453,14 @@ namespace NexusForever.WorldServer.Game.Entity
                 TextTable tt = GameTableManager.Instance.GetTextTable(Language.English);
 
                 //shhh zone spam - BAKI
-                /*
+                
                 Session.EnqueueMessageEncrypted(new ServerChat
                 {
                     Guid    = Session.Player.Guid,
                     Channel = ChatChannel.System,
                     Text    = $"New Zone: ({Zone.Id}){tt.GetEntry(Zone.LocalizedTextIdName)}"
                 });
-                */
+                
 
                 uint tutorialId = AssetManager.Instance.GetTutorialIdForZone(Zone.Id);
                 if (tutorialId > 0)
@@ -586,6 +586,19 @@ namespace NexusForever.WorldServer.Game.Entity
             AchievementManager.SendInitialPackets();
             ContactManager.OnLogin(Session);
 
+            //Public events -- BAKI
+            Session.EnqueueMessageEncrypted(new ServerPublicEventStart
+            {
+                PublicEventId = 671,
+                Unknown0 = true
+            });
+
+            Session.EnqueueMessageEncrypted(new ServerPublicEventReason
+            {
+                PublicEventId = 671,
+                Reason = 0
+            });
+
             Session.EnqueueMessageEncrypted(new ServerPlayerInnate
             {
                 InnateIndex = InnateIndex
@@ -608,7 +621,8 @@ namespace NexusForever.WorldServer.Game.Entity
                 pet?.RemoveFromMap();
                 VanityPetGuid = null;
             }
-            DestroyDependents();
+
+            //DestroyDependents(); -- don't need double atm BAKI
 
             base.OnRemoveFromMap();
 
@@ -832,6 +846,48 @@ namespace NexusForever.WorldServer.Game.Entity
                 Sex         = (byte)Sex,
                 ItemVisuals = GetAppearance().ToList()
             }, true);
+        }
+
+        /// <summary>
+        /// Process Falling Damage for this <see cref="Player"/>
+        /// </summary>
+        public void TakeFallingDamage(float healthPercent)
+        {
+            // TODO: Take HP damage
+            // Added some damage cause heeeeee >:3 -- BAKI
+            
+            string[] responses = { "Haha you fell!", "Ouch!", "Watch your step!"};
+            Random rnd = new Random();
+            int randResponse = rnd.Next(0, 3);
+            uint ouch;
+
+
+            if (healthPercent > 1)
+            {
+                ouch = 1;
+                SendSystemMessage($"{responses[randResponse]}");
+            }
+            else if (healthPercent > 0.5)
+            {
+                ouch = MaxHealth / 2;
+            }
+            else
+            {
+                ouch = MaxHealth - 5;
+            }
+            SetStat(Stat.Health, ouch);
+            EnqueueToVisible(new ServerEntityHealthUpdate
+            {
+                UnitId = Guid,
+                Health = Health
+            });
+            if (this is Player player)
+                player.Session.EnqueueMessageEncrypted(new ServerPlayerHealthUpdate
+                {
+                    UnitId = Guid,
+                    Health = Health,
+                    Mask = (UpdateHealthMask)4
+                });
         }
 
         /// <summary>

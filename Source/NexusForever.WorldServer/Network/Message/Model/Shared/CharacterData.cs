@@ -1,4 +1,4 @@
-﻿using NexusForever.Shared.Network;
+using NexusForever.Shared.Network;
 using NexusForever.Shared.Network.Message;
 using NexusForever.WorldServer.Game.Entity.Static;
 
@@ -7,9 +7,9 @@ namespace NexusForever.WorldServer.Network.Message.Model.Shared
     public class CharacterData : IWritable
     {
         public string Name { get; set; } = "";
-        public TargetPlayerIdentity PlayerIdentity { get; set; } = new TargetPlayerIdentity();
+        public TargetPlayerIdentity PlayerIdentity  { get; set; } = new TargetPlayerIdentity();
         public Class Class { get; set; }
-        public Race Race { get; set; }
+        public Race Race  { get; set; }
         public Path Path { get; set; }
         public uint Level { get; set; }
         public ushort WorldZoneId { get; set; }
@@ -28,3 +28,4 @@ namespace NexusForever.WorldServer.Network.Message.Model.Shared
         }
     }
 }
+

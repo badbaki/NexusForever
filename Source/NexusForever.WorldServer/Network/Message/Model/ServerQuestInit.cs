@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using NexusForever.Shared.Network;
 using NexusForever.Shared.Network.Message;
 using NexusForever.WorldServer.Game.Quest.Static;
@@ -70,7 +71,7 @@ namespace NexusForever.WorldServer.Network.Message.Model
         public List<QuestInactive> Inactive { get; set; } = new List<QuestInactive>();
         public List<QuestActive> Active { get; set; } = new List<QuestActive>();
 
-        public ulong DailyRandomSeed { get; set; }
+        public ulong DailyRandomSeed { get; set; } = (ulong)DateTime.Now.Subtract(new DateTime(2014, 6, 3)).TotalDays;
 
         public void Write(GamePacketWriter writer)
         {

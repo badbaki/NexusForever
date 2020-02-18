@@ -30,11 +30,12 @@ namespace NexusForever.WorldServer
         public NetworkConfig Network { get; set; }
         public DatabaseConfig Database { get; set; }
         public MapConfig Map { get; set; }
+        public StoreConfig Store { get; set; }
         public bool UseCache { get; set; } = false;
         public ushort RealmId { get; set; }
-        public ulong DefaultRole { get; set; } = 1;
         public uint LengthOfInGameDay { get; set; }
         public RulesConfig Rules { get; set; } = new RulesConfig();
+        public ulong DefaultRole { get; set; } = 1;
         public string MessageOfTheDay { get; set; } = "";
     }
 }

@@ -15,7 +15,7 @@ namespace NexusForever.WorldServer.Network.Message.Model
             public ulong NeighbourhoodId { get; set; }
             public ulong CharacterIdOwner { get; set; }
             public ulong GuildIdOwner { get; set; }
-            public uint RealmIdOwner { get; set; }
+            public uint RealmIdOwner{ get; set; }
             public uint Type { get; set; }
             public uint TileId { get; set; }
             public string Name { get; set; }
@@ -61,7 +61,7 @@ namespace NexusForever.WorldServer.Network.Message.Model
         }
 
         public List<Residence> Residences { get; } = new List<Residence>();
-
+        
         public void Write(GamePacketWriter writer)
         {
             writer.Write(Residences.Count);

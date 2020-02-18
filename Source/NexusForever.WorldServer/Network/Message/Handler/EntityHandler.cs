@@ -3,6 +3,7 @@ using NexusForever.Shared.Network.Message;
 using NexusForever.WorldServer.Game.Entity;
 using NexusForever.WorldServer.Game.Entity.Network;
 using NexusForever.WorldServer.Game.Entity.Network.Command;
+using NexusForever.WorldServer.Game.Spell;
 using NexusForever.WorldServer.Network.Message.Model;
 using NLog;
 using System;
@@ -28,13 +29,13 @@ namespace NexusForever.WorldServer.Network.Message.Handler
                 switch (command)
                 {
                     case SetPositionCommand setPosition:
-                    {
-                        // this is causing issues after moving to soon after mounting:
-                        // session.Player.CancelSpellsOnMove();
+                        {
+                            // this is causing issues after moving to soon after mounting:
+                            // session.Player.CancelSpellsOnMove();
 
-                        mover.Map.EnqueueRelocate(mover, setPosition.Position.Vector);
-                        break;
-                    }
+                            mover.Map.EnqueueRelocate(mover, setPosition.Position.Vector);
+                            break;
+                        }
                     case SetRotationCommand setRotation:
                         mover.Rotation = setRotation.Position.Vector;
                         break;
@@ -43,8 +44,8 @@ namespace NexusForever.WorldServer.Network.Message.Handler
 
             mover.EnqueueToVisible(new ServerEntityCommand
             {
-                Guid     = mover.Guid,
-                Time     = entityCommand.Time,
+                Guid = mover.Guid,
+                Time = entityCommand.Time,
                 ServerControlled = false,
                 Commands = entityCommand.Commands
             });
@@ -72,7 +73,7 @@ namespace NexusForever.WorldServer.Network.Message.Handler
             // TODO: sanity check for range etc.
 
             session.Player.QuestManager.ObjectiveUpdate(QuestObjectiveType.ActivateEntity, entity.CreatureId, 1u);
-            entity.OnActivateCast(session.Player);
+            entity.OnActivateCast(session.Player, unit.ClientUniqueId);
         }
 
         [MessageHandler(GameMessageOpcode.ClientEntityInteract)]
@@ -81,13 +82,13 @@ namespace NexusForever.WorldServer.Network.Message.Handler
             switch (entityInteraction.Event)
             {
                 case 37: // Quest NPC
-                {
-                    session.EnqueueMessageEncrypted(new Server0357
                     {
-                        UnitId = entityInteraction.Guid
-                    });
-                    break;
-                }
+                        session.EnqueueMessageEncrypted(new Server0357
+                        {
+                            UnitId = entityInteraction.Guid
+                        });
+                        break;
+                    }
                 case 49: // Handle Vendor
                     VendorHandler.HandleClientVendor(session, entityInteraction);
                     break;
@@ -139,6 +140,32 @@ namespace NexusForever.WorldServer.Network.Message.Handler
                 throw new InvalidPacketValueException();
 
             session.Player.Sit(chair);
+        }
+
+        [MessageHandler(GameMessageOpcode.ClientActivateUnitDeferred)]
+        public static void HandleActivateUnitDeferred(WorldSession session, ClientActivateUnitDeferred request)
+        {
+            WorldEntity entity = session.Player.GetVisible<WorldEntity>(request.ActivateUnitId);
+            if (entity == null)
+                throw new InvalidPacketValueException();
+
+            entity.OnActivateCast(session.Player, request.ClientUniqueId);
+        }
+
+        [MessageHandler(GameMessageOpcode.ClientInteractionResult)]
+        public static void HandleSpellDeferredResult(WorldSession session, ClientSpellInteractionResult result)
+        {
+            Spell spell = session.Player.GetPendingSpell(result.CastingId);
+            if (spell == null)
+                throw new ArgumentNullException($"Spell cast {result.CastingId} not found.");
+            if (!spell.IsClientSideInteraction)
+                throw new ArgumentNullException($"Spell missing a ClientSideInteraction.");
+
+            if (result.Result == 0)
+                spell.FailClientInteraction();
+
+            if (result.Result == 1)
+                spell.SucceedClientInteraction();
         }
     }
 }

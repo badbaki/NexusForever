@@ -6,7 +6,7 @@ namespace NexusForever.WorldServer.Network.Message.Model
     [Message(GameMessageOpcode.ClientEmote)]
     public class ClientEmote : IReadable
     {
-        public uint EmoteId { get; set; }
+        public uint EmoteId { get; set; } //Removed private for using emote freely with emote command -- BAKI
         public uint Seed {  get; set; }
         public uint TargetUnitId { get; set; }
         public bool Targeted { get; set; }

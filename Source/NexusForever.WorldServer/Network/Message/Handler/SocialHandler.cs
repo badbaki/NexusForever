@@ -54,8 +54,12 @@ namespace NexusForever.WorldServer.Network.Message.Handler
                     session.Player.SendSystemMessage($"EmoteID: {emote.EmoteId} is an invalid emoteID. Possible valid values will fall between 0 and 432.");
                     throw (new InvalidPacketValueException("HandleEmote: Invalid EmoteId"));
                 }
-
                 standState = (StandState)entry.StandState;
+
+                if (standState == StandState.Stand)
+                {
+                    standState = StandState.Emote;
+                }
             }
 
             if (emote.EmoteId == 0 && session.Player.IsSitting)

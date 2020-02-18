@@ -648,5 +648,11 @@ namespace NexusForever.WorldServer.Network.Message.Handler
 
             session.Player.SetCharacterCustomisation(customisations, appearanceChange.Bones, (Race)appearanceChange.Race, (Sex)appearanceChange.Sex, appearanceChange.UseServiceTokens);
         }
+
+        [MessageHandler(GameMessageOpcode.ClientFallingDamage)]
+        public static void HandleFallingDamage(WorldSession session, ClientFallingDamage fallingDamage)
+        {
+            session.Player.TakeFallingDamage(fallingDamage.HealthPercent);
+        }
     }
 }

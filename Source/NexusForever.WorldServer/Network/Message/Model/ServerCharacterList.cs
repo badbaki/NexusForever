@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using NexusForever.Shared.Network;
 using NexusForever.Shared.Network.Message;
 using NexusForever.WorldServer.Game.Entity;
@@ -96,7 +97,7 @@ namespace NexusForever.WorldServer.Network.Message.Model
             }
         }
 
-        public ulong Id { get; set; }
+        public ulong ServerTime { get; set; } = (ulong)DateTime.UtcNow.AddHours(TimeZone.CurrentTimeZone.GetUtcOffset(DateTime.Now).TotalHours).ToFileTime();
         public List<Character> Characters { get; } = new List<Character>();
         public List<uint> Unknown14 { get; } = new List<uint>();
         public List<uint> Unknown1C { get; } = new List<uint>();
@@ -112,7 +113,7 @@ namespace NexusForever.WorldServer.Network.Message.Model
 
         public void Write(GamePacketWriter writer)
         {
-            writer.Write(Id);
+            writer.Write(ServerTime);
             writer.Write(Characters.Count);
 
             foreach (Character character in Characters)

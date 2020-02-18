@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using NexusForever.Shared.Network;
 using NexusForever.Shared.Network.Message;
 using NexusForever.WorldServer.Network.Message.Static;
@@ -61,13 +62,13 @@ namespace NexusForever.WorldServer.Network.Message.Model
             }
         }
 
-        public ulong Unknown0 { get; set; }
+        public ulong ServerTime { get; set; } = (ulong)DateTime.UtcNow.AddHours(TimeZone.CurrentTimeZone.GetUtcOffset(DateTime.Now).TotalHours).ToFileTime();
         public List<RealmInfo> Realms { get; set; } = new List<RealmInfo>();
         public List<NetworkMessage> Messages { get; set; } = new List<NetworkMessage>();
 
         public void Write(GamePacketWriter writer)
         {
-            writer.Write(Unknown0);
+            writer.Write(ServerTime);
             writer.Write(Realms.Count);
             Realms.ForEach(s => s.Write(writer));
             writer.Write(Messages.Count);

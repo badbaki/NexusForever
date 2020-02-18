@@ -26,7 +26,7 @@ namespace NexusForever.WorldServer.Network.Message.Model
             public uint ActivePropUnitId { get; set; }
             public ulong ParentDecorId { get; set; }
             public ushort ColourShift { get; set; }
-
+            
             public void Write(GamePacketWriter writer)
             {
                 writer.Write(RealmId, 14u);
@@ -54,7 +54,7 @@ namespace NexusForever.WorldServer.Network.Message.Model
 
         public uint Operation { get; set; }
         public List<Decor> DecorData { get; set; } = new List<Decor>();
-
+        
         public void Write(GamePacketWriter writer)
         {
             writer.Write(DecorData.Count);
