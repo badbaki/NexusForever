@@ -321,7 +321,11 @@ namespace NexusForever.WorldServer.Game.Map
             HousingResult GetResult()
             {
                 if (!IsValidPlotForPosition(update))
+                {
+                    log.Debug($"IsValidPlotForPosition - Bad decor spot for {player.Name} at PlotIndex: {update.PlotIndex}");
                     return HousingResult.Decor_InvalidPosition;
+                }
+                    
 
                 if (update.ColourShiftId != 0u)
                 {
@@ -445,7 +449,7 @@ namespace NexusForever.WorldServer.Game.Map
             uint maxBound = worldSocketEntry.BoundIds.Max() + 2;
             uint minBound = worldSocketEntry.BoundIds.Min() - 2;
 
-            log.Debug($"IsValidPlotForPosition - PlotIndex: {update.PlotIndex}, Range: {minBound}-{maxBound}, Coords: {globalCellX}, {globalCellZ}");
+            //log.Debug($"IsValidPlotForPosition - PlotIndex: {update.PlotIndex}, Range: {minBound}-{maxBound}, Coords: {globalCellX}, {globalCellZ}");
 
             return (globalCellX >= minBound && globalCellX <= maxBound && globalCellZ >= minBound && globalCellZ <= maxBound);
         }

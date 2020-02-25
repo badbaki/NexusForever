@@ -453,14 +453,14 @@ namespace NexusForever.WorldServer.Game.Entity
                 TextTable tt = GameTableManager.Instance.GetTextTable(Language.English);
 
                 //shhh zone spam - BAKI
-                
+                /*
                 Session.EnqueueMessageEncrypted(new ServerChat
                 {
                     Guid    = Session.Player.Guid,
                     Channel = ChatChannel.System,
                     Text    = $"New Zone: ({Zone.Id}){tt.GetEntry(Zone.LocalizedTextIdName)}"
                 });
-                
+                */
 
                 uint tutorialId = AssetManager.Instance.GetTutorialIdForZone(Zone.Id);
                 if (tutorialId > 0)
@@ -589,13 +589,13 @@ namespace NexusForever.WorldServer.Game.Entity
             //Public events -- BAKI
             Session.EnqueueMessageEncrypted(new ServerPublicEventStart
             {
-                PublicEventId = 671,
+                PublicEventId = 786,
                 Unknown0 = true
             });
 
             Session.EnqueueMessageEncrypted(new ServerPublicEventReason
             {
-                PublicEventId = 671,
+                PublicEventId = 786,
                 Reason = 0
             });
 
@@ -622,7 +622,7 @@ namespace NexusForever.WorldServer.Game.Entity
                 VanityPetGuid = null;
             }
 
-            //DestroyDependents(); -- don't need double atm BAKI
+            DestroyDependents();
 
             base.OnRemoveFromMap();
 

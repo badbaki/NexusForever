@@ -1,12 +1,7 @@
 using System;
 using System.Collections.Generic;
-using NexusForever.Shared.Game.Events;
 using NexusForever.Shared.Network;
 using NexusForever.Shared.Network.Message;
-using NexusForever.WorldServer.Database.Character;
-using NexusForever.WorldServer.Database.Character.Model;
-using NexusForever.WorldServer.Game.Account;
-using NexusForever.WorldServer.Game.Account.Static;
 using NexusForever.WorldServer.Game.CharacterCache;
 using NexusForever.WorldServer.Game.Contact.Static;
 using NexusForever.WorldServer.Game.Entity;
@@ -39,7 +34,7 @@ namespace NexusForever.WorldServer.Network.Message.Handler
         {
             ICharacter character = CharacterManager.Instance.GetCharacterInfo(request.Identity.CharacterId);
             if (character == null)
-                throw new InvalidPacketValueException();
+                return;
 
             if (request.Type == ContactType.Ignore) // Ignored user data request
                 session.EnqueueMessageEncrypted(new ServerPlayerInfoBasicResponse
