@@ -34,6 +34,11 @@ namespace NexusForever.WorldServer.Command.Handler
                 await SendHelpAsync(context);
                 return;
             }
+            if (!context.Session.Player.CanTeleport())
+            {
+                await context.SendErrorAsync("You have a pending teleport! Please wait to use this command.");
+                return;
+            }
 
             if (parameters.Length == 4)
             {
@@ -67,6 +72,11 @@ namespace NexusForever.WorldServer.Command.Handler
                 await SendHelpAsync(context);
                 return;
             }
+            if (!context.Session.Player.CanTeleport())
+            {
+                await context.SendErrorAsync("You have a pending teleport! Please wait to use this command.");
+                return;
+            }
 
             WorldLocation2Entry entry = GameTableManager.Instance.WorldLocation2.GetEntry(worldLocation2Id);
             if (entry == null)
@@ -82,6 +92,11 @@ namespace NexusForever.WorldServer.Command.Handler
         [SubCommandHandler("to", "playername - teleport to another player's location.", Permission.CommandTeleport)] //Teleport to - Baki
         public async Task TeleportToSubCommandHandler(CommandContext context, string command, string[] parameters)
         {
+            if (!context.Session.Player.CanTeleport())
+            {
+                await context.SendErrorAsync("You have a pending teleport! Please wait to use this command.");
+                return;
+            }
             //find online players to teleport to
             List<WorldSession> allSessions = NetworkManager<WorldSession>.Instance.GetSessions().ToList();
             string name = string.Join(" ", parameters);

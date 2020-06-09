@@ -116,5 +116,10 @@ namespace NexusForever.WorldServer.Network.Message.Handler
                 RandomRollResult = RandRollResult
             });
         }
+
+        [MessageHandler(GameMessageOpcode.ClientZoneChange)]
+        public static void HandleClientZoneChange(WorldSession session, ClientZoneChange zoneChange)
+        {
+        }
     }
 }

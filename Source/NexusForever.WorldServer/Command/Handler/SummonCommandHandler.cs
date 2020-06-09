@@ -25,22 +25,6 @@ namespace NexusForever.WorldServer.Command.Handler
         {
         }
 
-        [SubCommandHandler("entity", "creature2Id - summons entity to the player's location", Permission.ModMe)]
-        public Task EntitySubCommandHandler(CommandContext context, string command, string[] parameters)
-        {
-            if (parameters.Length != 1)
-                return Task.CompletedTask;
-
-            uint creatureId;
-            uint.TryParse(parameters[0], out creatureId);
-
-            log.Info($"Summoning entity {creatureId} to {context.Session.Player.Position}");
-
-            var tempEntity = new VanityPet(context.Session.Player, creatureId);
-            context.Session.Player.Map.EnqueueAdd(tempEntity, context.Session.Player.Position);
-            return Task.CompletedTask;
-        }
-
         [SubCommandHandler("disguise", "creature2Id - changes player disguise", Permission.PRCommands)]
         public Task DisguiseSubCommandHandler(CommandContext context, string command, string[] parameters)
         {
@@ -77,16 +61,6 @@ namespace NexusForever.WorldServer.Command.Handler
         {
             //clear disguise
             context.Session.Player.ResetAppearance();
-            return Task.CompletedTask;
-        }
-
-        [SubCommandHandler("clearPet", "clears player pet", Permission.PRCommands)]
-        public Task ClearPetSubCommandHandler(CommandContext context, string command, string[] parameters)
-        {
-            //clear pet (hopefully all if many are summoned)
-            VanityPet oldVanityPet = context.Session.Player.GetVisible<VanityPet>(context.Session.Player.VanityPetGuid.Value);
-            oldVanityPet?.RemoveFromMap();
-            context.Session.Player.VanityPetGuid = 0u;
             return Task.CompletedTask;
         }
 
@@ -154,19 +128,6 @@ namespace NexusForever.WorldServer.Command.Handler
             }
             return Task.CompletedTask;
         }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     }
 }

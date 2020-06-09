@@ -36,13 +36,15 @@ using NexusForever.WorldServer.Game.Contact;
 using NexusForever.WorldServer.Network;
 using NexusForever.WorldServer.Network.Message.Model;
 using NexusForever.WorldServer.Network.Message.Model.Shared;
+using NLog;
 
 namespace NexusForever.WorldServer.Game.Entity
 {
     public class Player : UnitEntity, ISaveAuth, ISaveCharacter, ICharacter
     {
+        private static readonly ILogger log = LogManager.GetCurrentClassLogger();
         // TODO: move this to the config file
-        private const double SaveDuration = 60d;
+        private const double SaveDuration = 30d; //BAKI - reduced to see if it helps with saves
 
         public ulong CharacterId { get; }
         public string Name { get; }
@@ -156,6 +158,7 @@ namespace NexusForever.WorldServer.Game.Entity
 
         private LogoutManager logoutManager;
         private PendingTeleport pendingTeleport;
+        public bool CanTeleport() => pendingTeleport == null;
 
         /// <summary>
         /// Character Customisation models. Stored for modification purposes.
@@ -231,6 +234,9 @@ namespace NexusForever.WorldServer.Game.Entity
             TimePlayedTotal = model.TimePlayedTotal;
             TimePlayedLevel = model.TimePlayedLevel;
 
+            foreach (CharacterStats statModel in model.CharacterStats)
+                stats.Add((Stat)statModel.Stat, new StatValue(statModel));
+
             // managers
             CostumeManager          = new CostumeManager(this, session.Account, model);
             Inventory               = new Inventory(this, model);
@@ -275,8 +281,6 @@ namespace NexusForever.WorldServer.Game.Entity
                 characterBones.Add(new Bone(bone));
             }
 
-            foreach (CharacterStats statModel in model.CharacterStats)
-                stats.Add((Stat)statModel.Stat, new StatValue(statModel));
 
             BuildBaseProperties();
 
@@ -404,6 +408,7 @@ namespace NexusForever.WorldServer.Game.Entity
 
         public override void OnAddToMap(BaseMap map, uint guid, Vector3 vector)
         {
+            log.Info($"{Name} is being added to map.");
             IsLoading = true;
 
             Session.EnqueueMessageEncrypted(new ServerChangeWorld
@@ -415,6 +420,7 @@ namespace NexusForever.WorldServer.Game.Entity
             base.OnAddToMap(map, guid, vector);
             map.OnAddToMap(this);
 
+            log.Info($"Pet resummoned");
             // resummon vanity pet if it existed before teleport
             if (pendingTeleport?.VanityPetId != null)
             {
@@ -422,12 +428,17 @@ namespace NexusForever.WorldServer.Game.Entity
                 map.EnqueueAdd(vanityPet, Position);
             }
 
-            pendingTeleport = null;
+            
 
+            log.Info($"{Name} - Sending packets after addtomap");
             SendPacketsAfterAddToMap();
             Session.EnqueueMessageEncrypted(new ServerPlayerEnteredWorld());
 
+            log.Info($"{Name} - loading set to false");
             IsLoading = false;
+
+            log.Info($"PendingTeleport set to null");
+            pendingTeleport = null;
 
             if (!loggedIn)
                 OnLogin();
@@ -621,13 +632,19 @@ namespace NexusForever.WorldServer.Game.Entity
                 pet?.RemoveFromMap();
                 VanityPetGuid = null;
             }
-
+            log.Info($"{Name} - Destroying dependents");
             DestroyDependents();
 
+            log.Info($"{Name} - base remove from map");
             base.OnRemoveFromMap();
 
+            log.Info($"{Name} - Pending teleport check");
             if (pendingTeleport != null)
+            {
+                log.Info($"{Name} - Pending teleport");
                 MapManager.Instance.AddToMap(this, pendingTeleport.Info, pendingTeleport.Vector);
+            }
+                
         }
 
         public override void AddVisible(GridEntity entity)
@@ -749,6 +766,7 @@ namespace NexusForever.WorldServer.Game.Entity
             {
                 Save(() =>
                 {
+                    log.Info($"{Name} - Cleanup triggered");
                     RemoveFromMap();
                     ContactManager.OnLogout(Session);
                     SocialManager.Instance.LeaveChatChannels(Session);
@@ -787,6 +805,8 @@ namespace NexusForever.WorldServer.Game.Entity
         /// </summary>
         public void TeleportTo(WorldEntry entry, Vector3 vector, uint instanceId = 0u, ulong residenceId = 0ul)
         {
+            if (!CanTeleport())
+                throw new InvalidOperationException($"Player {CharacterId} tried to teleport when they're already teleporting.");
             if (DisableManager.Instance.IsDisabled(DisableType.World, entry.Id))
             {
                 SendSystemMessage($"Unable to teleport to world {entry.Id} because it is disabled.");
@@ -810,7 +830,9 @@ namespace NexusForever.WorldServer.Game.Entity
                 Dismount();
 
             var info = new MapInfo(entry, instanceId, residenceId);
+            log.Info($"{Name} - teleport pending set to new teleport");
             pendingTeleport = new PendingTeleport(info, vector, vanityPetId);
+            log.Info($"{Name} - Removing from map");
             RemoveFromMap();
         }
 

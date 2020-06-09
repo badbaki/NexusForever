@@ -70,8 +70,8 @@ namespace NexusForever.WorldServer.Game.Entity
         /// </summary>
         public virtual void OnAddToMap(BaseMap map, uint guid, Vector3 vector)
         {
-            Guid     = guid;
-            Map      = map;
+            Guid = guid;
+            Map = map;
             Position = vector;
 
             UpdateVision();
@@ -102,7 +102,7 @@ namespace NexusForever.WorldServer.Game.Entity
             visibleGrids.Clear();
 
             Guid = 0;
-            Map  = null;
+            Map = null;
         }
 
         /// <summary>

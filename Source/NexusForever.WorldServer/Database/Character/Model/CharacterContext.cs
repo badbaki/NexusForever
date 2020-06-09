@@ -247,7 +247,8 @@ namespace NexusForever.WorldServer.Database.Character.Model
 
                 entity.Property(e => e.SpecIndex)
                     .HasColumnName("specIndex")
-                    .HasDefaultValueSql("'0'");
+                    .HasDefaultValue(0)
+                    .ValueGeneratedNever();
 
                 entity.Property(e => e.AmpId)
                     .HasColumnName("ampId")
@@ -272,11 +273,13 @@ namespace NexusForever.WorldServer.Database.Character.Model
 
                 entity.Property(e => e.SpecIndex)
                     .HasColumnName("specIndex")
-                    .HasDefaultValueSql("'0'");
+                    .HasDefaultValue(0)
+                    .ValueGeneratedNever();
 
                 entity.Property(e => e.Location)
                     .HasColumnName("location")
-                    .HasDefaultValueSql("'0'");
+                    .HasDefaultValue(0)
+                    .ValueGeneratedNever();
 
                 entity.Property(e => e.ObjectId)
                     .HasColumnName("objectId")

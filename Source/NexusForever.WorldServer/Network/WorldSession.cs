@@ -11,11 +11,13 @@ using NexusForever.WorldServer.Database.Character.Model;
 using NexusForever.WorldServer.Game.Account;
 using NexusForever.WorldServer.Game.Entity;
 using NexusForever.WorldServer.Network.Message.Model;
+using NLog;
 
 namespace NexusForever.WorldServer.Network
 {
     public class WorldSession : GameSession
     {
+        private static readonly ILogger log = LogManager.GetCurrentClassLogger();
         public Account Account { get; private set; }
         public List<Character> Characters { get; } = new List<Character>();
 
@@ -59,7 +61,8 @@ namespace NexusForever.WorldServer.Network
         protected override void OnDisconnect()
         {
             base.OnDisconnect();
-            Player?.CleanUp();
+            //log.Info($"OnDisconnect triggered");
+            Player?.CleanUp(); //being triggered while leaving housing map
         }
 
         /// <summary>

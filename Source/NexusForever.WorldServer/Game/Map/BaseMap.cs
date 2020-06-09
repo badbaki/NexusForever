@@ -44,12 +44,12 @@ namespace NexusForever.WorldServer.Game.Map
 
         public virtual void Initialise(MapInfo info, Player player)
         {
-            Entry       = info.Entry;
-            File        = BaseMapManager.Instance.GetBaseMap(Entry.AssetPath);
-            InstanceId  = info.InstanceId;
+            Entry = info.Entry;
+            File = BaseMapManager.Instance.GetBaseMap(Entry.AssetPath);
+            InstanceId = info.InstanceId;
             entityCache = EntityCacheManager.Instance.GetEntityCache((ushort)Entry.Id);
         }
-        
+
         public virtual void Update(double lastTick)
         {
             uint actionThreshold = ConfigurationManager<WorldServerConfiguration>.Instance.Config.Map.GridActionThreshold ?? 100u;
@@ -58,19 +58,19 @@ namespace NexusForever.WorldServer.Game.Map
                 switch (action)
                 {
                     case GridActionAdd actionAdd:
-                    {
-                        if (!AddEntity(actionAdd.Entity, actionAdd.Vector))
                         {
-                            // retry threshold to prevent and issues with stuck actions
-                            actionAdd.RequeueCount++;
-                            if (actionAdd.RequeueCount > 5u)
-                                log.Error($"Failed to add entity to map {Entry.Id} at position X: {actionAdd.Vector.X}, Y: {actionAdd.Vector.Y}, Z: {actionAdd.Vector.Z}!");
-                            else
-                                pendingActions.Enqueue(action);
-                        }
+                            if (!AddEntity(actionAdd.Entity, actionAdd.Vector))
+                            {
+                                // retry threshold to prevent and issues with stuck actions
+                                actionAdd.RequeueCount++;
+                                if (actionAdd.RequeueCount > 5u)
+                                    log.Error($"Failed to add entity to map {Entry.Id} at position X: {actionAdd.Vector.X}, Y: {actionAdd.Vector.Y}, Z: {actionAdd.Vector.Z}!");
+                                else
+                                    pendingActions.Enqueue(action);
+                            }
 
-                        break;
-                    }
+                            break;
+                        }
                     case GridActionRelocate actionRelocate:
                         RelocateEntity(actionRelocate.Entity, actionRelocate.Vector);
                         break;
