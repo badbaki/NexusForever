@@ -167,6 +167,67 @@ namespace NexusForever.Database.Character.Migrations
                     b.ToTable("character_bone");
                 });
 
+            modelBuilder.Entity("NexusForever.Database.Character.Model.CharacterContactModel", b =>
+            {
+                b.Property<ulong>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnName("id")
+                    .HasColumnType("bigint(20) unsigned")
+                    .HasDefaultValue(0ul);
+
+                b.Property<ulong>("OwnerId")
+                    .HasColumnName("ownerId")
+                    .HasColumnType("bigint(20) unsigned")
+                    .HasDefaultValue(0ul);
+
+                b.Property<ulong>("ContactId")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnName("contactId")
+                    .HasColumnType("bigint(20) unsigned")
+                    .HasDefaultValue(0ul);
+
+                b.Property<byte>("Accepted")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnName("accepted")
+                    .HasColumnType("tinyint(8) unsigned")
+                    .HasDefaultValue((byte)0);
+
+                b.Property<string>("InviteMessage")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnName("inviteMessage")
+                    .HasColumnType("varchar(100)")
+                    .HasDefaultValueSql("''");
+
+                b.Property<string>("PrivateNote")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnName("privateNote")
+                    .HasColumnType("varchar(100)")
+                    .HasDefaultValueSql("''");
+
+                b.Property<DateTime>("RequestTime")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnName("requestTime")
+                    .HasColumnType("datetime")
+                    .HasDefaultValueSql("current_timestamp()");
+
+                b.Property<uint>("Type")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnName("type")
+                    .HasColumnType("int(3) unsigned")
+                    .HasDefaultValue(0u);
+
+                b.HasKey("Id", "OwnerId", "ContactId")
+                    .HasName("PRIMARY");
+
+                b.HasIndex("Id")
+                    .IsUnique()
+                    .HasName("contactGuid");
+
+                b.HasIndex("OwnerId");
+
+                b.ToTable("character_contact");
+            });
+
             modelBuilder.Entity("NexusForever.Database.Character.Model.CharacterCostumeItemModel", b =>
                 {
                     b.Property<ulong>("Id")
@@ -2136,6 +2197,16 @@ namespace NexusForever.Database.Character.Migrations
 
                     b.Navigation("Character");
                 });
+
+            modelBuilder.Entity("NexusForever.Database.Character.Model.CharacterContactModel", b =>
+            {
+                b.HasOne("NexusForever.Database.Character.Model.CharacterModel", "Character")
+                    .WithMany("Contact")
+                    .HasForeignKey("OwnerId")
+                    .HasConstraintName("FK__character_contact_id__character_id")
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .IsRequired();
+            });
 
             modelBuilder.Entity("NexusForever.Database.Character.Model.CharacterCostumeItemModel", b =>
                 {

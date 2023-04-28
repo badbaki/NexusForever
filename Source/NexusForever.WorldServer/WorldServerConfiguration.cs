@@ -18,6 +18,14 @@ namespace NexusForever.WorldServer
             public uint? MaxInstances { get; set; }
         }
 
+        public struct ContactLimits
+        {
+            public uint? MaxFriends { get; set; }
+            public uint? MaxRivals { get; set; }
+            public uint? MaxIgnored { get; set; }
+            public float? MaxRequestDuration { get; set; }
+        }
+
         public NetworkConfig Network { get; set; }
         public DatabaseConfig Database { get; set; }
         public MapConfig Map { get; set; }
@@ -28,5 +36,6 @@ namespace NexusForever.WorldServer
         public bool CrossFactionChat { get; set; } = true;
         public uint MaxPlayers { get; set; } = 50u;
         public uint? DefaultRole { get; set; } = null;
+        public ContactLimits Contacts { get; set; }
     }
 }

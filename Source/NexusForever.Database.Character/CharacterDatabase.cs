@@ -60,7 +60,10 @@ namespace NexusForever.Database.Character
         public List<CharacterModel> GetAllCharacters()
         {
             using var context = new CharacterContext(config);
-            return context.Character.Where(c => c.DeleteTime == null).ToList();
+            return context.Character
+                .Where(c => c.DeleteTime == null)
+                .Include(c => c.Stat)
+                .ToList();
         }
 
         public ulong GetNextCharacterId()
@@ -141,6 +144,7 @@ namespace NexusForever.Database.Character
                     .ThenInclude(c => c.QuestObjective)
                 .Include(c => c.Entitlement)
                 .Include(c => c.Achievement)
+                .Include(c => c.Contact)
                 .Include(c => c.TradeskillMaterials)
                 .Include(c => c.Reputation)
                 .ToListAsync();
@@ -208,6 +212,33 @@ namespace NexusForever.Database.Character
             using var context = new CharacterContext(config);
 
             return context.CharacterCreate.ToList();
+        }
+
+        /// <summary>
+        /// Used by the Global Contact Manager to get the next unique ID.
+        /// </summary>
+        public ulong GetNextContactId()
+        {
+            using var context = new CharacterContext(config);
+
+            return context.CharacterContact
+                .Select(r => r.Id)
+                .DefaultIfEmpty()
+                .Max();
+        }
+
+        public async Task<List<CharacterContactModel>> GetPendingContactRequests(ulong characterId)
+        {
+            // 0 = Friend
+            // 4 = FriendAndRival
+            // 8 = Account Friend
+            uint[] contactTypes = new uint[] { 0, 4, 8 };
+
+            using var context = new CharacterContext(config);
+
+            return await context.CharacterContact
+                .Where(c => c.ContactId == characterId && c.Accepted == 0 && contactTypes.Contains(c.Type))
+                .ToListAsync();
         }
     }
 }

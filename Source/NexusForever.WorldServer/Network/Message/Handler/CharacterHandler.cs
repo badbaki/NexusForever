@@ -302,15 +302,15 @@ namespace NexusForever.WorldServer.Network.Message.Handler
 
                 var character = new CharacterModel
                 {
-                    AccountId  = session.Account.Id,
-                    Id         = AssetManager.Instance.NextCharacterId,
-                    Name       = characterCreate.Name,
-                    Race       = (byte)creationEntry.RaceId,
-                    Sex        = (byte)creationEntry.Sex,
-                    Class      = (byte)creationEntry.ClassId,
-                    FactionId  = (ushort)creationEntry.FactionId,
+                    AccountId = session.Account.Id,
+                    Id = AssetManager.Instance.NextCharacterId,
+                    Name = characterCreate.Name,
+                    Race = (byte)creationEntry.RaceId,
+                    Sex = (byte)creationEntry.Sex,
+                    Class = (byte)creationEntry.ClassId,
+                    FactionId = (ushort)creationEntry.FactionId,
                     ActivePath = characterCreate.Path,
-                    TotalXp    = creationEntry.Xp
+                    TotalXp = creationEntry.Xp
                 };
 
                 uint startingLevel = GameTableManager.Instance.XpPerLevel.Entries.First(l => l.MinXpForLevel >= creationEntry.Xp).Id;
@@ -319,7 +319,7 @@ namespace NexusForever.WorldServer.Network.Message.Handler
                 {
                     character.Path.Add(new CharacterPathModel
                     {
-                        Path     = (byte)path,
+                        Path = (byte)path,
                         Unlocked = Convert.ToByte(characterCreate.Path == (byte)path)
                     });
                 }
@@ -337,15 +337,14 @@ namespace NexusForever.WorldServer.Network.Message.Handler
                         Value = value
                     });
 
-                    CharacterCustomizationEntry entry = GetCharacterCustomisation(customisations, creationEntry.RaceId, creationEntry.Sex, label, value);
-                    if (entry == null)
-                        continue;
-
-                    character.Appearance.Add(new CharacterAppearanceModel
+                    foreach (CharacterCustomizationEntry entry in AssetManager.Instance.GetCharacterCustomisation(customisations, creationEntry.RaceId, creationEntry.Sex, label, value))
                     {
-                        Slot      = (byte)entry.ItemSlotId,
-                        DisplayId = (ushort)entry.ItemDisplayId
-                    });
+                        character.Appearance.Add(new CharacterAppearanceModel
+                        {
+                            Slot = (byte)entry.ItemSlotId,
+                            DisplayId = (ushort)entry.ItemDisplayId
+                        });
+                    }
                 }
 
                 for (int i = 0; i < characterCreate.Bones.Count; ++i)
@@ -353,7 +352,7 @@ namespace NexusForever.WorldServer.Network.Message.Handler
                     character.Bone.Add(new CharacterBoneModel
                     {
                         BoneIndex = (byte)(i),
-                        Bone      = characterCreate.Bones[i]
+                        Bone = characterCreate.Bones[i]
                     });
                 }
 
@@ -379,19 +378,19 @@ namespace NexusForever.WorldServer.Network.Message.Handler
 
                     character.Spell.Add(new CharacterSpellModel
                     {
-                        Id           = character.Id,
+                        Id = character.Id,
                         Spell4BaseId = spell4Entry.Spell4BaseIdBaseSpell,
-                        Tier         = 1
+                        Tier = 1
                     });
 
                     character.ActionSetShortcut.Add(new CharacterActionSetShortcutModel
                     {
-                        Id           = character.Id,
-                        SpecIndex    = 0,
-                        Location     = (ushort)location,
+                        Id = character.Id,
+                        SpecIndex = 0,
+                        Location = (ushort)location,
                         ShortcutType = (byte)ShortcutType.Spell,
-                        ObjectId     = spell4Entry.Spell4BaseIdBaseSpell,
-                        Tier         = 1
+                        ObjectId = spell4Entry.Spell4BaseIdBaseSpell,
+                        Tier = 1
                     });
 
                     location++;
@@ -406,56 +405,56 @@ namespace NexusForever.WorldServer.Network.Message.Handler
                 //TODO: handle starting stats per class/race
                 character.Stat.Add(new CharacterStatModel
                 {
-                    Id    = character.Id,
-                    Stat  = (byte)Stat.Health,
+                    Id = character.Id,
+                    Stat = (byte)Stat.Health,
                     Value = 800
                 });
                 character.Stat.Add(new CharacterStatModel
                 {
-                    Id    = character.Id,
-                    Stat  = (byte)Stat.Dash,
+                    Id = character.Id,
+                    Stat = (byte)Stat.Dash,
                     Value = 200
                 });
                 character.Stat.Add(new CharacterStatModel
                 {
-                    Id    = character.Id,
-                    Stat  = (byte)Stat.Level,
+                    Id = character.Id,
+                    Stat = (byte)Stat.Level,
                     Value = startingLevel
                 });
                 character.Stat.Add(new CharacterStatModel
                 {
-                    Id    = character.Id,
-                    Stat  = (byte)Stat.StandState,
+                    Id = character.Id,
+                    Stat = (byte)Stat.StandState,
                     Value = 3
                 });
                 character.Stat.Add(new CharacterStatModel
                 {
-                    Id    = character.Id,
-                    Stat  = (byte)Stat.Sheathed,
+                    Id = character.Id,
+                    Stat = (byte)Stat.Sheathed,
                     Value = 1
                 });
 
                 // TODO: actually error check this
                 session.Events.EnqueueEvent(new TaskEvent(DatabaseManager.Instance.CharacterDatabase.Save(c =>
-                    {
-                        c.Character.Add(character);
-                        foreach (Item item in items)
-                            item.Save(c);
-                    }),
+                {
+                    c.Character.Add(character);
+                    foreach (Item item in items)
+                        item.Save(c);
+                }),
                    () =>
-               {
-                   session.Characters.Add(character);
-
-                   if ((CharacterCreationStart)creationEntry.CharacterCreationStartEnum == CharacterCreationStart.Level50)
-                       session.AccountCurrencyManager.CurrencySubtractAmount(AccountCurrencyType.MaxLevelToken, 1u);
-
-                   session.EnqueueMessageEncrypted(new ServerCharacterCreate
                    {
-                       CharacterId = character.Id,
-                       WorldId     = character.WorldId,
-                       Result      = CharacterModifyResult.CreateOk
-                   });
-               }));
+                       session.Characters.Add(character);
+
+                       if ((CharacterCreationStart)creationEntry.CharacterCreationStartEnum == CharacterCreationStart.Level50)
+                           session.AccountCurrencyManager.CurrencySubtractAmount(AccountCurrencyType.MaxLevelToken, 1u);
+
+                       session.EnqueueMessageEncrypted(new ServerCharacterCreate
+                       {
+                           CharacterId = character.Id,
+                           WorldId = character.WorldId,
+                           Result = CharacterModifyResult.CreateOk
+                       });
+                   }));
             }
             catch
             {
@@ -465,22 +464,6 @@ namespace NexusForever.WorldServer.Network.Message.Handler
                 });
 
                 throw;
-            }
-
-            CharacterCustomizationEntry GetCharacterCustomisation(Dictionary<uint, uint> customisations, uint race, uint sex, uint primaryLabel, uint primaryValue)
-            {
-                ImmutableList<CharacterCustomizationEntry> entries = AssetManager.Instance.GetPrimaryCharacterCustomisation(race, sex, primaryLabel, primaryValue);
-                if (entries == null)
-                    return null;
-                if (entries.Count == 1)
-                    return entries[0];
-
-                // customisation has multiple results, filter with secondary label and value 
-                uint secondaryLabel = entries.First(e => e.CharacterCustomizationLabelId01 != 0).CharacterCustomizationLabelId01;
-                uint secondaryValue = customisations[secondaryLabel];
-
-                CharacterCustomizationEntry entry = entries.SingleOrDefault(e => e.CharacterCustomizationLabelId01 == secondaryLabel && e.Value01 == secondaryValue);
-                return entry ?? entries.Single(e => e.CharacterCustomizationLabelId01 == 0 && e.Value01 == 0);
             }
         }
 
@@ -703,6 +686,17 @@ namespace NexusForever.WorldServer.Network.Message.Handler
             {
                 TaxiNode = rapidTransport.TaxiNode
             });
+        }
+
+        [MessageHandler(GameMessageOpcode.ClientCharacterAppearanceChange)]
+        public static void HandleAppearanceChange(WorldSession session, ClientCharacterAppearanceChange appearanceChange)
+        {
+            // merge seperate label and value lists into a single dictonary
+            Dictionary<uint, uint> customisations = appearanceChange.Labels
+                .Zip(appearanceChange.Values, (l, v) => new { l, v })
+                .ToDictionary(p => p.l, p => p.v);
+
+            session.Player.SetCharacterCustomisation(customisations, appearanceChange.Bones, (Race)appearanceChange.Race, (Sex)appearanceChange.Sex, appearanceChange.UseServiceTokens);
         }
 
         [MessageHandler(GameMessageOpcode.ClientInnateChange)]

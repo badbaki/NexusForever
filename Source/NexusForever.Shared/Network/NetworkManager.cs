@@ -88,6 +88,8 @@ namespace NexusForever.Shared.Network
 
         private void AddSession(T session)
         {
+            //Comment out to enable multiboxing - BAKI
+            /*
             if (sessions.TryGetValue(session.Id, out T existingSession))
             {
                 // there is already an existing session with this key, disconnect it
@@ -96,15 +98,19 @@ namespace NexusForever.Shared.Network
                 existingSession.ForceDisconnect();
                 UpdateSession(existingSession, Guid.NewGuid().ToString());
             }
+            */
 
             sessions.Add(session.Id, session);
         }
 
         private void UpdateSession(T session, string id)
         {
+            //No need to update when multiboxing is allowed - BAKI
+            /*
             sessions.Remove(session.Id);
             session.UpdateId(id);
             AddSession(session);
+            */
         }
 
         /// <summary>

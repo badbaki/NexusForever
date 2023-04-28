@@ -12,6 +12,7 @@ using NexusForever.WorldServer.Command;
 using NexusForever.WorldServer.Game;
 using NexusForever.WorldServer.Game.Achievement;
 using NexusForever.WorldServer.Game.CharacterCache;
+using NexusForever.WorldServer.Game.Contact;
 using NexusForever.WorldServer.Game.Cinematic;
 using NexusForever.WorldServer.Game.Entity;
 using NexusForever.WorldServer.Game.Entity.Movement;
@@ -59,6 +60,7 @@ namespace NexusForever.WorldServer
             EntityCacheManager.Instance.Initialise();
             FactionManager.Instance.Initialise();
             GlobalMovementManager.Instance.Initialise();
+            GlobalContactManager.Instance.Initialise();
 
             GlobalCinematicManager.Instance.Initialise();
             GlobalChatManager.Instance.Initialise(); // must be initialised before guilds
@@ -88,6 +90,7 @@ namespace NexusForever.WorldServer
 
                 BuybackManager.Instance.Update(lastTick);
                 GlobalQuestManager.Instance.Update(lastTick);
+                CommandManager.Instance.Update(lastTick);
                 GlobalGuildManager.Instance.Update(lastTick);
                 GlobalResidenceManager.Instance.Update(lastTick); // must be after guild update
                 GlobalChatManager.Instance.Update(lastTick);
@@ -95,7 +98,7 @@ namespace NexusForever.WorldServer
                 ShutdownManager.Instance.Update(lastTick);
 
                 // process commands after everything else in the tick has processed
-                CommandManager.Instance.Update(lastTick);
+                GlobalContactManager.Instance.Update(lastTick);
             });
 
             // initialise network and command managers last to make sure the rest of the server is ready for invoked handlers
