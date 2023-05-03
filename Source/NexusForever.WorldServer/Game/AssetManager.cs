@@ -290,7 +290,8 @@ namespace NexusForever.WorldServer.Game
                 }
             }
 
-            return customizationEntries;
+            // Ensure we only return 1 entry per ItemSlot.
+            return customizationEntries.GroupBy(i => i.ItemSlotId).Select(i => i.First());
         }
     }
 }

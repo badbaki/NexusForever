@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using NexusForever.Database.Auth;
 using NexusForever.Database.Character;
@@ -50,8 +51,8 @@ namespace NexusForever.WorldServer.Game.Entity
 
         public ulong CharacterId { get; }
         public string Name { get; }
-        public Sex Sex { get; set; }
-        public Race Race { get; set; }
+        public Sex Sex { get; private set; }
+        public Race Race { get; private set; }
         public Class Class { get; }
         public Faction Faction { get; }
         public List<float> Bones { get; } = new();
@@ -161,13 +162,7 @@ namespace NexusForever.WorldServer.Game.Entity
         /// </remarks>
         public float? GetOnlineStatus() => 0f;
 
-
-        private Dictionary</*label*/uint, Customisation> characterCustomisations = new Dictionary<uint, Customisation>();
-        private HashSet<Customisation> deletedCharacterCustomisations = new HashSet<Customisation>();
-        private Dictionary<ItemSlot, Appearance> characterAppearances = new Dictionary<ItemSlot, Appearance>();
-        private HashSet<Appearance> deletedCharacterAppearances = new HashSet<Appearance>();
-        private List<Bone> characterBones = new List<Bone>();
-        private HashSet<Bone> deletedCharacterBones = new HashSet<Bone>();
+        
         public Inventory Inventory { get; }
         public CurrencyManager CurrencyManager { get; }
         public PathManager PathManager { get; }
@@ -189,6 +184,16 @@ namespace NexusForever.WorldServer.Game.Entity
         public ChatManager ChatManager { get; }
         public ResidenceManager ResidenceManager { get; }
         public CinematicManager CinematicManager { get; }
+
+        /// <summary>
+        /// Character Customisation models. Stored for modification purposes.
+        /// </summary>
+        private Dictionary</*label*/uint, Customisation> characterCustomisations = new Dictionary<uint, Customisation>();
+        private HashSet<Customisation> deletedCharacterCustomisations = new HashSet<Customisation>();
+        private Dictionary<ItemSlot, Appearance> characterAppearances = new Dictionary<ItemSlot, Appearance>();
+        private HashSet<Appearance> deletedCharacterAppearances = new HashSet<Appearance>();
+        private List<Bone> characterBones = new List<Bone>();
+        private HashSet<Bone> deletedCharacterBones = new HashSet<Bone>();
 
         public VendorInfo SelectedVendorInfo { get; set; } // TODO unset this when too far away from vendor
 
