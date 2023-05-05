@@ -44,7 +44,7 @@ namespace NexusForever.WorldServer.Game.Entity
 {
     public class Player : UnitEntity, ISaveAuth, ISaveCharacter, ICharacter
     {
-        private readonly static ILogger log = LogManager.GetCurrentClassLogger();
+        private static readonly ILogger log = LogManager.GetCurrentClassLogger();
 
         // TODO: move this to the config file
         private const double SaveDuration = 60d;
@@ -267,16 +267,6 @@ namespace NexusForever.WorldServer.Game.Entity
             ResidenceManager        = new ResidenceManager(this);
             CinematicManager        = new CinematicManager(this);
 
-            // temp
-            Properties.Add(Property.BaseHealth, new PropertyValue(Property.BaseHealth, 200f, 800f));
-            Properties.Add(Property.ShieldCapacityMax, new PropertyValue(Property.ShieldCapacityMax, 0f, 450f));
-            Properties.Add(Property.MoveSpeedMultiplier, new PropertyValue(Property.MoveSpeedMultiplier, 1f, 1f));
-            Properties.Add(Property.JumpHeight, new PropertyValue(Property.JumpHeight, 2.5f, 2.5f));
-            Properties.Add(Property.GravityMultiplier, new PropertyValue(Property.GravityMultiplier, 1f, 1f));
-            // sprint
-            Properties.Add(Property.ResourceMax0, new PropertyValue(Property.ResourceMax0, 500f, 500f));
-            // dash
-            Properties.Add(Property.ResourceMax7, new PropertyValue(Property.ResourceMax7, 200f, 200f));
 
             Costume costume = null;
             if (CostumeIndex >= 0)
@@ -301,7 +291,8 @@ namespace NexusForever.WorldServer.Game.Entity
                 Bones.Add(bone.Bone);
                 characterBones.Add(new Bone(bone));
             }
-                
+
+            BuildBaseProperties();
 
             SetStat(Stat.Sheathed, 1u);
 
@@ -313,6 +304,30 @@ namespace NexusForever.WorldServer.Game.Entity
 
             CharacterManager.Instance.RegisterPlayer(this);
             firstTimeLoggingIn = model.TimePlayedTotal == 0;
+        }
+
+        public override void BuildBaseProperties()
+        {
+            var baseProperties = AssetManager.Instance.GetCharacterBaseProperties();
+            foreach (PropertyValue propertyValue in baseProperties)
+            {
+                float value = propertyValue.Value; // Intentionally copying value so that the PropertyValue does not get modified inside AssetManager
+
+                if (propertyValue.Property == Property.BaseHealth || propertyValue.Property == Property.AssaultRating || propertyValue.Property == Property.SupportRating)
+                    value *= Level;
+
+                SetBaseProperty(propertyValue.Property, value);
+            }
+
+            var classProperties = AssetManager.Instance.GetCharacterClassBaseProperties(Class);
+            foreach (PropertyValue propertyValue in classProperties)
+            {
+                float value = propertyValue.Value; // Intentionally copying value so that the PropertyValue does not get modified inside AssetManager
+
+                SetBaseProperty(propertyValue.Property, value);
+            }
+
+            base.BuildBaseProperties();
         }
 
         public override void Update(double lastTick)
