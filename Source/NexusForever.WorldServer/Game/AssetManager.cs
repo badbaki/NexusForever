@@ -45,6 +45,8 @@ namespace NexusForever.WorldServer.Game
         private ImmutableDictionary<ItemSlot, ImmutableDictionary<Property, float>> innatePropertiesLevelScaling;
         private ImmutableDictionary<ItemSlot, ImmutableDictionary<Property, float>> innatePropertiesFlat;
 
+        private ImmutableDictionary<ushort, Location> bindPointLocations;
+
         private ImmutableDictionary</*zoneId*/uint, /*tutorialId*/uint> zoneTutorials;
         private ImmutableDictionary</*creatureId*/uint, /*targetGroupIds*/ImmutableList<uint>> creatureAssociatedTargetGroups;
 
@@ -69,6 +71,7 @@ namespace NexusForever.WorldServer.Game
             CacheItemInnateProperties();
             CacheTutorials();
             CacheCreatureTargetGroups();
+            CacheBindPointPositions();
             CacheRewardPropertiesByTier();
         }
 
@@ -161,7 +164,7 @@ namespace NexusForever.WorldServer.Game
 
         public void CacheInventoryBagCapacities()
         {
-            var entries = new Dictionary<InventoryLocation, uint>();
+            var entries = ImmutableDictionary.CreateBuilder<InventoryLocation, uint>();
             foreach (FieldInfo field in typeof(InventoryLocation).GetFields())
             {
                 foreach (InventoryLocationAttribute attribute in field.GetCustomAttributes<InventoryLocationAttribute>())
@@ -171,7 +174,7 @@ namespace NexusForever.WorldServer.Game
                 }
             }
 
-            InventoryLocationCapacities = entries.ToImmutableDictionary();
+            InventoryLocationCapacities = entries.ToImmutable();
         }
 
         private void CacheItemDisplaySourceEntries()
@@ -201,6 +204,33 @@ namespace NexusForever.WorldServer.Game
             }
 
             zoneTutorials = zoneEntries.ToImmutable();
+        }
+
+        private void CacheBindPointPositions()
+        {
+            var entries = ImmutableDictionary.CreateBuilder<ushort, Location>();
+            foreach (BindPointEntry entry in GameTableManager.Instance.BindPoint.Entries)
+            {
+                ushort entryId = (ushort)entry.Id;
+                Creature2Entry creatureEntity = GameTableManager.Instance.Creature2.Entries.SingleOrDefault(x => x.BindPointId == entryId);
+                if (creatureEntity == null)
+                    continue;
+
+                var entityEntry = DatabaseManager.Instance.WorldDatabase.GetEntity(creatureEntity.Id);
+                if (entityEntry == null)
+                    continue;
+
+                WorldEntry worldEntry = GameTableManager.Instance.World.GetEntry(entityEntry.World);
+                if (worldEntry == null)
+                    continue;
+
+                Location bindPointLocation = new Location(worldEntry, new Vector3(entityEntry.X, entityEntry.Y, entityEntry.Z), new Vector3(entityEntry.Rx, entityEntry.Ry, entityEntry.Rz));
+
+                if (!entries.ContainsKey(entryId))
+                    entries.Add(entryId, bindPointLocation);
+            }
+
+            bindPointLocations = entries.ToImmutable();
         }
 
         private void CacheCreatureTargetGroups()
@@ -395,6 +425,13 @@ namespace NexusForever.WorldServer.Game
         public Location GetStartingLocation(Race race, Faction faction, CharacterCreationStart creationStart)
         {
             return characterCreationData.TryGetValue((race, faction, creationStart), out Location location) ? location : null;
+        }
+
+        /// Returns a <see cref="Location"/> for a <see cref="BindPoint"/>
+        /// </summary>
+        public Location GetBindPoint(ushort bindpointId)
+        {
+            return bindPointLocations.TryGetValue(bindpointId, out Location bindPoint) ? bindPoint : null;
         }
 
         /// <summary>

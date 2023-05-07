@@ -36,6 +36,7 @@ namespace NexusForever.Database.Character.Model
         public string OriginalName { get; set; }
         public uint TotalXp { get; set; }
         public uint RestBonusXp { get; set; }
+        public ushort BindPoint { get; set; }
         public ulong? GuildAffiliation { get; set; }
         public uint Flags { get; set; }
 
