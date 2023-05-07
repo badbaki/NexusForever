@@ -154,6 +154,29 @@ namespace NexusForever.WorldServer.Game.Entity
         private uint? currentChairGuid;
 
         /// <summary>
+        /// Whether or not this <see cref="Player"/> is currently in a state after using an emote. Setting this to false will let all nearby entities know that the state has been reset.
+        /// </summary>
+        public bool IsEmoting
+        {
+            get => isEmoting;
+            set
+            {
+                if (isEmoting && value == false)
+                {
+                    isEmoting = false;
+                    EnqueueToVisible(new ServerEntityEmote
+                    {
+                        EmotesId = 0,
+                        SourceUnitId = Guid
+                    });
+                    return;
+                }
+                isEmoting = value;
+            }
+        }
+        private bool isEmoting;
+
+        /// <summary>
         /// Returns if <see cref="Player"/> has premium signature subscription.
         /// </summary>
         public bool SignatureEnabled => Session.AccountRbacManager.HasPermission(Permission.Signature);

@@ -32,6 +32,9 @@ namespace NexusForever.WorldServer.Network.Message.Handler
             if (mover == null)
                 return;
 
+            if (session.Player.IsEmoting)
+                session.Player.IsEmoting = false;
+
             foreach ((EntityCommand id, IEntityCommandModel command) in entityCommand.Commands)
             {
                 switch (command)
