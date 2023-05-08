@@ -13,6 +13,18 @@ namespace NexusForever.WorldServer.Game.Prerequisite
         {
             switch (comparison)
             {
+                case PrerequisiteComparison.Equal:
+                    return player.Level == value;
+                case PrerequisiteComparison.NotEqual:
+                    return player.Level != value;
+                case PrerequisiteComparison.GreaterThan:
+                    return player.Level > value;
+                case PrerequisiteComparison.GreaterThanOrEqual:
+                    return player.Level >= value;
+                case PrerequisiteComparison.LessThan:
+                    return player.Level < value;
+                case PrerequisiteComparison.LessThanOrEqual:
+                    return player.Level <= value;
                 default:
                     log.Warn($"Unhandled PrerequisiteComparison {comparison} for {PrerequisiteType.Level}!");
                     return true;
@@ -45,7 +57,7 @@ namespace NexusForever.WorldServer.Game.Prerequisite
                     return player.Class != (Class)value;
                 default:
                     log.Warn($"Unhandled PrerequisiteComparison {comparison} for {PrerequisiteType.Class}!");
-                    return true;
+                    return false;
             }
         }
 
@@ -85,7 +97,9 @@ namespace NexusForever.WorldServer.Game.Prerequisite
             switch (comparison)
             {
                 case PrerequisiteComparison.Equal:
-                    return player.PathManager.IsPathActive((Path)value);
+                    return player.PathManager.IsPathActive((Path)value) == true;
+                case PrerequisiteComparison.NotEqual:
+                    return player.PathManager.IsPathActive((Path)value) == false;
                 default:
                     log.Warn($"Unhandled PrerequisiteComparison {comparison} for {PrerequisiteType.Path}!");
 
@@ -104,6 +118,51 @@ namespace NexusForever.WorldServer.Game.Prerequisite
                     return player.AchievementManager.HasCompletedAchievement((ushort)objectId);
                 default:
                     log.Warn($"Unhandled PrerequisiteComparison {comparison} for {PrerequisiteType.Achievement}!");
+                    return false;
+            }
+        }
+
+        [PrerequisiteCheck(PrerequisiteType.ItemProficiency)]
+        private static bool PrerequisiteCheckItemProficiency(Player player, PrerequisiteComparison comparison, uint value, uint objectId)
+        {
+            switch (comparison)
+            {
+                case PrerequisiteComparison.NotEqual:
+                    return (player.GetItemProficiencies() & (ItemProficiency)value) == 0;
+                case PrerequisiteComparison.Equal:
+                    return (player.GetItemProficiencies() & (ItemProficiency)value) != 0;
+                default:
+                    log.Warn($"Unhandled PrerequisiteComparison {comparison} for {PrerequisiteType.Achievement}!");
+                    return false;
+            }
+        }
+
+        [PrerequisiteCheck(PrerequisiteType.Gender)]
+        private static bool PrerequisiteCheckGender(Player player, PrerequisiteComparison comparison, uint value, uint objectId)
+        {
+            switch (comparison)
+            {
+                case PrerequisiteComparison.NotEqual:
+                    return player.Sex != (Sex)value;
+                case PrerequisiteComparison.Equal:
+                    return player.Sex == (Sex)value;
+                default:
+                    log.Warn($"Unhandled PrerequisiteComparison {comparison} for {PrerequisiteType.Gender}!");
+                    return false;
+            }
+        }
+
+        [PrerequisiteCheck(PrerequisiteType.Prerequisite)]
+        private static bool PrerequisiteCheckPrerequisite(Player player, PrerequisiteComparison comparison, uint value, uint objectId)
+        {
+            switch (comparison)
+            {
+                case PrerequisiteComparison.NotEqual:
+                    return Instance.Meets(player, objectId) == false;
+                case PrerequisiteComparison.Equal:
+                    return Instance.Meets(player, objectId) == true;
+                default:
+                    log.Warn($"Unhandled PrerequisiteComparison {comparison} for {PrerequisiteType.Prerequisite}!");
                     return false;
             }
         }
@@ -160,21 +219,6 @@ namespace NexusForever.WorldServer.Game.Prerequisite
 
             // Returning true by default as many mounts used this
             return true;
-        }
-
-        [PrerequisiteCheck(PrerequisiteType.Prerequisite)]
-        private static bool PrerequisiteCheckPrerequisite(Player player, PrerequisiteComparison comparison, uint value, uint objectId)
-        {
-            switch (comparison)
-            {
-                case PrerequisiteComparison.NotEqual:
-                    return !Instance.Meets(player, objectId);
-                case PrerequisiteComparison.Equal:
-                    return Instance.Meets(player, objectId);
-                default:
-                    log.Warn($"Unhandled {comparison} for {PrerequisiteType.Prerequisite}!");
-                    return false;
-            }
         }
 
         [PrerequisiteCheck(PrerequisiteType.HoverboardFlair)]

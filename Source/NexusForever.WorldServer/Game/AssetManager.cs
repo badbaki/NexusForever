@@ -242,6 +242,15 @@ namespace NexusForever.WorldServer.Game
 
         private void CacheCreatureTargetGroups()
         {
+            List<TargetGroupType> acceptedTypes = new List<TargetGroupType>
+            {
+                TargetGroupType.OtherTargetGroup,
+                TargetGroupType.OtherTargetGroup2,
+            };
+            List<TargetGroupEntry> tgEntries = GameTableManager.Instance.TargetGroup.Entries
+                        .Where(x => acceptedTypes.Contains((TargetGroupType)x.Type))
+                        .ToList();
+
             var entries = ImmutableDictionary.CreateBuilder<uint, List<uint>>();
             foreach (TargetGroupEntry entry in GameTableManager.Instance.TargetGroup.Entries)
             {
@@ -256,6 +265,17 @@ namespace NexusForever.WorldServer.Game
                     entries[creatureId].Add(entry.Id);
                 }
             }
+
+            // Add TargetGroup Ids which target the Creature's TargetGroup Ids
+            foreach ((uint creatureId, List<uint> targetGroups) in entries.ToList())
+                foreach (uint targetGroupId in targetGroups.ToList())
+                    foreach (TargetGroupEntry tgEntry in tgEntries)
+                    {
+                        if (!tgEntry.DataEntries.Contains(targetGroupId))
+                            continue;
+
+                        entries[creatureId].Add(tgEntry.Id);
+                    }
 
             creatureAssociatedTargetGroups = entries.ToImmutableDictionary(e => e.Key, e => e.Value.ToImmutableList());
         }

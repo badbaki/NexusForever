@@ -282,6 +282,8 @@ namespace NexusForever.WorldServer.Game.Entity
             if (player.Level < info.Entry.PrerequisiteLevel)
                 return false;
 
+            bool prequestCheckPassed = true;
+
             if (!info.PrerequisiteQuests.IsEmpty)
             {
                 bool preReqQuestsCompleted;
@@ -291,6 +293,9 @@ namespace NexusForever.WorldServer.Game.Entity
                     preReqQuestsCompleted = info.PrerequisiteQuests.All(q => GetQuestState((ushort)q.Id) == QuestState.Completed);
 
                 if (!preReqQuestsCompleted)
+                    prequestCheckPassed = false;
+
+                if (!prequestCheckPassed)
                     return false;
             }
 
