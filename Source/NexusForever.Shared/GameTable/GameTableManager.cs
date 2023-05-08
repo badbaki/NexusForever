@@ -667,7 +667,9 @@ namespace NexusForever.Shared.GameTable
         [GameData]
         public GameTable<WorldSkyEntry> WorldSky { get; private set; }
 
+        [GameData]
         public GameTable<WorldSocketEntry> WorldSocket { get; private set; }
+
         public GameTable<WorldWaterEnvironmentEntry> WorldWaterEnvironment { get; private set; }
         public GameTable<WorldWaterFogEntry> WorldWaterFog { get; private set; }
         public GameTable<WorldWaterLayerEntry> WorldWaterLayer { get; private set; }
