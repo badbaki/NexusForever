@@ -1,25 +1,25 @@
 ﻿using NexusForever.Shared.Network;
 using NexusForever.Shared.Network.Message;
-using NexusForever.WorldServer.Network.Message.Model.Shared;
+using NexusForever.WorldServer.Game.Social;
 
 namespace NexusForever.WorldServer.Network.Message.Model
 {
-    [Message(GameMessageOpcode.ServerChatJoin)]
-    public class ServerChatJoin : IWritable
+    [Message(GameMessageOpcode.ServerChatJoin, MessageDirection.Server)]
+    class ServerChatJoin : IWritable
     {
-        public Channel Channel { get; set; }
-        public string Name { get; set; }
-        public uint MemberCount { get; set; }
-        public uint Flags { get; set; }
-        public uint Order { get; set; }
+        public ChatChannel Channel { get; set; }
+        public ulong ChannelId { get; set; }
+        public string CustomChannelName { get; set; }
 
         public void Write(GamePacketWriter writer)
         {
-            Channel.Write(writer);
-            writer.WriteStringWide(Name);
-            writer.Write(MemberCount);
-            writer.Write(Flags);
-            writer.Write(Order);
+            writer.Write(Channel, 14u);
+            writer.Write(ChannelId);
+            writer.WriteStringWide(CustomChannelName);
+
+            writer.Write(0);
+            writer.Write(0);
+            writer.Write(0);
         }
     }
 }
