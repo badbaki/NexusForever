@@ -207,6 +207,8 @@ namespace NexusForever.WorldServer.Game.Entity
             if (entry == null)
                 throw new ArgumentException($"Invalid entitlement type {type}!");
 
+            // TODO: Implement Entitlements going to RewardProperties where necessary
+
             GenericError entitlementCheck = CanUpdateEntitlement(entry, value);
             if (entitlementCheck != GenericError.Ok)
             {
@@ -228,8 +230,10 @@ namespace NexusForever.WorldServer.Game.Entity
         /// A positive value must be supplied for new entitlements otherwise an <see cref="ArgumentException"/> will be thrown.
         /// For existing entitlements a positive value will increment and a negative value will decrement the entitlement value.
         /// </remarks>
-        private void SetAccountEntitlement(EntitlementType type, EntitlementEntry entry, int value)
+        public void SetAccountEntitlement(EntitlementType type, EntitlementEntry entry, int value)
         {
+            // TODO: Add RewardProperties where necessary
+
             AccountEntitlement entitlement = SetEntitlement(accountEntitlements, entry, value,
                 () => new AccountEntitlement(session.Account.Id, entry, (uint)value));
 
@@ -240,6 +244,32 @@ namespace NexusForever.WorldServer.Game.Entity
             });
 
             UpdateRewardProperty(type, value);
+        }
+
+        /// <summary>
+        /// Create or update account <see cref="EntitlementType"/> with supplied value.
+        /// </summary>
+        /// <remarks>
+        /// This is an older 2 argument version of the SetAccountEntitlement
+        /// A positive value must be supplied for new entitlements otherwise an <see cref="ArgumentException"/> will be thrown.
+        /// For existing entitlements a positive value will increment and a negative value will decrement the entitlement value.
+        /// </remarks>
+        public void SetAccountEntitlement(EntitlementType type, int value)
+        {
+            EntitlementEntry entry = GameTableManager.Instance.Entitlement.GetEntry((ulong)type);
+            if (entry == null)
+                throw new ArgumentException($"Invalid entitlement type {type}!");
+
+            // TODO: Add RewardProperties where necessary
+
+            AccountEntitlement entitlement = SetEntitlement(accountEntitlements, entry, value,
+                () => new AccountEntitlement(session.Account.Id, entry, (uint)value));
+
+            session.EnqueueMessageEncrypted(new ServerAccountEntitlement
+            {
+                Entitlement = type,
+                Count = entitlement.Amount
+            });
         }
 
         /// <summary>

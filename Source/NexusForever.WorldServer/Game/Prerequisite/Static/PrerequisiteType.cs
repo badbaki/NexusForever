@@ -15,7 +15,7 @@
         Path            = 52,
         Vital           = 73,
         SpellKnown      = 129,
-		    /// <summary>
+		/// <summary>
         /// Checks for an ObjectId, which is a hashed petflair id.
         /// </summary>
         HoverboardFlair = 190,
@@ -29,6 +29,7 @@
         Unknown195      = 195,
         SpellBaseId     = 214,
         Plane           = 232,
+        AccountItemClaimed = 246,
         BaseFaction     = 250,
         Unhealthy       = 269,
         PurchasedTitle  = 288

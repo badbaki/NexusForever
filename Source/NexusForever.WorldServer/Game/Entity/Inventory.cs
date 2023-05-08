@@ -881,6 +881,22 @@ namespace NexusForever.WorldServer.Game.Entity
                     }, ItemUpdateReason.MaterialBagConversion);
         }
 
+        /// <summary>
+        /// Returns whether or not this <see cref="Player"/> has an item with the supplied Item2Id
+        /// </summary>
+        public bool HasItem(uint item2Id)
+        {
+            foreach (Bag bag in bags.Values)
+            {
+                foreach (Item item in bag)
+                {
+                    if (item.Info != null && item.Info.Entry?.Id == item2Id) return true;
+                }
+            }
+
+            return false;
+        }
+
         private void ApplyProperties(Item item)
         {
             foreach (KeyValuePair<Property, float> property in item.InnateProperties)

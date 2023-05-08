@@ -32,8 +32,14 @@ namespace NexusForever.WorldServer.Game
         /// </summary>
         public ulong NextMailId => nextMailId++;
 
+        /// <summary>
+        /// Id to be assigned to the next created account item.
+        /// </summary>
+        public ulong NextAccountItemId => nextAccountItemId++;
+
         private ulong nextCharacterId;
         private ulong nextMailId;
+        private ulong nextAccountItemId;
 
         private ImmutableDictionary<(Race, Faction, CharacterCreationStart), Location> characterCreationData;
         private ImmutableDictionary<uint, ImmutableList<CharacterCustomizationEntry>> characterCustomisations;
@@ -59,7 +65,8 @@ namespace NexusForever.WorldServer.Game
         public void Initialise()
         {
             nextCharacterId = DatabaseManager.Instance.CharacterDatabase.GetNextCharacterId() + 1ul;
-            nextMailId      = DatabaseManager.Instance.CharacterDatabase.GetNextMailId() + 1ul;
+            nextMailId = DatabaseManager.Instance.CharacterDatabase.GetNextMailId() + 1ul;
+            nextAccountItemId = DatabaseManager.Instance.AuthDatabase.GetNextAccountItemId() + 1ul;
 
             CacheCharacterCreate();
             CacheCharacterCustomisations();

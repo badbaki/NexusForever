@@ -72,7 +72,10 @@ namespace NexusForever.Database.Auth
                 .AsSplitQuery()
                 .Include(a => a.AccountCostumeUnlock)
                 .Include(a => a.AccountCurrency)
+                .Include(a => a.AccountEntitlement)
                 .Include(a => a.AccountGenericUnlock)
+                .Include(a => a.AccountItem)
+                .Include(a => a.AccountItemCooldown)
                 .Include(a => a.AccountKeybinding)
                 .Include(a => a.AccountEntitlement)
                 .Include(a => a.AccountPermission)
@@ -184,6 +187,16 @@ namespace NexusForever.Database.Auth
                 .Include(r => r.RolePermission)
                 .AsNoTracking()
                 .ToImmutableList();
+        }
+
+        public ulong GetNextAccountItemId()
+        {
+            using var context = new AuthContext(config);
+            /// This was changed from the PR to the updated structure needed as the PR is quite old - BAKI
+            return context.AccountItem
+                .Select(r => r.Id)
+                .DefaultIfEmpty()
+                .Max();
         }
     }
 }

@@ -18,6 +18,8 @@
         Account                     = 1,
         AccountCreate               = 2,
         AccountDelete               = 3,
+        AccountInventory            = 107,
+        AccountInventoryItemAdd     = 108,
 
         // rbac
         RBAC                        = 7,
